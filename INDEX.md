@@ -8,7 +8,7 @@ listed here. We work down the list, one repo at a time.
 **Bucket column** is a *provisional guess from the repo name only.* A `?` means
 low confidence — it gets confirmed or moved the moment the repo is opened.
 
-_37 source repos · 0 reviewed · 37 remaining_
+_37 source repos · 1 reviewed · 36 remaining_
 
 ---
 
@@ -66,7 +66,7 @@ _37 source repos · 0 reviewed · 37 remaining_
 | ⬜ | `May24` | ? | dated snapshot — unknown contents, triage |
 | ⬜ | `team-project-build` | ? | project build — unknown, triage (private) |
 | ⬜ | `ReplitFinal_referenceonlyretired` | high | explicitly reference-only / retired |
-| ⬜ | `for_referencev5.1` | high | explicitly reference |
+| ✅ | `for_referencev5.1` | content staged | **Rich WLC content** — brand voice, services/pricing master, handshake flow, CRM, launch kits, and a WORKING-WITH-DAYNA memory doc. 42 files staged in `_incoming/`. Not "reference" at all. |
 | ⬜ | `replit_updatedv5.5.2026` | ? | Replit export — triage for salvage |
 | ⬜ | `solid-couscous` | ? | auto-named repo — unknown, triage |
 | ⬜ | `nextjs-boilerplate` | high | boilerplate — likely nothing custom (private) |
