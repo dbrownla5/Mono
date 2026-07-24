@@ -9,6 +9,16 @@ a place to **extract, organize, and understand** what already exists across ~37
 repos, so decisions can be made from a clean view instead of from 100 half-built
 drafts scattered everywhere.
 
+## The single most important fact
+
+**These ~37 repos are almost all fragments of ONE company — The Well Lived
+Citizen (WLC).** Different attempts, versions, and half-builds of the *same*
+business. So the job is not sorting separate projects — it's **assembling one
+real company out of many scattered pieces:** the true voice, the true pricing,
+the true services, found across all the fragments, with the drift edited out. The
+four groups below are functional *areas of the one company*, not separate
+businesses.
+
 ---
 
 ## The ground rules (read these — they keep us honest)

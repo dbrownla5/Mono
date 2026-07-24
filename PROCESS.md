@@ -93,5 +93,8 @@ over-eagerness: seeing a "shiny train," interpreting it, and deciding before you
 
 The spawnable agents:
 - `.claude/agents/repo-extractor.md` — one per repo (Phase 1–2), run as a fleet.
+- `.claude/agents/dayna-voice-auditor.md` — the voice guardian; audits extracted
+  copy against Dayna's OWN voice framework, edits out drift, audits its own edits,
+  and checks in with her on what it's cutting. Runs after the extractor fleet.
 - `.claude/agents/conflict-reconciler.md` — consolidates the claims ledger so
   conflicts are decided once, from the whole.
