@@ -15,10 +15,27 @@ No new themes. No rebuilding. Gathering, not generating.
 
 ---
 
+## Two speeds — and bulk is the default
+
+- **Bulk fan-out (default):** spawn a **fleet of `repo-extractor` subagents** that
+  process many repos at once, in parallel. Each drops its source repo into the
+  right one of the **4 groups** and logs any conflicts to the ledger. Dayna is not
+  asked anything per repo. The goal is to get from **37 scattered repos down to 4
+  consolidated groups she can edit down** at her own pace — not a hand-held,
+  one-at-a-time audit.
+- **Single-repo (only when asked):** run one `repo-extractor` for a close look.
+
+## The 4 groups (what the 37 collapse into)
+
+1. **well-lived-citizen** — WLC content, brand, voice, site (absorbs brand/studio)
+2. **commerce-workflow** — dashboard ↔ reseller ↔ handshake ↔ property/shipping
+3. **tooling** — agents, extractors, Claude Code config, skills
+4. **reference** — retired, forks, boilerplates, unknowns (triage/archive)
+
 ## The loop (it carries across ALL repos — it does not stop at two)
 
-The queue is `INDEX.md`. We work it top to bottom, or by bucket priority, until
-every repo is marked done. Each repo goes through four phases.
+The queue is `INDEX.md`. Each repo goes through four phases. In bulk mode the
+phases still happen — just across many agents at once instead of one at a time.
 
 ### Phase 1 — INGEST (mechanical, zero judgment)
 - Bring the repo in read-only.
@@ -38,8 +55,14 @@ every repo is marked done. Each repo goes through four phases.
 - Copy **verbatim**. Concepts are not renamed. Content is not rewritten. Ideas
   are not merged. Structure is not invented.
 
-### Phase 3 — AUDIT (you)
-- You review KEPT vs LEFT BEHIND. You have final say. Confirmed drift stays out.
+### Phase 3 — AUDIT (you, on your schedule — not mid-run)
+- You review KEPT vs LEFT BEHIND across a whole batch, when you're ready. You have
+  final say. Confirmed drift stays out.
+- **Conflicts are logged, never asked one at a time.** When two repos disagree
+  (e.g. commission %), every version goes to `_audit/CLAIMS-LEDGER.md` with its
+  source and date. The `conflict-reconciler` agent then lays the versions side by
+  side so you decide **once, from the whole picture** — never repo by repo,
+  mid-extraction. No document wins by calling itself "final" or "master."
 
 ### Phase 4 — ASSEMBLE (only on your say-so)
 - Once the correct parts are gathered by intent, the master tool is simply what
@@ -65,6 +88,10 @@ over-eagerness: seeing a "shiny train," interpreting it, and deciding before you
    next. Never stop at two. Never widen scope mid-repo.
 7. **Never say "it's already built."** State what was *found*, plainly, and let
    the audit decide what that's worth.
+8. **Never interrupt Dayna to adjudicate a conflict.** Log it to the ledger and
+   move on. No label ("final," "master," "source of truth") is treated as truth.
 
-The spawnable agent that enforces Phase 1–2 lives at
-`.claude/agents/repo-extractor.md`.
+The spawnable agents:
+- `.claude/agents/repo-extractor.md` — one per repo (Phase 1–2), run as a fleet.
+- `.claude/agents/conflict-reconciler.md` — consolidates the claims ledger so
+  conflicts are decided once, from the whole.

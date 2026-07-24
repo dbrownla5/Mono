@@ -1,19 +1,20 @@
 # well-lived-citizen
 
-**Intent:** the WLC universe — the content, brand, site, and portal work for
-Well-Lived Citizen. This is likely the **biggest pile of "dripped" writing and
-business concepts**, spread across many versioned repos.
+**Intent:** the entire WLC world — content, brand, voice, site, and portal. This
+is the biggest pile of "dripped" writing and business concepts, spread across
+many versioned repos. **Now also absorbs brand/studio** (visual brand, design
+assets) since the brand is part of WLC.
 
 **Provisional source repos:** `well-lived-citizen`, `well-lived-citizen-manus`,
 `well-lived-citizenV.5.13`, `well-lived-citizen-site`,
-`the-well-lived-citizen-rebuild`, `wlc-portal`, `wlc-june-2026`, `wlc-build-2026`
+`the-well-lived-citizen-rebuild`, `wlc-portal`, `wlc-june-2026`, `wlc-build-2026`,
+plus brand: `Visual-Brand`, `Visual-Brand-Boost`, `Studio-content-`
 
-**Priority:** because there are many versions, the goal is to find the **best
-content and the best working pieces across all of them** — not to keep any one
-version whole. Extract, compare, keep the good, drop the drift.
+**Goal:** find the best content and working pieces across all the versions — not
+keep any one version whole. Every version is drift until reviewed; nothing that
+labels itself "final" or "master" is treated as truth.
 
-As this bucket is worked, extracted pieces land in:
-- `tools/` — working site/portal pieces
-- `content/` — the writing and concepts pulled out into readable form
+Inside this group, source repos land as subfolders (verbatim), and conflicting
+claims across them go to `_audit/CLAIMS-LEDGER.md` — not to Dayna one at a time.
 
-_Status: not started._
+_Status: 1 source staged (`for_referencev5.1` content, in `_incoming/`)._

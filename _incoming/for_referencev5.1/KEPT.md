@@ -64,11 +64,11 @@ real, if any.**
 | `docs/_work/*` (trackers, gap-map, evidence-ledger, founder-truth-checkpoint, etc.) | Earlier passes at doing exactly this extraction — useful as history/cross-check |
 | `root-content/task.md`, `root-content/replit.md`, `root-content/CLAUDE.md` | Task list + Replit build standards + the repo's CLAUDE instructions |
 
-## ⚠️ Flag for you (documents disagree — you decide, not the documents)
+## Conflicts → logged to the ledger (not asked here)
 
-Some files here **contradict each other on pricing**, and none of them get to
-settle it by self-declaring "final." For example, one document asserts resale
-clothing commission is **55% you / 45% Dayna** while an older site/repo used
-**45/55**; one asserts the "Full Closet Liquidation" tier **does not exist**.
-I am **not** telling you which is correct — I only know they conflict. Both are
-drift until you say otherwise. Flagging the conflict, not resolving it.
+Pricing/fact conflicts found in this repo (commission %, tiers, hourly minimum,
+flex blocks, etc.) have been recorded in `_audit/CLAIMS-LEDGER.md` with their
+source and date. They are **not** questions for you to answer now. As more repos
+are processed, the same topics collect more versions, and the `conflict-reconciler`
+lays them side by side so you decide **once, from the whole picture** — never repo
+by repo. No document wins by calling itself "final."

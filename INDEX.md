@@ -35,7 +35,7 @@ _37 source repos · 1 reviewed · 36 remaining_
 | ⬜ | `wlc-june-2026` | high | WLC snapshot (private) |
 | ⬜ | `wlc-build-2026` | high | WLC build |
 
-## brand-studio — visual brand, studio, design assets
+## well-lived-citizen — brand/studio (folded into WLC)
 
 | Status | Repo | Bucket confidence | Notes |
 |---|---|---|---|
@@ -43,7 +43,7 @@ _37 source repos · 1 reviewed · 36 remaining_
 | ⬜ | `Visual-Brand-Boost` | high | brand assets (private) |
 | ⬜ | `Studio-content-` | ? | studio content — may be content-heavy for WLC too |
 
-## business-agent — agents + content-extraction engines
+## tooling — agents + content-extraction engines
 
 | Status | Repo | Bucket confidence | Notes |
 |---|---|---|---|
@@ -51,7 +51,7 @@ _37 source repos · 1 reviewed · 36 remaining_
 | ⬜ | `Content-Extractor` | high | content extraction engine (private) |
 | ⬜ | `repo-digest` | high | repo digest tool (fork) |
 
-## dev-tooling — Claude Code config, skills, dev workflow
+## tooling — Claude Code config, skills, dev workflow
 
 | Status | Repo | Bucket confidence | Notes |
 |---|---|---|---|

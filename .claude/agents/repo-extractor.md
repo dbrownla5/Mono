@@ -23,9 +23,13 @@ guardrails are law.
    carrying to a bucket, and what each is *for*, in the owner's words) and
    `_incoming/<repo>/LEFT-BEHIND.md` (the drift). Do NOT move anything into
    `buckets/` yet — that waits for the owner's audit.
-4. **Report back** a short summary: what the repo actually is, the standout
-   useful pieces, any Firebase/cloud lock-in found, and your proposed keep/drift
-   split. That report is your return value.
+4. **Log conflicts, never ask.** If a fact in this repo (pricing, commission,
+   terms, dates) conflicts with — or even just restates — a business fact, append
+   it to `../../_audit/CLAIMS-LEDGER.md` under the right topic, with source + date.
+   Do NOT surface it as a question. The `conflict-reconciler` handles it later.
+5. **Report back** a short summary: what the repo actually is, the standout
+   useful pieces, any Firebase/cloud lock-in found, your proposed keep/drift
+   split, and any claims you logged. That report is your return value.
 
 ## Hard rules (do not break these)
 
