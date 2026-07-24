@@ -15,12 +15,16 @@ persistent-memory problem you've been fighting.
 | `agents-memory/MEMORY.md` (+ linked rules) | Memory index: brand vault rules, handshake flow, site audit rules | **private home base** |
 | `docs/DIRECTIVE.md`, `docs/STATUS.md` | Operating directive + a status snapshot | **private home base** |
 
-## Business truth + services (proposed: well-lived-citizen)
+## Services + pricing documents (proposed: well-lived-citizen)
+
+**None of these are "truth" — they're claims, including the ones that call
+themselves final/master. They disagree with each other. Only you decide which is
+real, if any.**
 
 | File | What it is |
 |---|---|
-| `docs/FINAL-SOURCE-OF-TRUTH.md` | The precedence order + live fact/pricing corrections (money-level). |
-| `docs/AWLC-SERVICES-MASTER-FINAL.md` | Your final services + pricing master, verbatim. |
+| `docs/FINAL-SOURCE-OF-TRUTH.md` | A document that *claims* to be the source of truth and lists pricing/fact assertions. Treat as one more drifted claim, not a verdict. |
+| `docs/AWLC-SERVICES-MASTER-FINAL.md` | A services + pricing document labeled "final/master." Also just a claim until you confirm it. |
 | `docs/CRM-AND-INTAKE.md` | CRM + intake flow |
 | `docs/RESULTS-PLAN.md`, `docs/GO-LIVE.md`, `docs/LAUNCH-KIT.md`, `docs/LAUNCH-PACK.md`, `docs/PARTNER-BRIEF.md` | Launch + partner materials |
 | `docs/SITE-TOOLING-GAPS.md` | Known gaps in the site tooling |
@@ -60,10 +64,11 @@ persistent-memory problem you've been fighting.
 | `docs/_work/*` (trackers, gap-map, evidence-ledger, founder-truth-checkpoint, etc.) | Earlier passes at doing exactly this extraction — useful as history/cross-check |
 | `root-content/task.md`, `root-content/replit.md`, `root-content/CLAUDE.md` | Task list + Replit build standards + the repo's CLAUDE instructions |
 
-## ⚠️ Flag for you (a locked-truth conflict worth knowing)
+## ⚠️ Flag for you (documents disagree — you decide, not the documents)
 
-`FINAL-SOURCE-OF-TRUTH.md` lists **money-level corrections** where the old
-site/repo disagrees with your final master — e.g. resale clothing commission is
-**55% you / 45% Dayna, REVERSED** from an older 45/55, and the "Full Closet
-Liquidation" tier **does not exist**. Not acting on it — just flagging that the
-drift here includes real pricing errors, exactly the kind you catch first.
+Some files here **contradict each other on pricing**, and none of them get to
+settle it by self-declaring "final." For example, one document asserts resale
+clothing commission is **55% you / 45% Dayna** while an older site/repo used
+**45/55**; one asserts the "Full Closet Liquidation" tier **does not exist**.
+I am **not** telling you which is correct — I only know they conflict. Both are
+drift until you say otherwise. Flagging the conflict, not resolving it.
