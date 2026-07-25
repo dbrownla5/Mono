@@ -49,6 +49,7 @@ a note, not a verdict.
 |---|---|---|---|
 | 2/4/6-hour reserved work blocks; no prepaid packages | `for_referencev5.1` · FINAL-SOURCE-OF-TRUTH.md | ~2026-06-11 | Older: 10hr/$1,250 & 25hr/$3,150 prepaid, never expire |
 | 2/4/6-hr reserved, cross-scope, never expire; 10/25-hr banks DEAD | `replitfinal` · company.md (RESOLVED 6/12) | 2026-06-12 | **Agrees** with v5.1 — low-conflict |
+| **LOCKED (March):** home-org 10hr/$1,250 & 25hr/$3,150; elder/legacy 10hr/$1,500 & 25hr/$3,650 | `Dashboard-` · session_summary.md + manus_build_directive.md | 2026-03/04 | Oldest version — banks locked as **real**; June docs later killed them. Shows the drift timeline. |
 
 ## Pillar pricing + entry offers (single-source so far — from replitfinal 6/12, uncontested)
 
@@ -64,6 +65,14 @@ a note, not a verdict.
 | Claim | Source | Date | Notes |
 |---|---|---|---|
 | Pillars: **Home Organization & Move Support · House Calls · Legacy Inventory & Cataloging · Resale & Consignment**; "Modern Move" and "Legacy Planning & Inventory Catalog" retired | `replitfinal` · company.md (RESOLVED 6/12) | 2026-06-12 | v5.1 left pillar-01 naming open ("do not invent a fourth") — watch for conflict |
+| **"DOOR 1 THE RESET" (home org) · "DOOR 2 THE RECORD" (legacy/storytelling) · resale**; taglines "The Last Box", "The Archives" | `Dashboard-` · manus_build_directive.md | 2026-03/04 | Older naming scheme, retired by the June set |
+
+## Taglines / positioning (big voice drift over time)
+
+| Claim | Source | Date | Notes |
+|---|---|---|---|
+| "Well Placed. Well Dressed (again). Transitions done Well." + "Life is messy… Every item is a story — and I know just how to unpack it." | `Dashboard-` · session_summary.md + manus_build_directive.md | 2026-03/04 | Warm, story-forward March voice |
+| "CHAOS WRANGLER. PROFESSIONAL PROBLEM SOLVER." — observant, calm, slightly dark, operational | `for_referencev5.1` / `replitfinal` | 2026-06 | June persona — a **very different register**. The dayna-voice-auditor will need Dayna to confirm which is current. |
 
 ## Resale payouts + terms (from replitfinal legal lock — single-source so far)
 
