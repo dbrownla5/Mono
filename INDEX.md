@@ -8,7 +8,7 @@ listed here. We work down the list, one repo at a time.
 **Bucket column** is a *provisional guess from the repo name only.* A `?` means
 low confidence — it gets confirmed or moved the moment the repo is opened.
 
-_37 source repos · 1 reviewed · 36 remaining_
+_37 source repos · 2 reviewed · 35 remaining_
 
 ---
 
@@ -65,7 +65,7 @@ _37 source repos · 1 reviewed · 36 remaining_
 | ⬜ | `WEBREBUILD` | ? | web rebuild — could be commerce or WLC, triage (private) |
 | ⬜ | `May24` | ? | dated snapshot — unknown contents, triage |
 | ⬜ | `team-project-build` | ? | project build — unknown, triage (private) |
-| ⬜ | `ReplitFinal_referenceonlyretired` | high | explicitly reference-only / retired |
+| ✅ | `ReplitFinal_referenceonlyretired` | content staged | **Newest/fullest WLC reference (6/12)** — superset of v5.1 plus a `memory/` folder (company context, glossary, people, resolved conflict log). Commission conflict logged (opposite of v5.1). 50+ files staged. |
 | ✅ | `for_referencev5.1` | content staged | **Rich WLC content** — brand voice, services/pricing master, handshake flow, CRM, launch kits, and a WORKING-WITH-DAYNA memory doc. 42 files staged in `_incoming/`. Not "reference" at all. |
 | ⬜ | `replit_updatedv5.5.2026` | ? | Replit export — triage for salvage |
 | ⬜ | `solid-couscous` | ? | auto-named repo — unknown, triage |
