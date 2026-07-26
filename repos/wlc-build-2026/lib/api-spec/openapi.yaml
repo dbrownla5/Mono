@@ -1,0 +1,215 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: voice
+    description: Voice profile and copy analysis operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /voice/profile:
+    get:
+      operationId: getVoiceProfile
+      tags: [voice]
+      summary: Get the voice profile
+      description: Returns the full structured voice profile document
+      responses:
+        "200":
+          description: Voice profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoiceProfile"
+  /voice/analyze:
+    post:
+      operationId: analyzeVoice
+      tags: [voice]
+      summary: Analyze copy against the voice profile
+      description: Accepts a block of copy and returns a structured analysis with score, flags, and suggested rewrite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VoiceAnalyzeRequest"
+      responses:
+        "200":
+          description: Voice analysis result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoiceAnalyzeResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoiceError"
+        "500":
+          description: Analysis failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoiceError"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    VoiceEmotionalArchitecture:
+      type: object
+      properties:
+        rule:
+          type: string
+        approach:
+          type: string
+        strongPhrases:
+          type: array
+          items:
+            type: string
+      required:
+        - rule
+        - approach
+        - strongPhrases
+    VoiceAnnotatedExample:
+      type: object
+      properties:
+        context:
+          type: string
+        bad:
+          type: string
+        bad_problems:
+          type: array
+          items:
+            type: string
+        good:
+          type: string
+        good_strengths:
+          type: array
+          items:
+            type: string
+      required:
+        - context
+        - bad
+        - bad_problems
+        - good
+        - good_strengths
+    VoiceProfile:
+      type: object
+      properties:
+        identity:
+          type: string
+        corePrinciples:
+          type: array
+          items:
+            type: string
+        rhythmPatterns:
+          type: array
+          items:
+            type: string
+        antiPatterns:
+          type: array
+          items:
+            type: string
+        voiceTests:
+          type: array
+          items:
+            type: string
+        emotionalArchitecture:
+          $ref: "#/components/schemas/VoiceEmotionalArchitecture"
+        annotatedExamples:
+          type: array
+          items:
+            $ref: "#/components/schemas/VoiceAnnotatedExample"
+      required:
+        - identity
+        - corePrinciples
+        - rhythmPatterns
+        - antiPatterns
+        - voiceTests
+        - emotionalArchitecture
+        - annotatedExamples
+    VoiceAnalyzeRequest:
+      type: object
+      properties:
+        copy:
+          type: string
+          description: The block of copy to analyze
+        context:
+          type: string
+          description: Optional context about where this copy appears (e.g. "service page hero", "booking CTA")
+      required:
+        - copy
+    VoiceFlag:
+      type: object
+      properties:
+        phrase:
+          type: string
+          description: The specific phrase or sentence that was flagged
+        issue:
+          type: string
+          description: Named problem category (e.g. "operational language leaking", "missing emotional routing")
+        explanation:
+          type: string
+          description: Why this phrase drifts from the voice
+        suggestion:
+          type: string
+          description: A rewritten version that stays true to the voice
+      required:
+        - phrase
+        - issue
+        - explanation
+        - suggestion
+    VoiceAnalyzeResponse:
+      type: object
+      properties:
+        score:
+          type: number
+          description: Voice match score from 0 to 100
+          minimum: 0
+          maximum: 100
+        summary:
+          type: string
+          description: One or two sentence overall assessment
+        flags:
+          type: array
+          items:
+            $ref: "#/components/schemas/VoiceFlag"
+        rewrite:
+          type: string
+          description: A full rewrite of the copy that matches the voice profile
+      required:
+        - score
+        - summary
+        - flags
+        - rewrite
+    VoiceError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

@@ -1,0 +1,5 @@
+{
+  "name": "ShipWeight Estimator",
+  "description": "Estimate item weights and shipping costs for eBay, Poshmark, and more using AI, without needing a scale.",
+  "requestFramePermissions": []
+}

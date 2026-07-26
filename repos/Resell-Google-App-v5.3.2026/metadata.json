@@ -1,0 +1,6 @@
+{
+  "name": "Resale Engine",
+  "description": "An automated inventory tracker and resale listing assistant that uses AI for grouping, deduplicating, and pricing items.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["ai", "storage"]
+}

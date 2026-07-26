@@ -1,0 +1,26 @@
+{
+  "entities": {
+    "Item": {
+      "title": "Item",
+      "description": "An item to be listed for resale.",
+      "type": "object",
+      "properties": {
+        "brand": { "type": "string", "description": "Brand of the item" },
+        "model": { "type": "string", "description": "Model of the item" },
+        "marketPrice": { "type": "number", "description": "Resale market price" },
+        "floorPrice": { "type": "number", "description": "Minimum acceptable price" },
+        "platform": { "type": "string", "description": "Target resale platform" },
+        "status": { "type": "string", "description": "Inventory status" },
+        "ownerId": { "type": "string", "description": "ID of the user who owns the item" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["brand", "model", "marketPrice", "floorPrice", "platform", "status", "ownerId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/items/{itemId}": {
+      "schema": "Item",
+      "description": "All items in the resale inventory."
+    }
+  }
+}
