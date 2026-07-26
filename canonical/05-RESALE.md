@@ -2,7 +2,7 @@
 
 ## Fast Bag Pickup — the flow (clothing & accessories ONLY)
 1. **Fill a bag** — clothing, shoes, handbags, belts/small leather, scarves, hats, jewelry, watches. (No decor, furniture, art, books, kitchen, lamps, collectibles — those route to House Calls / Resale / Legacy.)
-2. **Schedule a pickup** — free within LA service area (route stop-ins, building-desk drops, or direct bag shipment; 60–90 qt totes sized for an Uber courier). Most pickups in 2–5 days; urgent within 48 hrs.
+2. **Schedule a pickup** — free within LA service area (route stop-ins, building-desk drops, or direct bag shipment; 60–90 qt totes; courier, UPS Access Point, or desk drop). Most pickups in 2–5 days; urgent within 48 hrs.
 3. **I evaluate after pickup** — piece by piece. Pickup ≠ acceptance; unsellable/damaged/counterfeit items may be declined.
 4. **You get the list** — what's being listed, donated, or is a judgment call.
 5. **Optional decision window** — weigh in, or hand full authority to Dayna.

@@ -7,7 +7,7 @@
 - Footer legal line: *"The Well Lived Citizen, a DBA of Well Dressed Citizen LLC."*
 
 ## Contact & handles
-- Site: **thewelllivedcitizen.com** (never thewelllivedcitizenco.com)
+- Site: **thewelllivedcitizen.com** (never thewelllivedcitizenco.com) — ⚠️ the newest static build still canonicals to the **-co** domain/email; the -co domain needs a 301 redirect and cleanup (see `DECISIONS.md`).
 - Email: **dayna@thewelllivedcitizen.com** · Phone: **(323) 433-1350**
 - Instagram: **@thewelllivedcitizen** · closet: **@thewelllivedcloset**
 - Poshmark: posh.mk/wUAQhT0Qj3b (Ambassador) · eBay: thewelllivedcitizencocloset

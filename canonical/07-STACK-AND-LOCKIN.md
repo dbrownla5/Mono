@@ -25,9 +25,11 @@ knot to untie.
 4. **Nifty** — fine as an ops board, but note it's a dependency for shipping.
 
 ## Security note (already known — not new)
-Anon/web keys and some real keys were committed in public source repos. This is
-old news and being handled; treat the affected keys as rotated. Not a blocker for
-consolidation — flagged only so the canonical stack doc is complete.
+Keys were committed in public source repos — the Supabase anon key is still live
+in `wlc-portal/index.html` and the Firebase web key in
+`Resell-Google-App/firebase-applet-config.json`. These are low-sensitivity
+anon/web keys by design, but they remain in source. Old news, not a blocker for
+consolidation — noted only so the stack doc is complete. Rotate on the normal cleanup.
 
 _Sources: wlc-portal, Resell-Google-App (firebase-*), SHIPWEIGHT, wlc-build-2026
 (.env references), for_referencev5.1._

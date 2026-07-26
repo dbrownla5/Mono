@@ -11,7 +11,7 @@ unless a conflict is flagged.
 | Four-Hour Reset (entry) | **$495 flat** |
 | Move-In Day (studio / 1BR, up to 8 hrs) | **$1,200 flat** |
 | House Calls | **$175/hr · 2-hour minimum** (= $350 min) |
-| Legacy Inventory & Cataloging | **$175/hr · 2-hour minimum**; whole home quoted after walkthrough; some sources cite a **from-$1,500** entry |
+| Legacy Inventory & Cataloging | **$175/hr · 2-hour minimum**; whole home quoted after walkthrough. (A **from-$1,500** entry appears on the May live site but is NOT confirmed by the 6/12 truth layer — treat as unconfirmed, like the struck $3,500 project.) |
 | Home Closeouts / Staged Transitions | **$150/hr + resale commission** |
 | Monthly retainer / continuity | **from $500/month** (weekly, bi-weekly, or monthly; scope customized) |
 | Single-item research review | **~$25** (one item, one question) |
@@ -30,7 +30,12 @@ unless a conflict is flagged.
 | Low-Value Volume ($5–$10 range) | **35%** | **65%** |
 
 - Calculated on **net** sale price. **No upfront/booking/pickup fees.**
-- The old "55 Dayna / 45 client" vs "45 client / 55 WLC" wording is the **same split** described from opposite sides — **not a conflict.** Use **client-first** phrasing publicly ("45% to you").
+- **Note on the "flip":** there WAS a real disagreement. The AWLC services master
+  (6/11) put clothing at **client 55 / Dayna 45** — the economic opposite of the
+  executed legal doc's **client 45 / WLC 55**. It was resolved 6/12 by treating
+  AWLC's line as a transcription slip and deferring to the **signed legal
+  agreement**, which governs all public resale claims. So the number is settled
+  (client 45 / WLC 55); use **client-first** phrasing publicly ("45% to you").
 - Low-Value 35/65: set at intake, communicated before listing, never retroactive.
 
 ## Flex blocks — ⚠️ two models exist (confirm which is current)
