@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() { return request.auth != null; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function isValidItem(data) {
+      return data.brand is string && data.brand.size() <= 100 &&
+             data.model is string && data.model.size() <= 100 &&
+             data.marketPrice is number && data.marketPrice >= 0 &&
+             data.floorPrice is number && data.floorPrice >= 0 &&
+             data.platform is string && data.platform.size() <= 100 &&
+             data.status is string && data.status.size() <= 20 &&
+             data.ownerId is string && data.ownerId == request.auth.uid &&
+             data.createdAt is timestamp;
+    }
+
+    match /items/{itemId} {
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(itemId) && isValidItem(request.resource.data) && request.resource.data.createdAt == request.time;
+      allow update: if isSignedIn() && isValidItem(request.resource.data) && request.resource.data.createdAt == resource.data.createdAt && request.resource.data.ownerId == resource.data.ownerId;
+    }
+  }
+}

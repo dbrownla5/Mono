@@ -1,0 +1,31 @@
+# Netlify config — The Well Lived Citizen
+# Deploys the static site (artifacts/wlc-site) and a serverless function that
+# emails every lead. Auto-deploys on every push to GitHub — no manual git.
+
+[build]
+  command = "pnpm --filter @workspace/wlc-site run build"
+  publish = "artifacts/wlc-site/dist/public"
+  functions = "netlify/functions"
+
+[build.environment]
+  BASE_PATH = "/"
+  NODE_VERSION = "22"
+
+# Cost control: skip Deploy Preview builds entirely. Production (main) still builds
+# and deploys normally; pull-request preview builds cancel immediately (the `ignore`
+# command exits 0 = "skip build"), so each launch costs ONE build, not two.
+[context.deploy-preview]
+  ignore = "/bin/true"
+
+# Route all /api/* requests to the serverless Express backend function.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api"
+  status = 200
+  force = true
+
+# SPA fallback — every other route serves the app.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
