@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Your Consignment &middot; The Well Lived Citizen</title>
+<style>
+  :root{
+    --parchment:#F3EFE9; --parchment-mid:#E8E2DA; --ink:#2D2F2F; --ink-soft:#424545;
+    --line:#D5D0CD; --accent:#8C5542; --ok:#5b6b54;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--parchment);color:var(--ink);font-family:'Inter',system-ui,-apple-system,sans-serif;
+       line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+  .wrap{max-width:760px;margin:0 auto;padding:2rem 1.25rem 5rem}
+  .eyebrow{font-size:.68rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
+  h1{font-size:clamp(1.6rem,4vw,2.3rem);font-weight:800;letter-spacing:-.02em;line-height:1.1}
+  h2{font-size:1.05rem;font-weight:700;margin:0}
+  .muted{color:var(--ink-soft);font-weight:300}
+  .card{background:#fff;border:1px solid var(--line);box-shadow:4px 4px 0 var(--ink);padding:1.5rem;margin-top:1.5rem}
+  .btn{display:inline-flex;align-items:center;gap:.5rem;font-family:inherit;font-size:.72rem;font-weight:600;
+       letter-spacing:.12em;text-transform:uppercase;padding:.8rem 1.4rem;border:1.5px solid var(--ink);
+       background:var(--ink);color:var(--parchment);cursor:pointer;transition:.15s}
+  .btn:hover{background:var(--ink-soft);border-color:var(--ink-soft)}
+  .btn-ghost{background:transparent;color:var(--ink)}
+  .btn-ghost:hover{background:var(--ink);color:var(--parchment)}
+  .btn-sm{padding:.5rem .9rem;font-size:.64rem}
+  .btn-ok{background:var(--ok);border-color:var(--ok)}
+  .btn-pull{background:transparent;color:var(--accent);border-color:var(--accent)}
+  .btn-pull:hover{background:var(--accent);color:#fff}
+  input[type=email],input[type=number]{width:100%;padding:.8rem 1rem;border:1.5px solid var(--line);
+       font-family:inherit;font-size:.95rem;background:#fff;color:var(--ink);outline:none}
+  input:focus{border-color:var(--ink)}
+  label{display:block;font-size:.66rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0 0 .4rem}
+  .row{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;padding:1.2rem 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:none}
+  .price{font-size:1.15rem;font-weight:800;white-space:nowrap}
+  .tier{display:inline-block;font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+        background:var(--parchment-mid);padding:.2rem .5rem;margin-top:.35rem;color:var(--ink-soft)}
+  .actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.7rem}
+  .pill{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .6rem}
+  .pill-ok{background:var(--ok);color:#fff}
+  .pill-pulled{background:var(--accent);color:#fff}
+  .adjust{display:none;gap:.5rem;margin-top:.6rem;align-items:flex-end}
+  .adjust.open{display:flex}
+  .adjust .grow{flex:1}
+  .hide{display:none}
+  .foot{margin-top:2.5rem;font-size:.8rem;color:var(--ink-soft);text-align:center}
+  .note{background:var(--parchment-mid);border-left:3px solid var(--accent);padding:1rem 1.2rem;margin-top:1.2rem;font-size:.92rem}
+  .err{color:var(--accent);font-size:.85rem;margin-top:.6rem;min-height:1.2em}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="login">
+    <div class="eyebrow">The Well Lived Citizen</div>
+    <h1>Your consignment, in one place.</h1>
+    <p class="muted" style="margin-top:.8rem">See every piece you handed me, what I'd price it at, and approve or adjust anything &mdash; on your time. You never make a wrong move here.</p>
+    <div class="card">
+      <label for="email">The email you gave me</label>
+      <input id="email" type="email" placeholder="you@email.com" autocomplete="email" />
+      <button class="btn" style="margin-top:1rem;width:100%;justify-content:center" id="sendLink">Email me my link</button>
+      <div class="err" id="loginErr"></div>
+      <p class="muted" style="font-size:.82rem;margin-top:.6rem">No password to remember. I send a secure link to your inbox &mdash; click it and you're in.</p>
+    </div>
+  </div>
+
+  <div id="portal" class="hide">
+    <div class="topbar">
+      <div class="eyebrow" style="margin:0">The Well Lived Citizen</div>
+      <button class="btn btn-ghost btn-sm" id="signOut">Sign out</button>
+    </div>
+    <h1 id="hello">Your pieces</h1>
+    <p class="muted" id="sub" style="margin-top:.5rem"></p>
+
+    <div class="note">Here's everything you handed me with what I'd list each piece at. <strong>Approve what feels right, suggest a different price, or pull anything you're not ready to part with.</strong> Nothing goes live until you say so &mdash; and you don't have to know what anything's worth. That's on me.</div>
+
+    <div class="card" id="items"></div>
+
+    <div class="foot">Questions on any of it? Just reply to my text. &mdash; Dayna<br/><span style="font-size:.72rem">The Well Lived Citizen &middot; Los Angeles</span></div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://nvnibybszmjplykeirwd.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52bmlieWJzem1qcGx5a2VpcndkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjI1NDIsImV4cCI6MjA5MzQ5ODU0Mn0.8W4JXGG8pPaP2NvMI-yPLBc2KjAJsGsLJlP1Qe_RGDA";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const $ = (id) => document.getElementById(id);
+const money = (c) => c == null ? "—" : "$" + (c/100).toLocaleString(undefined,{minimumFractionDigits:0});
+
+async function sendLink(){
+  const email = $("email").value.trim();
+  $("loginErr").textContent = "";
+  if(!email){ $("loginErr").textContent = "Enter your email first."; return; }
+  $("sendLink").textContent = "Sending…";
+  const { error } = await sb.auth.signInWithOtp({ email, options:{ emailRedirectTo: window.location.origin + window.location.pathname } });
+  if(error){ $("loginErr").textContent = error.message; $("sendLink").textContent = "Email me my link"; return; }
+  $("sendLink").outerHTML = '<p style="font-weight:600;color:var(--ok)">Check your inbox &mdash; your link is on the way.</p>';
+}
+
+async function loadPortal(){
+  $("login").classList.add("hide");
+  $("portal").classList.remove("hide");
+  const { data: hs } = await sb.from("handshakes").select("*").order("created_at",{ascending:false});
+  if(!hs || !hs.length){
+    $("hello").textContent = "Welcome";
+    $("items").innerHTML = '<p class="muted">I don\'t have a consignment under this email yet. If that\'s a surprise, text me and I\'ll sort it in a minute.</p>';
+    return;
+  }
+  const h = hs[0];
+  $("hello").textContent = (h.client_name ? h.client_name.split(" ")[0] + "'s" : "Your") + " pieces";
+  const { data: items } = await sb.from("handshake_items").select("*").eq("handshake_id", h.id).order("id");
+  const total = (items||[]).filter(i=>!i.client_pulled).reduce((s,i)=> s + (i.client_target_price_cents ?? i.start_price_cents ?? 0), 0);
+  $("sub").textContent = (items?.length||0) + " pieces · about " + money(total) + " in proposed listings";
+  renderItems(items||[]);
+}
+
+function renderItems(items){
+  const box = $("items");
+  box.innerHTML = "";
+  if(!items.length){ box.innerHTML = '<p class="muted">No pieces logged yet.</p>'; return; }
+  items.forEach(it=>{
+    const proposed = it.client_target_price_cents ?? it.start_price_cents;
+    const div = document.createElement("div");
+    div.className = "row";
+    let statusPill = "";
+    if(it.client_pulled) statusPill = '<span class="pill pill-pulled">Pulled</span>';
+    else if(it.client_approved) statusPill = '<span class="pill pill-ok">Approved'+(it.client_target_price_cents?" · "+money(it.client_target_price_cents):"")+'</span>';
+    const hideActions = (it.client_pulled||it.client_approved) ? 'hide' : '';
+    div.innerHTML =
+      '<div style="flex:1">'+
+        '<h2>'+esc(it.description)+'</h2>'+
+        '<div><span class="tier">'+esc(it.tier||"standard")+'</span></div>'+
+        '<div class="actions '+hideActions+'">'+
+          '<button class="btn btn-ok btn-sm" data-approve="'+it.id+'">Approve '+money(proposed)+'</button>'+
+          '<button class="btn btn-ghost btn-sm" data-adjust="'+it.id+'">Suggest a price</button>'+
+          '<button class="btn btn-pull btn-sm" data-pull="'+it.id+'">Pull this one</button>'+
+        '</div>'+
+        '<div class="adjust" data-adjustbox="'+it.id+'">'+
+          '<div class="grow"><label>Your price</label><input type="number" min="0" step="1" value="'+(proposed?Math.round(proposed/100):'')+'" data-price="'+it.id+'"/></div>'+
+          '<button class="btn btn-sm" data-saveprice="'+it.id+'">Save</button>'+
+        '</div>'+
+        '<div style="margin-top:.5rem">'+statusPill+'</div>'+
+      '</div>'+
+      '<div class="price">'+money(proposed)+'</div>';
+    box.appendChild(div);
+  });
+  box.querySelectorAll("[data-approve]").forEach(b=> b.onclick = ()=> decide(b.dataset.approve,{client_approved:true,client_pulled:false}));
+  box.querySelectorAll("[data-pull]").forEach(b=> b.onclick = ()=> decide(b.dataset.pull,{client_pulled:true,client_approved:false}));
+  box.querySelectorAll("[data-adjust]").forEach(b=> b.onclick = ()=> document.querySelector("[data-adjustbox='"+b.dataset.adjust+"']").classList.add("open"));
+  box.querySelectorAll("[data-saveprice]").forEach(b=> b.onclick = ()=>{
+    const id=b.dataset.saveprice; const val=document.querySelector("[data-price='"+id+"']").value;
+    const cents = val? Math.round(parseFloat(val)*100): null;
+    decide(id,{client_target_price_cents:cents, client_approved:true, client_pulled:false});
+  });
+}
+
+async function decide(id, patch){
+  patch.client_decision_at = new Date().toISOString();
+  const { error } = await sb.from("handshake_items").update(patch).eq("id", id);
+  if(error){ alert(error.message); return; }
+  loadPortal();
+}
+
+function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+$("sendLink").onclick = sendLink;
+$("signOut").onclick = async ()=>{ await sb.auth.signOut(); location.reload(); };
+
+sb.auth.getSession().then(({data})=>{ if(data.session) loadPortal(); });
+sb.auth.onAuthStateChange((_e, session)=>{ if(session) loadPortal(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+# CodeRabbit disabled for this repo.
+# Mono is a content-extraction workspace, not a code project — automated code
+# review adds noise, not value. Turn it all off.
+reviews:
+  review_status: false
+  high_level_summary: false
+  poem: false
+  auto_review:
+    enabled: false
+    drafts: false
+chat:
+  auto_reply: false

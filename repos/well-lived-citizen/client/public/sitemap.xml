@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://www.thewelllivedcitizen.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://www.thewelllivedcitizen.com/services</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://www.thewelllivedcitizen.com/the-reset</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.thewelllivedcitizen.com/house-calls</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.thewelllivedcitizen.com/closeout</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.thewelllivedcitizen.com/fast-bag-fill</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.thewelllivedcitizen.com/legacy-inventory</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.thewelllivedcitizen.com/home-reset</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.thewelllivedcitizen.com/event-operations</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://www.thewelllivedcitizen.com/pricing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.thewelllivedcitizen.com/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://www.thewelllivedcitizen.com/faq</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.thewelllivedcitizen.com/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+</urlset>

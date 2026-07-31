@@ -1,0 +1,404 @@
+/*
+ * THE WELL LIVED CITIZEN — GLOBAL DESIGN SYSTEM
+ * Palette: Warm parchment (#F8F4E3) + warm grays (#D4CDC3, #D5D0CD)
+ * Palette (from Dayna's swatches): warm TAN (#F8F4E3) base · neutral CHARCOAL/BLACK
+ *          (#2D2F2F / #1C1C1C) — NOT brown espresso · STEEL-BLUE accent (#616359)
+ *          · grayer OLIVE (#616359) used sparingly · light gray (#C9C9C3).
+ * NO brown espresso, NO yellow cream. The legacy token names --sage / --sage-dark
+ * are kept (used ~200×) but now hold a muted steel accent / warm gray.
+ * Typography: Plus Jakarta Sans — 800 display, 400/300 body
+ * Structure: Stacked full-bleed color blocks, opaque underlays, shadow cards
+ * No rounded corners. No gradients. No blur. Restraint is the brand.
+ */
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --parchment:     #F8F4E3;  /* warm TAN — main light bg (was yellow cream) */
+  --parchment-mid: #D4CDC3;  /* deeper tan — alt sections / cards */
+  --warm-gray-lt:  #C9C9C3;  /* light gray — borders */
+  --warm-gray-md:  #D5D0CD;
+  /* Steel-blue accent + neutral charcoal. Deep slate = filled buttons/panels with
+     light text; muted = inline accents (eyebrows, arrows) that must read on both
+     the tan AND the dark charcoal sections. */
+  --slate:         #616359; /* steel blue — accent fills / buttons (light text on it) */
+  --slate-deep:    #4B4D45; /* hover / pressed */
+  --sage:          #A2A392; /* LEGACY NAME — muted steel inline accent (reads on light + dark) */
+  --sage-dark:     #6B6A5E; /* LEGACY NAME — warm gray-olive for muted text */
+  --ink:           #2D2F2F; /* neutral CHARCOAL — replaces the brown espresso */
+  --ink-soft:      #474B4C; /* charcoal-soft */
+  --font-serif:    'Fraunces', Georgia, 'Times New Roman', serif; /* complement to Plus Jakarta Sans — eyebrows, labels, quotes */
+
+  --bg:            var(--parchment);
+  --bg-alt:        var(--parchment-mid);
+  --bg-dark:       var(--ink);
+  --bg-mid:        var(--sage);
+  --text-primary:  var(--ink);
+  --text-muted:    var(--sage-dark);
+  --border-color:  var(--warm-gray-lt);
+  --accent:        var(--slate);
+
+  --radius: 0px;
+  --background:           #F8F4E3;
+  --foreground:           #2D2F2F;
+  --card:                 #F8F4E3;
+  --card-foreground:      #2D2F2F;
+  --popover:              #F8F4E3;
+  --popover-foreground:   #2D2F2F;
+  --primary:              #2D2F2F;
+  --primary-foreground:   #F8F4E3;
+  --secondary:            #616359;
+  --secondary-foreground: #F8F4E3;
+  --muted:                #D4CDC3;
+  --muted-foreground:     #6B6A5E;
+  --accent-foreground:    #2D2F2F;
+  --destructive:          oklch(0.577 0.245 27.325);
+  --border:               #C9C9C3;
+  --input:                #C9C9C3;
+  --ring:                 #616359;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+  body {
+    background-color: var(--parchment);
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.65;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  a[href] {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    max-width: 1200px;
+  }
+  @media (min-width: 768px) {
+    .container {
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+    }
+  }
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  .block-parchment     { background-color: var(--parchment); color: var(--ink); }
+  .block-parchment-mid { background-color: var(--parchment-mid); color: var(--ink); }
+  .block-ink           { background-color: var(--ink); color: var(--parchment); }
+  .block-sage          { background-color: var(--slate); color: var(--parchment); }
+  .block-sage-dark     { background-color: var(--slate-deep); color: var(--parchment); }
+  .block-warm-gray     { background-color: var(--warm-gray-lt); color: var(--ink); }
+
+  .block-cream    { background-color: var(--parchment); color: var(--ink); }
+  .block-espresso { background-color: var(--ink); color: var(--parchment); }
+
+  .underlay-tag {
+    display: inline-block;
+    background-color: var(--ink);
+    color: var(--parchment);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .underlay-tag-sage      { background-color: var(--slate); color: var(--parchment); }
+  .underlay-tag-parchment { background-color: var(--parchment); color: var(--ink); }
+
+  .eyebrow {
+    display: block;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    margin-bottom: 1rem;
+  }
+  .eyebrow-sage  { color: var(--sage); }
+  .eyebrow-ink   { color: var(--ink); }
+  .eyebrow-light { color: rgba(248,244,227,0.5); }
+  .eyebrow-rust  { color: var(--sage); }
+
+  .section-pad { padding-top: 6rem; padding-bottom: 6rem; }
+  @media (min-width: 768px) {
+    .section-pad { padding-top: 8rem; padding-bottom: 8rem; }
+  }
+
+  .display-xl {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .display-lg {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .display-md {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+  }
+  .display-sm {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: clamp(1.2rem, 2vw, 1.65rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .body-lg {
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--ink-soft);
+  }
+  .body-md {
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.75;
+  }
+  .pull-quote {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.65;
+    color: var(--sage-dark);
+  }
+  .service-num {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--sage);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.23, 1, 0.32, 1);
+    white-space: nowrap;
+  }
+  .btn:active { opacity: 0.85; }
+
+  .btn-ink {
+    background-color: var(--ink);
+    color: var(--parchment);
+    border-color: var(--ink);
+  }
+  .btn-ink:hover {
+    background-color: var(--ink-soft);
+    border-color: var(--ink-soft);
+  }
+
+  .btn-sage {
+    background-color: var(--slate);
+    color: var(--parchment);
+    border-color: var(--slate);
+  }
+  .btn-sage:hover {
+    background-color: var(--slate-deep);
+    border-color: var(--slate-deep);
+    color: var(--parchment);
+  }
+
+  .btn-outline-light {
+    background-color: transparent;
+    color: var(--parchment);
+    border-color: rgba(248,244,227,0.5);
+  }
+  .btn-outline-light:hover {
+    background-color: rgba(248,244,227,0.1);
+    border-color: var(--parchment);
+  }
+
+  .btn-outline-ink {
+    background-color: transparent;
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .btn-outline-ink:hover {
+    background-color: var(--ink);
+    color: var(--parchment);
+  }
+
+  .btn-rust         { background-color: var(--slate); color: var(--parchment); border-color: var(--slate); }
+  .btn-rust:hover   { background-color: var(--slate-deep); border-color: var(--slate-deep); color: var(--parchment); }
+  .btn-espresso     { background-color: var(--ink); color: var(--parchment); border-color: var(--ink); }
+  .btn-espresso:hover { background-color: var(--ink-soft); border-color: var(--ink-soft); }
+  .btn-outline-cream { background-color: transparent; color: var(--parchment); border-color: rgba(248,244,227,0.5); }
+  .btn-outline-cream:hover { background-color: rgba(248,244,227,0.1); border-color: var(--parchment); }
+
+  .hr-warm    { border: none; border-top: 1px solid var(--warm-gray-lt); margin: 0; }
+  .hr-ink     { border: none; border-top: 1px solid rgba(248,244,227,0.15); margin: 0; }
+  .hr-espresso { border: none; border-top: 1px solid rgba(248,244,227,0.15); margin: 0; }
+
+  .shadow-card      { box-shadow: 4px 4px 0px var(--ink); }
+  .shadow-card-sage { box-shadow: 4px 4px 0px var(--slate); }
+
+  /* Scroll fade-ins removed — no motion (accessibility: older eyes / vestibular). */
+  .fade-up {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .fade-up.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .nav-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: var(--parchment);
+    border-bottom: 1px solid var(--warm-gray-lt);
+    transition: box-shadow 0.2s ease;
+  }
+  .nav-fixed.scrolled {
+    box-shadow: 0 2px 20px rgba(56,48,46,0.08);
+  }
+
+  .form-input {
+    width: 100%;
+    background-color: transparent;
+    border: 1.5px solid var(--warm-gray-lt);
+    padding: 0.85rem 1rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--ink);
+    transition: border-color 0.18s ease;
+    outline: none;
+  }
+  .form-input:focus { border-color: var(--ink); }
+  .form-input::placeholder { color: var(--sage-dark); font-weight: 300; }
+  .form-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .faq-item { border-bottom: 1px solid var(--warm-gray-lt); }
+  .faq-trigger {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    gap: 1rem;
+    transition: color 0.18s ease;
+  }
+  .faq-trigger:hover { color: var(--sage-dark); }
+  .faq-content {
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .faq-body {
+    padding-bottom: 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--ink-soft);
+  }
+
+  .grid-cols-1 { grid-template-columns: 1fr !important; }
+  .hidden { display: none !important; }
+
+  @media (min-width: 768px) {
+    .md\:grid-cols-2   { grid-template-columns: 1fr 1fr !important; }
+    .md\:block         { display: block !important; }
+    .md\:grid-cols-faq { grid-template-columns: 240px 1fr !important; }
+    .md\:grid-cols-form { grid-template-columns: 1fr 1.6fr !important; }
+    .md\:flex          { display: flex !important; }
+    .hidden.md\:block  { display: block !important; }
+    .hidden.md\:flex   { display: flex !important; }
+  }
+}
