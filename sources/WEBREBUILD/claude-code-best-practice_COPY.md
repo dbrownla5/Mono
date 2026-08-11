@@ -1,0 +1,3630 @@
+# Copy Extraction for claude-code-best-practice
+
+## Section: .mcp
+
+### 📝 General Body Copy / Page Text
+- @playwright/mcp
+- @upstash/context7-mcp
+
+---
+
+## Section: CLAUDE
+
+### 📝 General Body Copy / Page Text
+- This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+- - `/weather-orchestrator` command (`.claude/commands/weather-orchestrator.md`): Entry point — asks user for C/F, invokes agent, then invokes SVG skill
+- - `weather-svg-creator` skill (`.claude/skills/weather-svg-creator/SKILL.md`): Skill — creates SVG weather card, writes `orchestration-workflow/weather.svg` and `orchestration-workflow/output.md`
+- Two skill patterns: agent skills (preloaded via `skills:` field) vs skills (invoked via `Skill` tool). See `orchestration-workflow/orchestration-workflow.md` for the complete flow diagram.
+- Skills in `.claude/skills/<name>/SKILL.md` use YAML frontmatter:
+- - `name`: Display name and `/slash-command` (defaults to directory name)
+- - `description`: When to invoke (recommended for auto-discovery)
+- - `argument-hint`: Autocomplete hint (e.g., `[issue-number]`)
+- - `disable-model-invocation`: Set `true` to prevent automatic invocation
+- - `user-invocable`: Set `false` to hide from `/` menu (background knowledge only)
+- - `allowed-tools`: Tools allowed without permission prompts when skill is active
+- - `model`: Model to use when skill is active
+- - `context`: Set to `fork` to run in isolated subagent context
+- - `agent`: Subagent type for `context: fork` (default: `general-purpose`)
+- - `hooks`: Lifecycle hooks scoped to this skill
+- See `.claude/rules/presentation.md` — all presentation work is delegated to the `presentation-curator` agent.
+- - `scripts/hooks.py`: Main handler for Claude Code hook events
+- - `config/hooks-config.json`: Shared team configuration
+- - `config/hooks-config.local.json`: Personal overrides (git-ignored)
+- - `sounds/`: Audio files organized by hook event (generated via ElevenLabs TTS)
+- Hook events configured in `.claude/settings.json`: PreToolUse, PostToolUse, UserPromptSubmit, Notification, Stop, SubagentStart, SubagentStop, PreCompact, SessionStart, SessionEnd, Setup, PermissionRequest, TeammateIdle, TaskCompleted, ConfigChange.
+- Special handling: git commits trigger `pretooluse-git-committing` sound.
+- Subagents **cannot** invoke other subagents via bash commands. Use the Agent tool (renamed from Task in v2.1.63; `Task(...)` still works as an alias):
+- Agent(subagent_type="agent-name", description="...", prompt="...", model="haiku")
+- Be explicit about tool usage in subagent definitions. Avoid vague terms like "launch" that could be misinterpreted as bash commands.
+- Subagents in `.claude/agents/*.md` use YAML frontmatter:
+- - `name`: Subagent identifier
+- - `description`: When to invoke (use "PROACTIVELY" for auto-invocation)
+- - `tools`: Comma-separated allowlist of tools (inherits all if omitted). Supports `Agent(agent_type)` syntax
+- - `model`: Model alias: `haiku`, `sonnet`, `opus`, or `inherit` (default: `inherit`)
+- - `permissionMode`: Permission mode (e.g., `"acceptEdits"`, `"plan"`, `"bypassPermissions"`)
+- - `maxTurns`: Maximum agentic turns before the subagent stops
+- - `skills`: List of skill names to preload into agent context
+- - `mcpServers`: MCP servers for this subagent (server names or inline configs)
+- - `hooks`: Lifecycle hooks scoped to this subagent (all hook events are supported; `PreToolUse`, `PostToolUse`, and `Stop` are the most common)
+- - `background`: Set to `true` to always run as a background task
+- - `effort`: Effort level override: `low`, `medium`, `high`, `max` (default: inherits from session)
+- - `color`: CLI output color for visual distinction
+- 1. **Managed** (`managed-settings.json` / MDM plist / Registry): Organization-enforced, cannot be overridden
+- 2. Command line arguments: Single-session overrides
+- 3. `.claude/settings.local.json`: Personal project settings (git-ignored)
+- 4. `.claude/settings.json`: Team-shared settings
+- 5. `~/.claude/settings.json`: Global personal defaults
+- 6. `hooks-config.local.json` overrides `hooks-config.json`
+- Set `"disableAllHooks": true` in `.claude/settings.local.json`, or disable individual hooks in `hooks-config.json`.
+- From experience with this repository:
+- - Keep CLAUDE.md under 200 lines per file for reliable adherence
+- - Use commands for workflows instead of standalone agents
+- - Create feature-specific subagents with skills (progressive disclosure) rather than general-purpose agents
+- - Perform manual `/compact` at ~50% context usage
+- - Start with plan mode for complex tasks
+- - Use human-gated task list workflow for multi-step tasks
+- - Break subtasks small enough to complete in under 50% context
+- - Use `/doctor` for diagnostics
+- - Run long-running terminal commands as background tasks for better log visibility
+- - Use browser automation MCPs (Claude in Chrome, Playwright, Chrome DevTools) for Claude to inspect console logs
+- - Provide screenshots when reporting visual issues
+- When committing changes, **create separate commits per file**. Do NOT bundle multiple file changes into a single commit. Each file gets its own commit with a descriptive message specific to that file's changes.
+- For example, if `README.md`, `best-practice/claude-subagents.md`, and a skill file all changed:
+- - Commit 1: `git add README.md` → commit with README-specific message
+- - Commit 2: `git add best-practice/claude-subagents.md` → commit with subagents-doc-specific message
+- - Commit 3: `git add .claude/skills/weather-fetcher/SKILL.md` → commit with skill-specific message
+- This makes the git history cleaner and easier to review, revert, or cherry-pick individual changes.
+- See `.claude/rules/markdown-docs.md` for documentation standards. Key docs:
+- - `best-practice/claude-subagents.md`: Subagent frontmatter, hooks, and repository agents
+- - `best-practice/claude-commands.md`: Slash command patterns and built-in command reference
+
+---
+
+## Section: agent-teams
+
+### 📝 General Body Copy / Page Text
+- Create an agent team to build a time orchestration workflow that displays
+- the current Dubai time as a visual SVG card. The workflow follows the
+- Command → Agent → Skill architecture pattern:
+- - A command orchestrates the flow and handles user interaction
+- - An agent fetches the live current time for Dubai using a preloaded skill
+- - A skill creates a visual SVG time card from the fetched data
+- **Important**: All files must be created inside `agent-teams/.claude/` —
+- NOT in the repo root's `.claude/` directory. This keeps the agent team's
+- output self-contained and runnable via `cd agent-teams && claude`.
+- Do NOT reference or copy the existing weather workflow — build everything from scratch.
+- Assign these teammates:
+- command in `agent-teams/.claude/commands/time-orchestrator.md`. The command should:
+- - Invoke the time-agent via the Agent tool (NOT bash) to fetch the
+- current time for Dubai, UAE (Asia/Dubai timezone, UTC+4)
+- - Invoke the time-svg-creator skill via the Skill tool to render the
+- SVG card from the fetched time data
+- - Use model: haiku in the frontmatter
+- (Agent tool for agents, Skill tool for skills), and an output summary
+- Coordinate with the other teammates via the shared task list to agree
+- `agent-teams/.claude/agents/time-agent.md` and its preloaded `time-fetcher`
+- skill in `agent-teams/.claude/skills/time-fetcher/SKILL.md`. The agent should:
+- - Fetch the current time for Dubai (Asia/Dubai, UTC+4) using Bash
+- with `TZ='Asia/Dubai' date '+%Y-%m-%d %H:%M:%S %Z'`
+- - Return the time value, timezone name, and formatted string to the command
+- - Use frontmatter: tools (Bash), model: haiku, color: blue, maxTurns: 3
+- - Preload the time-fetcher skill via the `skills:` field
+- The time-fetcher skill (`agent-teams/.claude/skills/time-fetcher/SKILL.md`)
+- should contain the bash command for Dubai time, the expected output format,
+- and set user-invocable: false since it is agent-only domain knowledge.
+- Post the agreed data contract to the shared task list so the Command
+- Architect and Skill Designer can align on the interface.
+- skill in `agent-teams/.claude/skills/time-svg-creator/SKILL.md` with supporting
+- (example input/output pairs). The skill should:
+- - Receive a time value, timezone, and formatted string from the calling context
+- - Create a self-contained SVG time card for Dubai showing the current time
+- - Write the SVG to `agent-teams/output/dubai-time.svg`
+- - Write a markdown summary to `agent-teams/output/output.md`
+- - Use the exact time provided — never re-fetch
+- Also create the `agent-teams/output/` directory for the output files.
+- All three teammates should create tasks in the shared task list to
+- the command passes it through context, and the skill consumes it.
+- Start all three in parallel since the components are independent —
+- they only need to agree on the data interface, not wait on each other's
+
+---
+
+## Section: best-practice
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> "sparsePaths": ["packages/my-app", "shared/utils"]
+
+> | `Task` | `Task(agent-name)` | `Task(Explore)`, `Task(my-agent)` |
+
+> "claude-opus-4-6": "arn:aws:bedrock:us-east-1:123456789:inference-profile/anthropic.claude-opus-4-6-v1:0",
+
+> "claude-sonnet-4-6": "arn:aws:bedrock:us-east-1:123456789:inference-profile/anthropic.claude-sonnet-4-6-v1:0"
+
+> "claude-opus-4-6": "arn:aws:bedrock:us-east-1:123456789:inference-profile/anthropic.claude-opus-4-6-v1:0"
+
+> - [5 MCPs that have genuinely made me 10x faster — r/mcp](https://reddit.com/r/mcp/comments/1qarjqm/)
+
+### 📝 General Body Copy / Page Text
+- <td><a href="../">← Back to Claude Code Best Practice</a></td>
+- <td align="right"><img src="../!/claude-jumping.svg" alt="Claude" width="60" /></td>
+- <img src="assets/claude-power-ups/powerup-menu.png" alt="Power-ups menu showing 10 lessons" width="700">
+- | # | Power-up | Topics |
+- |---|----------|--------|
+- | 1 | Talk to your codebase | `@` files, line refs |
+- | 2 | Steer with modes | `shift+tab`, plan, auto |
+- | 3 | Undo anything | `/rewind`, `Esc-Esc` |
+- | 4 | Run in the background | tasks, `/tasks` |
+- | 6 | Extend with tools | MCP, `/mcp` |
+- | 7 | Automate your workflow | skills, hooks |
+- | 8 | Multiply yourself | subagents, `/agents` |
+- | 10 | Dial the model | `/model`, `/effort` |
+- - [Changelog — v2.1.90](https://code.claude.com/docs/en/changelog)
+- Claude Code skills — frontmatter fields and official bundled skills.
+- | Field | Type | Required | Description |
+- |-------|------|----------|-------------|
+- | `name` | string | No | Display name and `/slash-command` identifier. Defaults to the directory name if omitted |
+- | `description` | string | Recommended | What the skill does. Shown in autocomplete and used by Claude for auto-discovery |
+- | `argument-hint` | string | No | Hint shown during autocomplete (e.g., `[issue-number]`, `[filename]`) |
+- | `disable-model-invocation` | boolean | No | Set `true` to prevent Claude from automatically invoking this skill |
+- | `user-invocable` | boolean | No | Set `false` to hide from the `/` menu — skill becomes background knowledge only, intended for agent preloading |
+- | `allowed-tools` | string | No | Tools allowed without permission prompts when this skill is active |
+- | `model` | string | No | Model to use when this skill runs (e.g., `haiku`, `sonnet`, `opus`) |
+- | `effort` | string | No | Override the model effort level when invoked (`low`, `medium`, `high`, `max`) |
+- | `context` | string | No | Set to `fork` to run the skill in an isolated subagent context |
+- | `agent` | string | No | Subagent type when `context: fork` is set (default: `general-purpose`) |
+- | `hooks` | object | No | Lifecycle hooks scoped to this skill |
+- | `paths` | string/list | No | Glob patterns that limit when the skill auto-activates. Accepts a comma-separated string or YAML list — Claude loads the skill only when working with matching files |
+- | `shell` | string | No | Shell for `` !`command` `` blocks — `bash` (default) or `powershell`. Requires `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` |
+- | # | Skill | Description |
+- |---|-------|-------------|
+- | 1 | `simplify` | Review changed code for reuse, quality, and efficiency — refactors to eliminate duplication |
+- | 2 | `batch` | Run commands across multiple files in bulk |
+- | 3 | `debug` | Debug failing commands or code issues |
+- | 4 | `loop` | Run a prompt or slash command on a recurring interval (up to 3 days) |
+- | 5 | `claude-api` | Build apps with the Claude API or Anthropic SDK — triggers on `anthropic` / `@anthropic-ai/sdk` imports |
+- See also: [Official Skills Repository](https://github.com/anthropics/skills/tree/main/skills) for community-maintained installable skills.
+- - [Claude Code Skills — Docs](https://code.claude.com/docs/en/skills)
+- - [Skills Discovery in Monorepos](../reports/claude-skills-for-larger-mono-repos.md)
+- - [Claude Code CHANGELOG](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
+- A comprehensive guide to all available configuration options in Claude Code's `settings.json` files. As of v2.1.97, Claude Code exposes **60+ settings** and **170+ environment variables** (use the `"env"` field in `settings.json` to avoid wrapper scripts).
+- 1. [Settings Hierarchy](#settings-hierarchy)
+- 2. [Core Configuration](#core-configuration)
+- 3. [Permissions](#permissions)
+- 5. [MCP Servers](#mcp-servers)
+- 8. [Model Configuration](#model-configuration)
+- 9. [Display & UX](#display--ux)
+- 10. [AWS & Cloud Credentials](#aws--cloud-credentials)
+- 11. [Environment Variables](#environment-variables-via-env)
+- 12. [Useful Commands](#useful-commands)
+- Settings apply in order of precedence (highest to lowest):
+- | Priority | Location | Scope | Shared? | Purpose |
+- |----------|----------|-------|---------|---------|
+- | 1 | Managed settings | Organization | Yes (deployed by IT) | Security policies that cannot be overridden |
+- | 3 | `.claude/settings.local.json` | Project | No (git-ignored) | Personal project-specific |
+- | 4 | `.claude/settings.json` | Project | Yes (committed) | Team-shared settings |
+- | 5 | `~/.claude/settings.json` | User | N/A | Global personal defaults |
+- **Managed settings** are organization-enforced and cannot be overridden by any other level, including command line arguments. Delivery methods:
+- - **MDM profiles** — macOS plist at `com.anthropic.claudecode`
+- - **Registry policies** — Windows `HKLM\SOFTWARE\Policies\ClaudeCode` (admin) and `HKCU\SOFTWARE\Policies\ClaudeCode` (user-level, lowest policy priority)
+- - **File** — `managed-settings.json` and `managed-mcp.json` (macOS: `/Library/Application Support/ClaudeCode/`, Linux/WSL: `/etc/claude-code/`, Windows: `C:\Program Files\ClaudeCode\`)
+- Within the managed tier, precedence is: server-managed > MDM/OS-level policies > file-based (`managed-settings.d/*.json` + `managed-settings.json`) > HKCU registry (Windows only). Only one managed source is used; sources do not merge across tiers. Within the file-based tier, drop-in files and the base file are merged together.
+- - `deny` rules have highest safety precedence and cannot be overridden by lower-priority allow/ask rules.
+- - Managed settings may lock or override local behavior even if local files specify different values.
+- - Array settings (e.g., `permissions.allow`) are **concatenated and deduplicated** across scopes — entries from all levels are combined, not replaced.
+- | Key | Type | Default | Description |
+- |-----|------|---------|-------------|
+- | `model` | string | `"default"` | Override default model. Accepts aliases (`sonnet`, `opus`, `haiku`) or full model IDs |
+- | `agent` | string | - | Set the default agent for the main conversation. Value is the agent name from `.claude/agents/`. Also available via `--agent` CLI flag |
+- | `language` | string | `"english"` | Claude's preferred response language. Also sets the voice dictation language |
+- | `autoUpdatesChannel` | string | `"latest"` | Release channel: `"stable"` or `"latest"` |
+- | `alwaysThinkingEnabled` | boolean | `false` | Enable extended thinking by default for all sessions |
+- | `availableModels` | array | - | Restrict which models users can select via `/model`, `--model`, Config tool, or `ANTHROPIC_MODEL`. Does not affect the Default option. Example: `["sonnet", "haiku"]` |
+- | `fastModePerSessionOptIn` | boolean | `false` | Require users to opt in to fast mode each session |
+- | `defaultShell` | string | `"bash"` | Default shell for input-box `!` commands. Accepts `"bash"` (default) or `"powershell"`. Setting `"powershell"` routes interactive `!` commands through PowerShell on Windows. Requires `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` (v2.1.84) |
+- | `voiceEnabled` | boolean | - | Enable push-to-talk voice dictation. Written automatically when you run `/voice`. Requires a Claude.ai account |
+- | `showClearContextOnPlanAccept` | boolean | `false` | Show the "clear context" option on the plan accept screen. Set to `true` to restore the option (hidden by default since v2.1.81) |
+- | `showThinkingSummaries` | boolean | `false` | Show extended thinking summaries in interactive sessions. When unset or `false` (default in interactive mode), thinking blocks are redacted by the API and shown as a collapsed stub. Redaction only changes what you see, not what the model generates — to reduce thinking spend, lower the budget or disable thinking instead. Non-interactive mode (`-p`) and SDK callers always receive summaries regardless of this setting |
+- | `disableSkillShellExecution` | boolean | `false` | Disable inline shell execution for `` !`...` `` blocks in skills and custom commands. Commands are replaced with `[shell command execution disabled by policy]`. Bundled and managed skills are not affected (v2.1.91) |
+- | `feedbackSurveyRate` | number | - | Probability (0–1) that the session quality survey appears when eligible. Enterprise admins can control how often the survey is shown. Example: `0.05` = 5% of eligible sessions |
+- "agent": "code-reviewer",
+- "language": "japanese",
+- "cleanupPeriodDays": 60,
+- "autoUpdatesChannel": "stable",
+- "alwaysThinkingEnabled": true
+- | `plansDirectory` | string | `~/.claude/plans` | Directory where `/plan` outputs are stored |
+- "plansDirectory": "./my-plans"
+- **Use Case:** Useful for organizing planning artifacts separately from Claude's internal files, or for keeping plans in a shared team location.
+- Configure how `--worktree` creates and manages git worktrees. Useful for reducing disk usage and startup time in large monorepos.
+- | `worktree.symlinkDirectories` | array | `[]` | Directories to symlink from the main repository into each worktree to avoid duplicating large directories on disk |
+- | `worktree.sparsePaths` | array | `[]` | Directories to check out in each worktree via git sparse-checkout (cone mode). Only the listed paths are written to disk |
+- "symlinkDirectories": ["node_modules", ".cache"],
+- Customize attribution messages for git commits and pull requests.
+- | `attribution.commit` | string | Co-authored-by | Git commit attribution (supports trailers) |
+- | `attribution.pr` | string | Generated message | Pull request description attribution |
+- | `includeCoAuthoredBy` | boolean | `true` | **DEPRECATED** - Use `attribution` instead |
+- "commit": "Generated with AI\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+- "pr": "Generated with Claude Code"
+- Scripts for dynamic authentication token generation.
+- | Key | Type | Description |
+- |-----|------|-------------|
+- | `apiKeyHelper` | string | Shell script path that outputs auth token (sent as `X-Api-Key` header) |
+- | `forceLoginMethod` | string | Restrict login to `"claudeai"` or `"console"` accounts |
+- "forceLoginMethod": "console",
+- "forceLoginOrgUUID": ["xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"]
+- "Welcome to Acme Corp!",
+- "Check the wiki for coding standards"
+- Control what tools and operations Claude can perform.
+- "additionalDirectories": [],
+- "defaultMode": "acceptEdits",
+- "disableBypassPermissionsMode": "disable"
+- | `permissions.allow` | array | Rules allowing tool use without prompting |
+- | `permissions.ask` | array | Rules requiring user confirmation |
+- | `permissions.deny` | array | Rules blocking tool use (highest precedence) |
+- | `permissions.additionalDirectories` | array | Extra directories Claude can access |
+- | `permissions.disableBypassPermissionsMode` | string | Prevent bypass mode activation |
+- | `permissions.skipDangerousModePermissionPrompt` | boolean | Skip the confirmation prompt shown before entering bypass permissions mode via `--dangerously-skip-permissions` or `defaultMode: "bypassPermissions"`. Ignored when set in project settings (`.claude/settings.json`) to prevent untrusted repositories from auto-bypassing the prompt |
+- | `allowManagedPermissionRulesOnly` | boolean | **(Managed only)** Only managed permission rules apply; user/project `allow`, `ask`, `deny` rules are ignored |
+- | `autoMode` | object | Customize what the [auto mode](/en/permission-modes#eliminate-prompts-with-auto-mode) classifier blocks and allows. Contains `environment` (trusted infrastructure descriptions), `allow` (exceptions to block rules), and `soft_deny` (block rules) — all arrays of prose strings. **Not read from shared project settings** (`.claude/settings.json`) to prevent repo injection. Available in user, local, and managed settings. Setting `allow` or `soft_deny` **replaces** the entire default list for that section. Run `claude auto-mode defaults` to see built-in rules before customizing |
+- | `"default"` | Standard permission checking with prompts |
+- | `"acceptEdits"` | Auto-accept file edits without asking |
+- | `"askEdits"` | Ask before every operation *(not in official docs — unverified)* |
+- | `"dontAsk"` | Auto-denies tools unless pre-approved via `/permissions` or `permissions.allow` rules |
+- | `"viewOnly"` | Read-only mode, no modifications *(not in official docs — unverified)* |
+- | `"bypassPermissions"` | Skip all permission checks (dangerous) |
+- | `"auto"` | Background classifier replaces manual prompts (`--enable-auto-mode`). Research preview — requires Team plan + Sonnet/Opus 4.6. Classifier auto-approves read-only and file edits; sends everything else through a safety check. Falls back to prompting after 3 consecutive or 20 total blocks. Configure with `autoMode` setting |
+- | `"plan"` | Read-only exploration mode |
+- | Tool | Syntax | Examples |
+- |------|--------|----------|
+- | `Bash` | `Bash(command pattern)` | `Bash(npm run *)`, `Bash(* install)`, `Bash(git * main)` |
+- | `Read` | `Read(path pattern)` | `Read(.env)`, `Read(./secrets/**)` |
+- | `Edit` | `Edit(path pattern)` | `Edit(src/**)`, `Edit(*.ts)` |
+- | `Write` | `Write(path pattern)` | `Write(*.md)`, `Write(./docs/**)` |
+- | `NotebookEdit` | `NotebookEdit(pattern)` | `NotebookEdit(*)` |
+- | `WebFetch` | `WebFetch(domain:pattern)` | `WebFetch(domain:example.com)` |
+- | `WebSearch` | `WebSearch` | Global web search |
+- | `Agent` | `Agent(name)` | `Agent(researcher)`, `Agent(*)` — permission scoped to subagent spawning |
+- | `Skill` | `Skill(skill-name)` | `Skill(weather-fetcher)` |
+- **Evaluation order:** Rules are evaluated in order: deny rules first, then ask, then allow. The first matching rule wins.
+- **Read/Edit path patterns:** Permission rules for `Read`, `Edit`, and `Write` support gitignore-style patterns with four prefix types:
+- | Prefix | Meaning | Example |
+- |--------|---------|---------|
+- | `~/` | Relative to home directory | `Read(~/.zshrc)` |
+- | `/` | Relative to project root | `Edit(/src/**)` |
+- | `./` or none | Relative path (current directory) | `Read(.env)`, `Read(*.ts)` |
+- **Bash wildcard notes:**
+- - `*` can appear at **any position**: prefix (`Bash(* install)`), suffix (`Bash(npm *)`), or middle (`Bash(git * main)`)
+- - **Word boundary:** `Bash(ls *)` (space before `*`) matches `ls -la` but NOT `lsof`; `Bash(ls*)` (no space) matches both
+- - `Bash(*)` is treated as equivalent to `Bash` (matches all bash commands)
+- - Permission rules support output redirections: `Bash(python:*)` matches `python script.py > output.txt`
+- - The legacy `:*` suffix syntax (e.g., `Bash(npm:*)`) is equivalent to ` *` but is deprecated
+- "WebFetch(domain:*)",
+- "additionalDirectories": ["../shared-libs/"]
+- Hook configuration (events, properties, matchers, exit codes, environment variables, and HTTP hooks) is maintained in a dedicated repository:
+- Hook-related settings keys (`hooks`, `disableAllHooks`, `allowManagedHooksOnly`, `allowedHttpHookUrls`, `httpHookAllowedEnvVars`) are documented there.
+- For the official hooks reference, see the [Claude Code Hooks Documentation](https://code.claude.com/docs/en/hooks).
+- Configure Model Context Protocol servers for extended capabilities.
+- | Key | Type | Scope | Description |
+- |-----|------|-------|-------------|
+- | `enableAllProjectMcpServers` | boolean | Any | Auto-approve all `.mcp.json` servers |
+- | `enabledMcpjsonServers` | array | Any | Allowlist specific server names |
+- | `disabledMcpjsonServers` | array | Any | Blocklist specific server names |
+- | `allowedMcpServers` | array | Managed only | Allowlist with name/command/URL matching |
+- | `deniedMcpServers` | array | Managed only | Blocklist with matching |
+- | `allowManagedMcpServersOnly` | boolean | Managed only | Only allow MCP servers explicitly listed in managed allowlist |
+- | `channelsEnabled` | boolean | Managed only | Allow [channels](https://code.claude.com/docs/en/channels) for Team and Enterprise users. When unset or `false`, channel message delivery is blocked regardless of `--channels` flag |
+- "allowedMcpServers": [
+- "deniedMcpServers": [
+- "enableAllProjectMcpServers": true,
+- "disabledMcpjsonServers": ["experimental-server"]
+- Configure bash command sandboxing for security.
+- | `sandbox.enabled` | boolean | `false` | Enable bash sandboxing |
+- | `sandbox.failIfUnavailable` | boolean | `false` | Exit with error when sandbox is enabled but cannot start, instead of running unsandboxed. Useful for enterprise policies that require strict sandboxing (v2.1.83) |
+- | `sandbox.autoAllowBashIfSandboxed` | boolean | `true` | Auto-approve bash when sandboxed |
+- | `sandbox.excludedCommands` | array | `[]` | Commands to run outside sandbox |
+- | `sandbox.allowUnsandboxedCommands` | boolean | `true` | Allow `dangerouslyDisableSandbox`. When set to `false`, the escape hatch is completely disabled and all commands must run sandboxed (or be in `excludedCommands`). Useful for enterprise policies that require strict sandboxing |
+- | `sandbox.enableWeakerNestedSandbox` | boolean | `false` | Weaker sandbox for Docker (reduces security) |
+- | `sandbox.network.allowUnixSockets` | array | `[]` | Specific Unix socket paths accessible in sandbox |
+- | `sandbox.network.allowAllUnixSockets` | boolean | `false` | Allow all Unix sockets (overrides allowUnixSockets) |
+- | `sandbox.network.allowLocalBinding` | boolean | `false` | Allow binding to localhost ports (macOS) |
+- | `sandbox.network.allowedDomains` | array | `[]` | Network domain allowlist for sandbox |
+- | `sandbox.network.deniedDomains` | array | `[]` | Network domain denylist for sandbox *(not in official docs — unverified)* |
+- | `sandbox.network.httpProxyPort` | number | - | HTTP proxy port 1-65535 (custom proxy) |
+- | `sandbox.network.socksProxyPort` | number | - | SOCKS5 proxy port 1-65535 (custom proxy) |
+- | `sandbox.network.allowManagedDomainsOnly` | boolean | `false` | Only allow domains in managed allowlist (managed settings) |
+- | `sandbox.network.allowMachLookup` | array | `[]` | (macOS only) Additional XPC/Mach service names the sandbox may look up. Supports a single trailing `*` for prefix matching. Needed for tools that communicate via XPC such as the iOS Simulator or Playwright. Example: `["com.apple.coresimulator.*"]` |
+- "autoAllowBashIfSandboxed": true,
+- "excludedCommands": ["git", "docker", "gh"],
+- "allowUnsandboxedCommands": false,
+- "allowUnixSockets": ["/var/run/docker.sock"],
+- "allowLocalBinding": true
+- Configure Claude Code plugins and marketplaces.
+- | `enabledPlugins` | object | Any | Enable/disable specific plugins |
+- | `extraKnownMarketplaces` | object | Project | Add custom plugin marketplaces (team sharing via `.claude/settings.json`) |
+- | `strictKnownMarketplaces` | array | Managed only | Allowlist of permitted marketplaces |
+- | `blockedMarketplaces` | array | Managed only | Block specific plugin marketplaces |
+- | `pluginTrustMessage` | string | Managed only | Custom message displayed when prompting users to trust plugins |
+- **Marketplace source types:** `github`, `git`, `directory`, `hostPattern`, `settings`, `url`, `npm`, `file`. Use `source: 'settings'` to declare a small set of plugins inline without setting up a hosted marketplace repository.
+- "formatter@acme-tools": true,
+- "deployer@acme-tools": true,
+- "experimental@acme-tools": false
+- "extraKnownMarketplaces": {
+- "repo": "acme-corp/claude-plugins"
+- "source": "settings",
+- "name": "inline-tools",
+- "name": "code-formatter",
+- | Alias | Description |
+- |-------|-------------|
+- | `"default"` | Recommended for your account type |
+- | `"sonnet"` | Latest Sonnet model (Claude Sonnet 4.6) |
+- | `"opus"` | Latest Opus model (Claude Opus 4.6) |
+- | `"haiku"` | Fast Haiku model |
+- | `"sonnet[1m]"` | Sonnet with 1M token context |
+- | `"opus[1m]"` | Opus with 1M token context (default on Max, Team, and Enterprise since v2.1.75) |
+- | `"opusplan"` | Opus for planning, Sonnet for execution |
+- Map Anthropic model IDs to provider-specific model IDs for Bedrock, Vertex, or Foundry deployments.
+- | `effortLevel` | string | - | Persist the effort level across sessions. Accepts `"low"`, `"medium"`, or `"high"`. Written automatically when you run `/effort low`, `/effort medium`, or `/effort high`. Supported on Opus 4.6 and Sonnet 4.6 |
+- | `modelOverrides` | object | - | Map model picker entries to provider-specific IDs (e.g., Bedrock inference profile ARNs). Each key is a model picker entry name, each value is the provider model ID |
+- The `/model` command exposes an **effort level** control that adjusts how much reasoning the model applies per response. Use the ← → arrow keys in the `/model` UI to cycle through effort levels.
+- | Effort Level | Description |
+- |-------------|-------------|
+- | High (default) | Full reasoning depth, best for complex tasks |
+- | Medium | Balanced reasoning, good for everyday tasks |
+- | Low | Minimal reasoning, fastest responses |
+- 1. Run `/effort low`, `/effort medium`, or `/effort high` to set directly (v2.1.76+)
+- 2. Or run `/model` → select a model → use **← →** arrow keys to adjust
+- 3. The setting persists via the `effortLevel` key in `settings.json`
+- **Note:** Effort level is available for Opus 4.6 and Sonnet 4.6 on Max and Team plans. The default was changed from High to Medium in v2.1.68, then changed back to **High** for API-key, Bedrock/Vertex/Foundry, Team, and Enterprise users in v2.1.94. As of v2.1.75, 1M context window for Opus 4.6 is available by default on Max, Team, and Enterprise plans.
+- Configure via `env` key:
+- "ANTHROPIC_MODEL": "sonnet",
+- "ANTHROPIC_DEFAULT_HAIKU_MODEL": "custom-haiku-model",
+- "ANTHROPIC_DEFAULT_SONNET_MODEL": "custom-sonnet-model",
+- "ANTHROPIC_DEFAULT_OPUS_MODEL": "custom-opus-model",
+- "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
+- "MAX_THINKING_TOKENS": "10000"
+- | `statusLine` | object | - | Custom status line configuration |
+- | `outputStyle` | string | `"default"` | Output style (e.g., `"Explanatory"`) |
+- | `spinnerTipsEnabled` | boolean | `true` | Show tips while waiting |
+- | `spinnerVerbs` | object | - | Custom spinner verbs with `mode` ("append" or "replace") and `verbs` array |
+- | `spinnerTipsOverride` | object | - | Custom spinner tips with `tips` (string array) and optional `excludeDefault` (boolean) |
+- | `respectGitignore` | boolean | `true` | Respect .gitignore in file picker |
+- | `prefersReducedMotion` | boolean | `false` | Reduce animations and motion effects in the UI |
+- | `fileSuggestion` | object | - | Custom file suggestion command (see File Suggestion Configuration below) |
+- | `autoConnectIde` | boolean | `false` | Automatically connect to a running IDE when Claude Code starts from an external terminal. Appears in `/config` as **Auto-connect to IDE (external terminal)** when running outside a VS Code or JetBrains terminal |
+- | `autoInstallIdeExtension` | boolean | `true` | Automatically install the Claude Code IDE extension when running from a VS Code terminal. Appears in `/config` as **Auto-install IDE extension**. Can also be disabled via `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL` env var |
+- | `editorMode` | string | `"normal"` | Key binding mode for the input prompt: `"normal"` or `"vim"`. Appears in `/config` as **Editor mode** |
+- | `showTurnDuration` | boolean | `true` | Show turn duration messages after responses (e.g., "Cooked for 1m 6s"). Edit `~/.claude.json` directly to change |
+- | `terminalProgressBarEnabled` | boolean | `true` | Show the terminal progress bar in supported terminals (ConEmu, Ghostty 1.2.0+, and iTerm2 3.6.6+). Appears in `/config` as **Terminal progress bar** |
+- | `teammateMode` | string | `"in-process"` | How [agent team](https://code.claude.com/docs/en/agent-teams) teammates display: `"auto"` (picks split panes in tmux or iTerm2, in-process otherwise), `"in-process"`, or `"tmux"`. See [choose a display mode](https://code.claude.com/docs/en/agent-teams#choose-a-display-mode) |
+- "command": "~/.claude/statusline.sh",
+- | Field | Description |
+- | `type` | Set to `"command"` to run a shell script |
+- | `command` | Shell command or script path that generates the status line output |
+- | `padding` | Extra horizontal spacing (in characters) added to status line content. Defaults to `0`. Controls relative indentation beyond the interface's built-in spacing |
+- | `refreshInterval` | Re-run the command every N seconds in addition to event-driven updates. Minimum is `1`. Useful when the status line shows time-based data (e.g., a clock) or when background subagents change git state while the main session is idle. Leave unset to run only on events (v2.1.97) |
+- **Status Line Input Fields:**
+- | `model.id`, `model.display_name` | Current model identifier and display name |
+- | `cwd`, `workspace.current_dir` | Current working directory (both contain the same value; `workspace.current_dir` preferred) |
+- | `workspace.project_dir` | Directory where Claude Code was launched (may differ from `cwd` if working directory changes) |
+- | `workspace.added_dirs` | Additional directories added via `/add-dir` or `--add-dir` |
+- | `workspace.git_worktree` | Git worktree name when inside a linked worktree created with `git worktree add`. Absent in the main working tree (v2.1.97) |
+- | `cost.total_cost_usd` | Total session cost in USD |
+- | `cost.total_duration_ms` | Total wall-clock time since session started, in milliseconds |
+- | `cost.total_api_duration_ms` | Total time spent waiting for API responses, in milliseconds |
+- | `context_window.total_input_tokens`, `context_window.total_output_tokens` | Cumulative token counts across the session |
+- | `context_window.context_window_size` | Maximum context window size in tokens (200000 default, 1000000 for extended context) |
+- | `context_window.used_percentage` | Pre-calculated percentage of context window used |
+- | `context_window.current_usage` | Token counts from the last API call (input, output, cache tokens) |
+- | `exceeds_200k_tokens` | Whether total tokens from the most recent API response exceeds 200k (fixed threshold) |
+- | `rate_limits.five_hour.used_percentage` | Five-hour rate limit usage percentage (v2.1.80+) |
+- | `rate_limits.five_hour.resets_at` | Five-hour rate limit reset timestamp (Unix epoch seconds) |
+- | `rate_limits.seven_day.used_percentage` | Seven-day rate limit usage percentage |
+- | `rate_limits.seven_day.resets_at` | Seven-day rate limit reset timestamp (Unix epoch seconds) |
+- | `session_id` | Unique session identifier |
+- | `session_name` | Custom session name set with `--name` or `/rename`. Absent if no custom name set |
+- | `transcript_path` | Path to conversation transcript file |
+- | `version` | Claude Code version |
+- | `output_style.name` | Name of the current output style |
+- | `vim.mode` | Current vim mode (`NORMAL` or `INSERT`) when vim mode is enabled |
+- | `agent.name` | Agent name when running with `--agent` flag or agent settings |
+- | `worktree.name` | Name of the active worktree (present only during `--worktree` sessions) |
+- | `worktree.path` | Absolute path to the worktree directory |
+- | `worktree.branch` | Git branch name for the worktree. Absent for hook-based worktrees |
+- | `worktree.original_cwd` | Directory before entering the worktree |
+- | `worktree.original_branch` | Git branch checked out before entering the worktree. Absent for hook-based worktrees |
+- "command": "~/.claude/file-suggestion.sh"
+- "respectGitignore": true
+- "command": "git branch --show-current 2>/dev/null || echo 'no-branch'"
+- "spinnerTipsEnabled": true,
+- "verbs": ["Cooking", "Brewing", "Crafting", "Conjuring"]
+- "spinnerTipsOverride": {
+- "tips": ["Use /compact at ~50% context", "Start with plan mode for complex tasks"],
+- "excludeDefault": true
+- | `awsAuthRefresh` | string | Script to refresh AWS auth (modifies `.aws` dir) |
+- | `awsCredentialExport` | string | Script outputting JSON with AWS credentials |
+- "awsAuthRefresh": "aws sso login --profile myprofile",
+- "awsCredentialExport": "/bin/generate_aws_grant.sh"
+- "otelHeadersHelper": "/bin/generate_otel_headers.sh"
+- Set environment variables for all Claude Code sessions.
+- "ANTHROPIC_API_KEY": "...",
+- "NODE_ENV": "development",
+- | Variable | Description |
+- |----------|-------------|
+- | `ANTHROPIC_API_KEY` | API key for authentication |
+- | `ANTHROPIC_AUTH_TOKEN` | OAuth token |
+- | `CLAUDE_CODE_OAUTH_TOKEN` | OAuth access token for Claude.ai authentication. Alternative to `/login` for SDK and automated environments. Takes precedence over keychain-stored credentials |
+- | `CLAUDE_CODE_OAUTH_REFRESH_TOKEN` | OAuth refresh token for Claude.ai authentication. When set, `claude auth login` exchanges this token directly instead of opening a browser. Requires `CLAUDE_CODE_OAUTH_SCOPES` |
+- | `CLAUDE_CODE_OAUTH_SCOPES` | Space-separated OAuth scopes the refresh token was issued with (e.g., `"user:profile user:inference user:sessions:claude_code"`). Required when `CLAUDE_CODE_OAUTH_REFRESH_TOKEN` is set |
+- | `ANTHROPIC_BASE_URL` | Custom API endpoint |
+- | `ANTHROPIC_BEDROCK_BASE_URL` | Override Bedrock endpoint URL |
+- | `ANTHROPIC_BEDROCK_MANTLE_BASE_URL` | Override the Bedrock Mantle endpoint URL. See [Mantle endpoint](https://code.claude.com/docs/en/amazon-bedrock#use-the-mantle-endpoint) |
+- | `ANTHROPIC_VERTEX_BASE_URL` | Override Vertex AI endpoint URL |
+- | `ANTHROPIC_BETAS` | Comma-separated Anthropic beta header values |
+- | `ANTHROPIC_VERTEX_PROJECT_ID` | GCP project ID for Vertex AI |
+- | `ANTHROPIC_CUSTOM_MODEL_OPTION` | Model ID to add as a custom entry in the `/model` picker. Use to make a non-standard or gateway-specific model selectable without replacing built-in aliases |
+- | `ANTHROPIC_CUSTOM_MODEL_OPTION_NAME` | Display name for the custom model entry in the `/model` picker. Defaults to the model ID when not set |
+- | `ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION` | Display description for the custom model entry in the `/model` picker. Defaults to `Custom model (<model-id>)` when not set |
+- | `ANTHROPIC_MODEL` | Name of the model to use. Accepts aliases (`sonnet`, `opus`, `haiku`) or full model IDs. Overrides the `model` setting |
+- | `ANTHROPIC_DEFAULT_HAIKU_MODEL` | Override the Haiku model alias with a custom model ID (e.g., for third-party deployments) |
+- | `ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME` | Customize the Haiku entry label in the `/model` picker when using a pinned model on Bedrock/Vertex/Foundry. Defaults to the model ID |
+- | `ANTHROPIC_DEFAULT_HAIKU_MODEL_DESCRIPTION` | Customize the Haiku entry description in the `/model` picker. Defaults to `Custom model (<model-id>)` |
+- | `ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES` | Override capability detection for a pinned Haiku model. Comma-separated values (e.g., `effort,thinking`). Required when the pinned model supports features the auto-detection cannot confirm |
+- | `CLAUDECODE` | Set to `1` in shell environments Claude Code spawns (Bash tool, tmux sessions). Not set in hooks or status line commands. Use to detect when a script is running inside a Claude Code shell |
+- | `CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS` | Set to `1` to allow fast mode when the organization status check fails due to a network error. Useful when a corporate proxy blocks the status endpoint |
+- | `CLAUDE_CODE_USE_BEDROCK` | Use AWS Bedrock (`1` to enable) |
+- | `CLAUDE_CODE_USE_VERTEX` | Use Google Vertex AI (`1` to enable) |
+- | `CLAUDE_CODE_USE_FOUNDRY` | Use Microsoft Foundry (`1` to enable) |
+- | `CLAUDE_CODE_USE_MANTLE` | Use the Bedrock [Mantle endpoint](https://code.claude.com/docs/en/amazon-bedrock#use-the-mantle-endpoint) (`1` to enable) |
+- | `CLAUDE_CODE_USE_POWERSHELL_TOOL` | Set to `1` to enable the PowerShell tool on Windows (opt-in preview). When enabled, Claude can run PowerShell commands natively instead of routing through Git Bash. Only supported on native Windows, not WSL (v2.1.84) |
+- | `DISABLE_ERROR_REPORTING` | Disable error reporting (`1` to disable) |
+- | `MCP_TIMEOUT` | MCP startup timeout in ms |
+- | `MAX_MCP_OUTPUT_TOKENS` | Max MCP output tokens (default: 25000). Warning displayed when output exceeds 10,000 tokens |
+- | `API_TIMEOUT_MS` | Timeout in ms for API requests (default: 600000) |
+- | `BASH_MAX_TIMEOUT_MS` | Bash command timeout |
+- | `BASH_MAX_OUTPUT_LENGTH` | Max bash output length |
+- | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | Auto-compact threshold percentage (1-100). Default is ~95%. Set lower (e.g., `50`) to trigger compaction earlier. Values above 95% have no effect. Use `/context` to monitor current usage. Example: `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=50 claude` |
+- | `CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR` | Keep cwd between bash calls (`1` to enable) |
+- | `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` | Disable background tasks (`1` to disable) |
+- | `ENABLE_TOOL_SEARCH` | MCP tool search threshold (e.g., `auto:5`) |
+- | `DISABLE_PROMPT_CACHING` | Disable all prompt caching (`1` to disable) |
+- | `DISABLE_PROMPT_CACHING_HAIKU` | Disable Haiku prompt caching |
+- | `DISABLE_PROMPT_CACHING_SONNET` | Disable Sonnet prompt caching |
+- | `DISABLE_PROMPT_CACHING_OPUS` | Disable Opus prompt caching |
+- | `ENABLE_PROMPT_CACHING_1H_BEDROCK` | Request 1-hour cache TTL on Bedrock (`1` to enable) |
+- | `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` | Disable experimental beta features (`1` to disable) |
+- | `CLAUDE_CODE_SHELL` | Override automatic shell detection |
+- | `CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS` | Override default file read token limit |
+- | `CLAUDE_CODE_GLOB_HIDDEN` | Set to `false` to exclude dotfiles from results when Claude invokes the Glob tool. Included by default. Does not affect `@` file autocomplete, `ls`, Grep, or Read |
+- | `CLAUDE_CODE_GLOB_NO_IGNORE` | Set to `false` to make the Glob tool respect `.gitignore` patterns. By default, Glob returns all matching files including gitignored ones. Does not affect `@` file autocomplete, which has its own `respectGitignore` setting |
+- | `CLAUDE_CODE_GLOB_TIMEOUT_SECONDS` | Timeout in seconds for Glob file discovery |
+- | `CLAUDE_CODE_ENABLE_TASKS` | Set to `true` to enable task tracking in non-interactive mode (`-p` flag). Tasks are on by default in interactive mode |
+- | `CLAUDE_CODE_EXIT_AFTER_STOP_DELAY` | Auto-exit SDK mode after idle duration (ms) |
+- | `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING` | Disable adaptive thinking (`1` to disable) |
+- | `CLAUDE_CODE_DISABLE_THINKING` | Force-disable extended thinking (`1` to disable) |
+- | `DISABLE_INTERLEAVED_THINKING` | Prevent interleaved-thinking beta header from being sent (`1` to disable) |
+- | `CLAUDE_CODE_DISABLE_1M_CONTEXT` | Disable 1M token context window (`1` to disable) |
+- | `CLAUDE_CODE_ACCOUNT_UUID` | Override account UUID for authentication |
+- | `CLAUDE_CODE_NEW_INIT` | Set to `true` to make `/init` run an interactive setup flow. Asks which files to generate (CLAUDE.md, skills, hooks) before exploring the codebase. Without this, `/init` generates a CLAUDE.md automatically |
+- | `CLAUDE_CODE_PLUGIN_SEED_DIR` | Path to one or more read-only plugin seed directories, separated by `:` on Unix or `;` on Windows. Bundle pre-populated plugins into a container image. Claude Code registers marketplaces from these directories at startup and uses pre-cached plugins without re-cloning |
+- | `ENABLE_CLAUDEAI_MCP_SERVERS` | Enable Claude.ai MCP servers |
+- | `CLAUDE_CODE_EFFORT_LEVEL` | Set effort level: `low`, `medium`, `high`, `max` (Opus 4.6 only), or `auto` (use model default). Takes precedence over `/effort` and the `effortLevel` setting |
+- | `CLAUDE_CODE_MAX_TURNS` | Maximum agentic turns before stopping *(not in official docs — unverified)* |
+- | `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` | Equivalent of setting `DISABLE_AUTOUPDATER`, `DISABLE_FEEDBACK_COMMAND`, `DISABLE_ERROR_REPORTING`, and `DISABLE_TELEMETRY` |
+- | `CLAUDE_CODE_SKIP_SETTINGS_SETUP` | Skip first-run settings setup flow *(not in official docs — unverified)* |
+- | `CLAUDE_CODE_PROMPT_CACHING_ENABLED` | Override prompt caching behavior *(not in official docs — unverified)* |
+- | `CLAUDE_CODE_DISABLE_TOOLS` | Comma-separated list of tools to disable *(not in official docs — unverified)* |
+- | `CLAUDE_CODE_DISABLE_MCP` | Disable all MCP servers (`1` to disable) *(not in official docs — unverified)* |
+- | `CLAUDE_CODE_MAX_OUTPUT_TOKENS` | Max output tokens per response. Default: 32,000 (64,000 for Opus 4.6 as of v2.1.77). Upper bound: 64,000 (128,000 for Opus 4.6 and Sonnet 4.6 as of v2.1.77) |
+- | `CLAUDE_CODE_DISABLE_FAST_MODE` | Disable fast mode entirely (`1` to disable) |
+- | `CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK` | Set to `1` to disable the non-streaming fallback when a streaming request fails mid-stream. Streaming errors propagate to the retry layer instead. Useful when a proxy or gateway causes the fallback to produce duplicate tool execution (v2.1.83) |
+- | `CLAUDE_ENABLE_STREAM_WATCHDOG` | Abort stalled streams (`1` to enable) |
+- | `CLAUDE_CODE_ENABLE_FINE_GRAINED_TOOL_STREAMING` | Enable fine-grained tool streaming (`1` to enable) |
+- | `CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING` | Disable file checkpointing for `/rewind` (`1` to disable) |
+- | `CLAUDE_CODE_DISABLE_ATTACHMENTS` | Disable attachment processing (`1` to disable) |
+- | `CLAUDE_CODE_DISABLE_CLAUDE_MDS` | Prevent loading CLAUDE.md files (`1` to disable) |
+- | `CLAUDE_CODE_RESUME_INTERRUPTED_TURN` | Auto-resume if previous session ended mid-turn (`1` to enable) |
+- | `CLAUDE_CODE_ORGANIZATION_UUID` | Provide organization UUID synchronously for authentication |
+- | `CLAUDE_CONFIG_DIR` | Custom config directory (overrides default `~/.claude`) |
+- | `ANTHROPIC_CUSTOM_HEADERS` | Custom headers for API requests (`Name: Value` format, newline-separated for multiple headers) |
+- | `ANTHROPIC_FOUNDRY_API_KEY` | API key for Microsoft Foundry authentication |
+- | `ANTHROPIC_FOUNDRY_BASE_URL` | Base URL for Foundry resource |
+- | `ANTHROPIC_FOUNDRY_RESOURCE` | Foundry resource name |
+- | `AWS_BEARER_TOKEN_BEDROCK` | Bedrock API key for authentication |
+- | `ANTHROPIC_SMALL_FAST_MODEL` | **DEPRECATED** — Use `ANTHROPIC_DEFAULT_HAIKU_MODEL` instead |
+- | `ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION` | AWS region for deprecated Haiku-class model override |
+- | `CLAUDE_CODE_SHELL_PREFIX` | Command prefix prepended to bash commands |
+- | `BASH_DEFAULT_TIMEOUT_MS` | Default bash command timeout in ms |
+- | `CLAUDE_CODE_SKIP_BEDROCK_AUTH` | Skip AWS auth for Bedrock (`1` to skip) |
+- | `CLAUDE_CODE_SKIP_FOUNDRY_AUTH` | Skip Azure auth for Foundry (`1` to skip) |
+- | `CLAUDE_CODE_SKIP_MANTLE_AUTH` | Skip AWS authentication for Bedrock Mantle (e.g., when using an LLM gateway) |
+- | `CLAUDE_CODE_SKIP_VERTEX_AUTH` | Skip Google auth for Vertex (`1` to skip) |
+- | `CLAUDE_CODE_PROXY_RESOLVES_HOSTS` | Allow proxy to perform DNS resolution |
+- | `CLAUDE_CODE_API_KEY_HELPER_TTL_MS` | Credential refresh interval in ms for `apiKeyHelper` |
+- | `CLAUDE_CODE_CLIENT_CERT` | Client certificate path for mTLS |
+- | `CLAUDE_CODE_CLIENT_KEY` | Client private key path for mTLS |
+- | `CLAUDE_CODE_CLIENT_KEY_PASSPHRASE` | Passphrase for encrypted mTLS key |
+- | `CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS` | Plugin marketplace git clone timeout in ms (default: 120000) |
+- | `CLAUDE_CODE_PLUGIN_CACHE_DIR` | Override the plugins root directory |
+- | `CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL` | Skip auto-adding the official marketplace (`1` to disable) |
+- | `CLAUDE_CODE_SYNC_PLUGIN_INSTALL` | Wait for plugin install to complete before first query (`1` to enable) |
+- | `CLAUDE_CODE_SYNC_PLUGIN_INSTALL_TIMEOUT_MS` | Timeout in ms for synchronous plugin install |
+- | `CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE` | Set to `1` to keep the existing marketplace cache when a `git pull` fails instead of wiping and re-cloning. Useful in offline or airgapped environments where re-cloning would fail the same way |
+- | `CLAUDE_CODE_DISABLE_CRON` | Disable scheduled/cron tasks (`1` to disable) |
+- | `DISABLE_INSTALLATION_CHECKS` | Disable installation warnings |
+- | `DISABLE_FEEDBACK_COMMAND` | Disable the `/feedback` command. The older name `DISABLE_BUG_COMMAND` is also accepted |
+- | `DISABLE_DOCTOR_COMMAND` | Hide the `/doctor` command (`1` to disable) |
+- | `DISABLE_LOGIN_COMMAND` | Hide the `/login` command (`1` to disable) |
+- | `DISABLE_LOGOUT_COMMAND` | Hide the `/logout` command (`1` to disable) |
+- | `DISABLE_UPGRADE_COMMAND` | Hide the `/upgrade` command (`1` to disable) |
+- | `DISABLE_EXTRA_USAGE_COMMAND` | Hide the `/extra-usage` command (`1` to disable) |
+- | `DISABLE_INSTALL_GITHUB_APP_COMMAND` | Hide the `/install-github-app` command (`1` to disable) |
+- | `DISABLE_NON_ESSENTIAL_MODEL_CALLS` | Disable flavor text and non-essential model calls *(not in official docs — unverified)* |
+- | `CLAUDE_CODE_DEBUG_LOGS_DIR` | Override debug log file directory path |
+- | `CLAUDE_CODE_DEBUG_LOG_LEVEL` | Minimum debug log level |
+- | `CLAUDE_AUTO_BACKGROUND_TASKS` | Force auto-backgrounding of long tasks (`1` to enable) |
+- | `FALLBACK_FOR_ALL_PRIMARY_MODELS` | Trigger fallback model for all primary models, not just default (`1` to enable) |
+- | `CLAUDE_CODE_GIT_BASH_PATH` | Windows Git Bash executable path (startup-only) |
+- | `DISABLE_COST_WARNINGS` | Disable cost warning messages |
+- | `CLAUDE_CODE_SUBAGENT_MODEL` | Override model for subagents (e.g., `haiku`, `sonnet`) |
+- | `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` | Set to `1` to strip Anthropic and cloud provider credentials from subprocess environments (Bash tool, hooks, MCP stdio servers). Use for defense-in-depth when subprocesses should not inherit API keys (v2.1.83) |
+- | `CLAUDE_CODE_MAX_RETRIES` | Override API request retry count (default: 10) |
+- | `CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY` | Max parallel read-only tools (default: 10) |
+- | `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS` | Disable built-in subagent types in SDK mode (`1` to disable) |
+- | `CLAUDE_AGENT_SDK_MCP_NO_PREFIX` | Skip `mcp__<server>__` prefix for MCP tools in SDK mode (`1` to enable) |
+- | `MCP_CONNECTION_NONBLOCKING` | Set to `true` in `-p` mode to skip the MCP connection wait entirely. Bounds `--mcp-config` server connections at 5s instead of blocking on the slowest server *(in v2.1.89 changelog, not yet on official env-vars page)* |
+- | `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS` | SessionEnd hook timeout in ms (replaces hard 1.5s limit) |
+- | `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY` | Disable feedback survey prompts (`1` to disable) |
+- | `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` | Disable terminal title updates (`1` to disable) |
+- | `CLAUDE_CODE_NO_FLICKER` | Set to `1` to enable flicker-free alt-screen rendering. Eliminates visual flicker during fullscreen redraws (v2.1.88) |
+- | `CLAUDE_CODE_SCROLL_SPEED` | Mouse wheel scroll multiplier for fullscreen rendering. Increase for faster scrolling, decrease for finer control |
+- | `CLAUDE_CODE_DISABLE_MOUSE` | Set to `1` to disable mouse tracking in fullscreen rendering. Useful when mouse events interfere with terminal multiplexers or accessibility tools |
+- | `CLAUDE_CODE_ACCESSIBILITY` | Set to `1` to keep native terminal cursor visible for screen readers and accessibility tools |
+- | `CLAUDE_CODE_SYNTAX_HIGHLIGHT` | Set to `0` to disable syntax highlighting in diff output |
+- | `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL` | Skip automatic IDE extension installation (`1` to skip) |
+- | `CLAUDE_CODE_AUTO_CONNECT_IDE` | Override auto IDE connection behavior |
+- | `CLAUDE_CODE_IDE_HOST_OVERRIDE` | Override IDE host address for connection |
+- | `CLAUDE_CODE_IDE_SKIP_VALID_CHECK` | Skip IDE lockfile validation (`1` to skip) |
+- | `CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS` | Debounce interval in ms for OTel headers helper script |
+- | `CLAUDE_CODE_MCP_SERVER_NAME` | Name of the MCP server, passed as an environment variable to `headersHelper` scripts so they can generate server-specific authentication headers *(in v2.1.85 changelog, not yet on official env-vars page)* |
+- | `CLAUDE_CODE_MCP_SERVER_URL` | URL of the MCP server, passed as an environment variable to `headersHelper` scripts alongside `CLAUDE_CODE_MCP_SERVER_NAME` *(in v2.1.85 changelog, not yet on official env-vars page)* |
+- | `ANTHROPIC_DEFAULT_OPUS_MODEL` | Override Opus model alias (e.g., `claude-opus-4-6[1m]`) |
+- | `ANTHROPIC_DEFAULT_OPUS_MODEL_NAME` | Customize the Opus entry label in the `/model` picker when using a pinned model on Bedrock/Vertex/Foundry. Defaults to the model ID |
+- | `ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION` | Customize the Opus entry description in the `/model` picker. Defaults to `Custom model (<model-id>)` |
+- | `ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES` | Override capability detection for a pinned Opus model. Comma-separated values (e.g., `effort,thinking`). Required when the pinned model supports features the auto-detection cannot confirm |
+- | `ANTHROPIC_DEFAULT_SONNET_MODEL` | Override Sonnet model alias (e.g., `claude-sonnet-4-6`) |
+- | `ANTHROPIC_DEFAULT_SONNET_MODEL_NAME` | Customize the Sonnet entry label in the `/model` picker when using a pinned model on Bedrock/Vertex/Foundry. Defaults to the model ID |
+- | `ANTHROPIC_DEFAULT_SONNET_MODEL_DESCRIPTION` | Customize the Sonnet entry description in the `/model` picker. Defaults to `Custom model (<model-id>)` |
+- | `ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES` | Override capability detection for a pinned Sonnet model. Comma-separated values (e.g., `effort,thinking`). Required when the pinned model supports features the auto-detection cannot confirm |
+- | `MAX_THINKING_TOKENS` | Maximum extended thinking tokens per response |
+- | `CLAUDE_CODE_AUTO_COMPACT_WINDOW` | Set the context capacity in tokens used for auto-compaction calculations. Defaults to the model's context window (200K standard, 1M for extended context models). Use a lower value (e.g., `500000`) on a 1M model to treat it as 500K for compaction. Capped at actual context window. `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` is applied as a percentage of this value. Setting this decouples the compaction threshold from the status line's `used_percentage` |
+- | `DISABLE_AUTO_COMPACT` | Disable automatic context compaction (`1` to disable). Manual `/compact` still works |
+- | `DISABLE_COMPACT` | Disable all compaction — both automatic and manual (`1` to disable) |
+- | `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION` | Enable prompt suggestions |
+- | `CLAUDE_CODE_PLAN_MODE_REQUIRED` | Require plan mode for sessions |
+- | `CLAUDE_CODE_TEAM_NAME` | Team name for agent teams |
+- | `CLAUDE_CODE_TASK_LIST_ID` | Task list ID for task integration |
+- | `CLAUDE_ENV_FILE` | Custom environment file path |
+- | `FORCE_AUTOUPDATE_PLUGINS` | Force plugin auto-updates (`1` to enable) |
+- | `HTTP_PROXY` | HTTP proxy URL for network requests |
+- | `HTTPS_PROXY` | HTTPS proxy URL for network requests |
+- | `NO_PROXY` | Comma-separated list of hosts that bypass proxy |
+- | `MCP_TOOL_TIMEOUT` | MCP tool execution timeout in ms |
+- | `MCP_CLIENT_SECRET` | MCP OAuth client secret |
+- | `MCP_OAUTH_CALLBACK_PORT` | MCP OAuth callback port |
+- | `SLASH_COMMAND_TOOL_CHAR_BUDGET` | Character budget for slash command tool output |
+- | `VERTEX_REGION_CLAUDE_3_5_HAIKU` | Vertex AI region override for Claude 3.5 Haiku |
+- | `VERTEX_REGION_CLAUDE_3_7_SONNET` | Vertex AI region override for Claude 3.7 Sonnet |
+- | `VERTEX_REGION_CLAUDE_4_0_OPUS` | Vertex AI region override for Claude 4.0 Opus |
+- | `VERTEX_REGION_CLAUDE_4_0_SONNET` | Vertex AI region override for Claude 4.0 Sonnet |
+- | `VERTEX_REGION_CLAUDE_4_1_OPUS` | Vertex AI region override for Claude 4.1 Opus |
+- | Command | Description |
+- |---------|-------------|
+- | `/model` | Switch models and adjust Opus 4.6 effort level |
+- | `/effort` | Set effort level directly: `low`, `medium`, `high` (v2.1.76+) |
+- | `/config` | Interactive configuration UI |
+- | `/agents` | Manage subagents |
+- | `/mcp` | Manage MCP servers |
+- | `/hooks` | View configured hooks |
+- | `/plugin` | Manage plugins |
+- | `/keybindings` | Configure custom keyboard shortcuts |
+- | `/skills` | View and manage skills |
+- | `/permissions` | View and manage permission rules |
+- | `--doctor` | Diagnose configuration issues |
+- | `--debug` | Debug mode with hook execution details |
+- "language": "english",
+- "cleanupPeriodDays": 30,
+- "alwaysThinkingEnabled": true,
+- "showThinkingSummaries": true,
+- "includeGitInstructions": true,
+- "defaultShell": "bash",
+- "plansDirectory": "./plans",
+- "effortLevel": "medium",
+- "symlinkDirectories": ["node_modules"],
+- "Source control: github.example.com/acme-corp and all repos under it",
+- "Trusted internal domains: *.internal.example.com"
+- "additionalDirectories": ["../shared/"],
+- "defaultMode": "acceptEdits"
+- "excludedCommands": ["git", "docker"],
+- "denyRead": ["./secrets/"],
+- "denyWrite": ["./.env"]
+- "commit": "Generated with Claude Code",
+- "command": "git branch --show-current"
+- "tips": ["Custom tip 1", "Custom tip 2"],
+- "excludeDefault": false
+- "prefersReducedMotion": false,
+- "CLAUDE_CODE_EFFORT_LEVEL": "medium"
+- - [Claude Code Settings Documentation](https://code.claude.com/docs/en/settings)
+- - [Claude Code Changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
+- - [Claude Code GitHub Settings Examples](https://github.com/feiskyer/claude-code-settings)
+- - [Shipyard - Claude Code CLI Cheatsheet](https://shipyard.build/blog/claude-code-cheat-sheet/)
+- - [Claude Code Environment Variables Reference](https://code.claude.com/docs/en/env-vars)
+- - [Claude Code Permissions Reference](https://code.claude.com/docs/en/permissions)
+- Claude Code subagents — frontmatter fields and official built-in agent types.
+- | `name` | string | Yes | Unique identifier using lowercase letters and hyphens |
+- | `description` | string | Yes | When to invoke. Use `"PROACTIVELY"` for auto-invocation by Claude |
+- | `tools` | string/list | No | Comma-separated allowlist of tools (e.g., `Read, Write, Edit, Bash`). Inherits all tools if omitted. Supports `Agent(agent_type)` syntax to restrict spawnable subagents; the older `Task(agent_type)` alias still works |
+- | `model` | string | No | Model to use: `sonnet`, `opus`, `haiku`, a full model ID (e.g., `claude-opus-4-6`), or `inherit` (default: `inherit`) |
+- | `permissionMode` | string | No | Permission mode: `default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, or `plan` |
+- | `maxTurns` | integer | No | Maximum number of agentic turns before the subagent stops |
+- | `skills` | list | No | Skill names to preload into agent context at startup (full content injected, not just made available) |
+- | `hooks` | object | No | Lifecycle hooks scoped to this subagent. All hook events are supported; `PreToolUse`, `PostToolUse`, and `Stop` are the most common |
+- | `background` | boolean | No | Set to `true` to always run as a background task (default: `false`) |
+- | `effort` | string | No | Effort level override when this subagent is active: `low`, `medium`, `high`, `max` (Opus 4.6 only). Default: inherits from session |
+- | `initialPrompt` | string | No | Auto-submitted as the first user turn when this agent runs as the main session agent (via `--agent` or the `agent` setting). Commands and skills are processed. Prepended to any user-provided prompt |
+- | `color` | string | No | Display color for the subagent in the task list and transcript: `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, or `cyan` |
+- | # | Agent | Model | Tools | Description |
+- |---|-------|-------|-------|-------------|
+- | 1 | `general-purpose` | inherit | All | Complex multi-step tasks — the default agent type for research, code search, and autonomous work |
+- | 2 | `Explore` | haiku | Read-only (no Write, Edit) | Fast codebase search and exploration — optimized for finding files, searching code, and answering codebase questions |
+- | 4 | `statusline-setup` | sonnet | Read, Edit | Configures the user's Claude Code status line setting |
+- | 5 | `claude-code-guide` | haiku | Glob, Grep, Read, WebFetch, WebSearch | Answers questions about Claude Code features, Agent SDK, and Claude API |
+- - [Create custom subagents — Claude Code Docs](https://code.claude.com/docs/en/sub-agents)
+- - [CLI reference — Claude Code Docs](https://code.claude.com/docs/en/cli-reference)
+- Reference for Claude Code startup flags, top-level subcommands, and startup environment variables when launching Claude Code from the terminal.
+- 2. [Model & Configuration](#model--configuration)
+- 3. [Permissions & Security](#permissions--security)
+- 4. [Output & Format](#output--format)
+- 6. [Agent & Subagent](#agent--subagent)
+- 7. [MCP & Plugins](#mcp--plugins)
+- 8. [Directory & Workspace](#directory--workspace)
+- 9. [Budget & Limits](#budget--limits)
+- 10. [Integration](#integration)
+- 11. [Initialization & Maintenance](#initialization--maintenance)
+- 12. [Debug & Diagnostics](#debug--diagnostics)
+- 13. [Settings Override](#settings-override)
+- 14. [Version & Help](#version--help)
+- 15. [Subcommands](#subcommands)
+- 16. [Environment Variables](#environment-variables)
+- | Flag | Short | Description |
+- |------|-------|-------------|
+- | `--continue` | `-c` | Continue the most recent conversation in the current directory |
+- | `--resume` | `-r` | Resume a specific session by ID or name, or show interactive picker |
+- | `--from-pr <NUMBER\|URL>` | | Resume sessions linked to a specific GitHub PR |
+- | `--fork-session` | | Create a new session ID when resuming (use with `--resume` or `--continue`) |
+- | `--session-id <UUID>` | | Use a specific session ID (must be valid UUID) |
+- | `--no-session-persistence` | | Disable session persistence (print mode only) |
+- | `--teleport` | | Resume a web session in your local terminal |
+- | `--model <NAME>` | | Set model with alias (`sonnet`, `opus`, `haiku`) or full model ID |
+- | `--fallback-model <NAME>` | | Auto-fallback model when default is overloaded (print mode only) |
+- | `--betas <LIST>` | | Beta headers to include in API requests (API key users only) |
+- | `--allow-dangerously-skip-permissions` | | Enable permission bypassing as an option without activating it |
+- | `--permission-mode <MODE>` | | Begin in specified permission mode: `default`, `plan`, `acceptEdits`, `bypassPermissions` |
+- | `--allowedTools <TOOLS>` | | Tools that execute without prompting (permission rule syntax) |
+- | `--tools <TOOLS>` | | Restrict which built-in tools Claude can use (use `""` to disable all) |
+- | `--permission-prompt-tool <TOOL>` | | Specify MCP tool to handle permission prompts in non-interactive mode |
+- | `--print` | `-p` | Print response without interactive mode (headless/SDK mode) |
+- | `--output-format <FORMAT>` | | Output format: `text`, `json`, `stream-json` |
+- | `--input-format <FORMAT>` | | Input format: `text`, `stream-json` |
+- | `--include-partial-messages` | | Include partial streaming events (requires `--print` and `--output-format=stream-json`) |
+- | `--verbose` | | Enable verbose logging with full turn-by-turn output |
+- | `--agent <NAME>` | | Specify an agent for the current session |
+- | `--agents <JSON>` | | Define custom subagents dynamically via JSON |
+- | `--teammate-mode <MODE>` | | Set agent team display: `auto`, `in-process`, `tmux` |
+- | `--mcp-config <PATH\|JSON>` | | Load MCP servers from JSON file or string |
+- | `--strict-mcp-config` | | Only use MCP servers from `--mcp-config`, ignore all others |
+- | `--plugin-dir <PATH>` | | Load plugins from directory for this session only (repeatable) |
+- | `--add-dir <PATH>` | | Add additional working directories for Claude to access |
+- | `--worktree` | `-w` | Start Claude in an isolated git worktree (branched from HEAD) |
+- | `--max-budget-usd <AMOUNT>` | | Maximum dollar amount for API calls before stopping (print mode only) |
+- | `--max-turns <NUMBER>` | | Limit number of agentic turns (print mode only) |
+- | `--chrome` | | Enable Chrome browser integration for web automation |
+- | `--no-chrome` | | Disable Chrome browser integration for this session |
+- | `--ide` | | Automatically connect to IDE on startup if exactly one valid IDE available |
+- | `--init` | | Run initialization hooks and start interactive mode |
+- | `--init-only` | | Run initialization hooks and exit (no interactive session) |
+- | `--maintenance` | | Run maintenance hooks and exit |
+- | `--debug <CATEGORIES>` | | Enable debug mode with optional category filtering (e.g., `"api,hooks"`) |
+- | `--settings <PATH\|JSON>` | | Path to settings JSON file or JSON string to load |
+- | `--setting-sources <LIST>` | | Comma-separated list of sources to load: `user`, `project`, `local` |
+- | `--disable-slash-commands` | | Disable all skills and slash commands for this session |
+- | `--version` | `-v` | Output the version number |
+- | `--help` | `-h` | Show help information |
+- These are top-level commands run as `claude <subcommand>`:
+- | Subcommand | Description |
+- |------------|-------------|
+- | `claude` | Start interactive REPL |
+- | `claude "query"` | Start REPL with initial prompt |
+- | `claude agents` | List configured agents |
+- | `claude auth` | Manage Claude Code authentication |
+- | `claude doctor` | Run diagnostics from the command line |
+- | `claude install` | Install or switch Claude Code native builds |
+- | `claude plugin` | Manage Claude Code plugins |
+- | `claude setup-token` | Create a long-lived token for subscription usage |
+- | `claude update` / `claude upgrade` | Update to the latest version |
+- These startup-only environment variables are set in your shell before launching Claude Code (they cannot be configured via `settings.json`):
+- | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` | Enable experimental agent teams |
+- | `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1` | Enable additional directory CLAUDE.md loading |
+- | `DISABLE_AUTOUPDATER=1` | Disable auto-updates |
+- | `CLAUDE_CODE_EFFORT_LEVEL` | Control thinking depth — see [Settings Reference](./claude-settings.md#environment-variables-via-env) |
+- | `CLAUDE_CODE_SIMPLE` | Enable simple mode (Bash + Edit tools only). Also configurable via `env` key — see [Settings Reference](./claude-settings.md#environment-variables-via-env) |
+- | `CLAUDE_BASH_NO_LOGIN=1` | Skip login shell for BashTool |
+- For environment variables configurable via the `"env"` key in `settings.json` (including `MAX_THINKING_TOKENS`, `CLAUDE_CODE_SHELL`, `CLAUDE_CODE_ENABLE_TASKS`, `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`, `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`, and more), see the [Claude Settings Reference](./claude-settings.md#environment-variables-via-env).
+- - [Claude Code CLI Reference](https://code.claude.com/docs/en/cli-reference)
+- - [Claude Code Headless Mode](https://code.claude.com/docs/en/headless)
+- - [Claude Code Setup](https://code.claude.com/docs/en/setup)
+- - [Claude Code Common Workflows](https://code.claude.com/docs/en/common-workflows)
+- A well-structured CLAUDE.md is the single most impactful way to improve Claude Code's output for your project. Humanlayer has an excellent guide covering what to include, how to structure it, and common pitfalls.
+- - [Humanlayer - Writing a good Claude.md](https://www.humanlayer.dev/blog/writing-a-good-claude-md)
+- When working with Claude Code in a monorepo, understanding how CLAUDE.md files are loaded into context is crucial for organizing your project instructions effectively.
+- Claude Code uses two distinct mechanisms for loading CLAUDE.md files:
+- CLAUDE.md files in subdirectories below your current working directory are **NOT loaded at launch**. They are only included when Claude reads files in those subdirectories during your session. This is known as **lazy loading**.
+- Consider a typical monorepo with separate directories for different components:
+- ├── CLAUDE.md # Root-level instructions (shared across all components)
+- │ └── CLAUDE.md # Frontend-specific instructions
+- │ └── CLAUDE.md # Backend-specific instructions
+- └── CLAUDE.md # API-specific instructions
+- When you run Claude Code from `/mymonorepo/`:
+- | File | Loaded at Launch? | Reason |
+- |------|-------------------|--------|
+- | `/mymonorepo/CLAUDE.md` | Yes | It's your current working directory |
+- | `/mymonorepo/frontend/CLAUDE.md` | No | Loaded only when you read/edit files in `frontend/` |
+- | `/mymonorepo/backend/CLAUDE.md` | No | Loaded only when you read/edit files in `backend/` |
+- | `/mymonorepo/api/CLAUDE.md` | No | Loaded only when you read/edit files in `api/` |
+- When you run Claude Code from `/mymonorepo/frontend/`:
+- cd /mymonorepo/frontend
+- | `/mymonorepo/CLAUDE.md` | Yes | It's an ancestor directory |
+- | `/mymonorepo/frontend/CLAUDE.md` | Yes | It's your current working directory |
+- | `/mymonorepo/backend/CLAUDE.md` | No | Different branch of the directory tree |
+- | `/mymonorepo/api/CLAUDE.md` | No | Different branch of the directory tree |
+- 1. **Ancestors always load at startup** — Claude walks UP the directory tree and loads all CLAUDE.md files it finds. This ensures you always have access to root-level, repository-wide instructions.
+- 2. **Descendants load lazily** — Subdirectory CLAUDE.md files only load when you interact with files in those subdirectories. This prevents irrelevant context from bloating your session.
+- 3. **Siblings never load** — If you're working in `frontend/`, you won't get `backend/CLAUDE.md` or `api/CLAUDE.md` loaded into context.
+- 4. **Global CLAUDE.md** — You can also place a CLAUDE.md at `~/.claude/CLAUDE.md` in your home folder, which applies to ALL Claude Code sessions regardless of project.
+- - **Shared instructions propagate down** — Root-level CLAUDE.md contains repository-wide conventions, coding standards, and common patterns that apply everywhere.
+- - **Component-specific instructions stay isolated** — Frontend developers don't need backend-specific instructions cluttering their context, and vice versa.
+- - **Context is optimized** — By lazily loading descendant CLAUDE.md files, Claude Code avoids loading potentially hundreds of kilobytes of irrelevant instructions at startup.
+- 2. **Put component-specific instructions in component CLAUDE.md** — Framework-specific patterns, component architecture, testing conventions unique to that component.
+- 3. **Use CLAUDE.local.md for personal preferences** — Add it to `.gitignore` for instructions that shouldn't be shared with the team.
+- - [Boris Cherny on X - Clarification on CLAUDE.md Loading](https://x.com/bcherny/status/2016339448863355206)
+- Claude Code commands — frontmatter fields and official built-in slash commands.
+- | `description` | string | Recommended | What the command does. Shown in autocomplete and used by Claude for auto-discovery |
+- | `disable-model-invocation` | boolean | No | Set `true` to prevent Claude from automatically invoking this command |
+- | `user-invocable` | boolean | No | Set `false` to hide from the `/` menu — command becomes background knowledge only |
+- | `paths` | string/list | No | Glob patterns that limit when this skill is activated. Accepts a comma-separated string or a YAML list. When set, Claude loads the skill automatically only when working with files matching the patterns |
+- | `allowed-tools` | string | No | Tools allowed without permission prompts when this command is active |
+- | `model` | string | No | Model to use when this command runs (e.g., `haiku`, `sonnet`, `opus`) |
+- | `context` | string | No | Set to `fork` to run the command in an isolated subagent context |
+- | `shell` | string | No | Shell for `` !`command` `` blocks — accepts `bash` (default) or `powershell`. Requires `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` |
+- | `hooks` | object | No | Lifecycle hooks scoped to this command |
+- | # | Command | Tag | Description |
+- |---|---------|-----|-------------|
+- | 1 | `/login` | ![Auth](https://img.shields.io/badge/Auth-2980B9?style=flat) | Sign in to your Anthropic account |
+- | 2 | `/logout` | ![Auth](https://img.shields.io/badge/Auth-2980B9?style=flat) | Sign out from your Anthropic account |
+- | 3 | `/setup-bedrock` | ![Auth](https://img.shields.io/badge/Auth-2980B9?style=flat) | Configure Amazon Bedrock authentication, region, and model pins through an interactive wizard. Only visible when `CLAUDE_CODE_USE_BEDROCK=1` is set. First-time Bedrock users can also access this wizard from the login screen |
+- | 4 | `/upgrade` | ![Auth](https://img.shields.io/badge/Auth-2980B9?style=flat) | Open the upgrade page to switch to a higher plan tier |
+- | 5 | `/color [color\|default]` | ![Config](https://img.shields.io/badge/Config-F39C12?style=flat) | Set the prompt bar color for the current session. Available colors: `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, `cyan`. Use `default` to reset |
+- | 7 | `/keybindings` | ![Config](https://img.shields.io/badge/Config-F39C12?style=flat) | Open or create your keybindings configuration file |
+- | 9 | `/privacy-settings` | ![Config](https://img.shields.io/badge/Config-F39C12?style=flat) | View and update your privacy settings. Only available for Pro and Max plan subscribers |
+- | 10 | `/sandbox` | ![Config](https://img.shields.io/badge/Config-F39C12?style=flat) | Toggle sandbox mode. Available on supported platforms only |
+- | 11 | `/statusline` | ![Config](https://img.shields.io/badge/Config-F39C12?style=flat) | Configure Claude Code's status line. Describe what you want, or run without arguments to auto-configure from your shell prompt |
+- | 12 | `/stickers` | ![Config](https://img.shields.io/badge/Config-F39C12?style=flat) | Order Claude Code stickers |
+- | 13 | `/terminal-setup` | ![Config](https://img.shields.io/badge/Config-F39C12?style=flat) | Configure terminal keybindings for Shift+Enter and other shortcuts. Only visible in terminals that need it, like VS Code, Alacritty, or Warp |
+- | 15 | `/voice` | ![Config](https://img.shields.io/badge/Config-F39C12?style=flat) | Toggle push-to-talk voice dictation. Requires a Claude.ai account |
+- | 17 | `/cost` | ![Context](https://img.shields.io/badge/Context-8E44AD?style=flat) | Show token usage statistics. See cost tracking guide for subscription-specific details |
+- | 18 | `/extra-usage` | ![Context](https://img.shields.io/badge/Context-8E44AD?style=flat) | Configure extra usage to keep working when rate limits are hit |
+- | 19 | `/insights` | ![Context](https://img.shields.io/badge/Context-8E44AD?style=flat) | Generate a report analyzing your Claude Code sessions, including project areas, interaction patterns, and friction points |
+- | 20 | `/stats` | ![Context](https://img.shields.io/badge/Context-8E44AD?style=flat) | Visualize daily usage, session history, streaks, and model preferences |
+- | 21 | `/status` | ![Context](https://img.shields.io/badge/Context-8E44AD?style=flat) | Open the Settings interface (Status tab) showing version, model, account, and connectivity. Works while Claude is responding, without waiting for the current response to finish |
+- | 22 | `/usage` | ![Context](https://img.shields.io/badge/Context-8E44AD?style=flat) | Show plan usage limits and rate limit status |
+- | 23 | `/doctor` | ![Debug](https://img.shields.io/badge/Debug-E74C3C?style=flat) | Diagnose and verify your Claude Code installation and settings |
+- | 24 | `/feedback [report]` | ![Debug](https://img.shields.io/badge/Debug-E74C3C?style=flat) | Submit feedback about Claude Code. Alias: `/bug` |
+- | 25 | `/help` | ![Debug](https://img.shields.io/badge/Debug-E74C3C?style=flat) | Show help and available commands |
+- | 27 | `/release-notes` | ![Debug](https://img.shields.io/badge/Debug-E74C3C?style=flat) | View the changelog in an interactive version picker. Select a specific version to see its release notes, or choose to show all versions |
+- | 28 | `/tasks` | ![Debug](https://img.shields.io/badge/Debug-E74C3C?style=flat) | List and manage background tasks. Alias: `/bashes` |
+- | 29 | `/copy [N]` | ![Export](https://img.shields.io/badge/Export-7F8C8D?style=flat) | Copy the last assistant response to clipboard. Pass a number `N` to copy the Nth-latest response: `/copy 2` copies the second-to-last. When code blocks are present, shows an interactive picker to select individual blocks or the full response. Press `w` in the picker to write the selection to a file instead of the clipboard, which is useful over SSH |
+- | 30 | `/export [filename]` | ![Export](https://img.shields.io/badge/Export-7F8C8D?style=flat) | Export the current conversation as plain text. With a filename, writes directly to that file. Without, opens a dialog to copy to clipboard or save to a file |
+- | 31 | `/agents` | ![Extensions](https://img.shields.io/badge/Extensions-16A085?style=flat) | Manage agent configurations |
+- | 32 | `/chrome` | ![Extensions](https://img.shields.io/badge/Extensions-16A085?style=flat) | Configure Claude in Chrome settings |
+- | 33 | `/hooks` | ![Extensions](https://img.shields.io/badge/Extensions-16A085?style=flat) | View hook configurations for tool events |
+- | 34 | `/ide` | ![Extensions](https://img.shields.io/badge/Extensions-16A085?style=flat) | Manage IDE integrations and show status |
+- | 35 | `/mcp` | ![Extensions](https://img.shields.io/badge/Extensions-16A085?style=flat) | Manage MCP server connections and OAuth authentication |
+- | 36 | `/plugin` | ![Extensions](https://img.shields.io/badge/Extensions-16A085?style=flat) | Manage Claude Code plugins |
+- | 37 | `/reload-plugins` | ![Extensions](https://img.shields.io/badge/Extensions-16A085?style=flat) | Reload all active plugins to apply pending changes without restarting. Reports counts for each reloaded component and flags any load errors |
+- | 38 | `/skills` | ![Extensions](https://img.shields.io/badge/Extensions-16A085?style=flat) | List available skills |
+- | 40 | `/effort [low\|medium\|high\|max\|auto]` | ![Model](https://img.shields.io/badge/Model-E67E22?style=flat) | Set the model effort level. `low`, `medium`, and `high` persist across sessions. `max` applies to the current session only and requires Opus 4.6. `auto` resets to the model default. Without an argument, shows the current level. Takes effect immediately without waiting for the current response to finish |
+- | 41 | `/fast [on\|off]` | ![Model](https://img.shields.io/badge/Model-E67E22?style=flat) | Toggle fast mode on or off |
+- | 42 | `/model [model]` | ![Model](https://img.shields.io/badge/Model-E67E22?style=flat) | Select or change the AI model. For models that support it, use left/right arrows to adjust effort level. The change takes effect immediately without waiting for the current response to finish |
+- | 43 | `/passes` | ![Model](https://img.shields.io/badge/Model-E67E22?style=flat) | Share a free week of Claude Code with friends. Only visible if your account is eligible |
+- | 44 | `/plan [description]` | ![Model](https://img.shields.io/badge/Model-E67E22?style=flat) | Enter plan mode directly from the prompt. Pass an optional description to enter plan mode and immediately start with that task, for example `/plan fix the auth bug` |
+- | 46 | `/add-dir <path>` | ![Project](https://img.shields.io/badge/Project-27AE60?style=flat) | Add a working directory for file access during the current session. Most `.claude/` configuration is not discovered from the added directory |
+- | 47 | `/diff` | ![Project](https://img.shields.io/badge/Project-27AE60?style=flat) | Open an interactive diff viewer showing uncommitted changes and per-turn diffs. Use left/right arrows to switch between the current git diff and individual Claude turns, and up/down to browse files |
+- | 49 | `/review` | ![Project](https://img.shields.io/badge/Project-27AE60?style=flat) | Deprecated. Install the `code-review` plugin instead: `claude plugin install code-review@claude-plugins-official` |
+- | 50 | `/security-review` | ![Project](https://img.shields.io/badge/Project-27AE60?style=flat) | Analyze pending changes on the current branch for security vulnerabilities. Reviews the git diff and identifies risks like injection, auth issues, and data exposure |
+- | 61 | `/branch [name]` | ![Session](https://img.shields.io/badge/Session-4A90D9?style=flat) | Create a branch of the current conversation at this point. Alias: `/fork` |
+- | 62 | `/btw <question>` | ![Session](https://img.shields.io/badge/Session-4A90D9?style=flat) | Ask a quick side question without adding to the conversation |
+- | 63 | `/clear` | ![Session](https://img.shields.io/badge/Session-4A90D9?style=flat) | Clear conversation history and free up context. Aliases: `/reset`, `/new` |
+- | 64 | `/compact [instructions]` | ![Session](https://img.shields.io/badge/Session-4A90D9?style=flat) | Compact conversation with optional focus instructions |
+- | 65 | `/exit` | ![Session](https://img.shields.io/badge/Session-4A90D9?style=flat) | Exit the CLI. Alias: `/quit` |
+- | 66 | `/rename [name]` | ![Session](https://img.shields.io/badge/Session-4A90D9?style=flat) | Rename the current session and show the name on the prompt bar. Without a name, auto-generates one from conversation history |
+- | 67 | `/resume [session]` | ![Session](https://img.shields.io/badge/Session-4A90D9?style=flat) | Resume a conversation by ID or name, or open the session picker. Alias: `/continue` |
+- | 68 | `/rewind` | ![Session](https://img.shields.io/badge/Session-4A90D9?style=flat) | Rewind the conversation and/or code to a previous point, or summarize from a selected message. See checkpointing. Alias: `/checkpoint` |
+- Bundled skills such as `/debug` can also appear in the slash-command menu, but they are not built-in commands.
+- - [Claude Code Slash Commands](https://code.claude.com/docs/en/slash-commands)
+- - [Claude Code Interactive Mode](https://code.claude.com/docs/en/interactive-mode)
+- MCP (Model Context Protocol) servers extend Claude Code with connections to external tools, databases, and APIs. This guide covers recommended servers for daily use and configuration best practices.
+- > *"Went overboard with 15 MCP servers thinking more = better. Ended up using only 4 daily."* — [r/mcp](https://reddit.com/r/mcp/comments/1mj0fxs/) (682 upvotes)
+- | MCP Server | What It Does | Resources |
+- |------------|-------------|-----------|
+- | [**Context7**](https://github.com/upstash/context7) | Fetches up-to-date library docs into context. Prevents hallucinated APIs from outdated training data | [Reddit: "by far the best MCP for coding"](https://reddit.com/r/mcp/comments/1qarjqm/) · [npm](https://www.npmjs.com/package/@upstash/context7-mcp) |
+- | [**Claude in Chrome**](https://github.com/nicobailon/claude-code-in-chrome-mcp) | Connects Claude to your real Chrome browser — inspect console, network, DOM. Debug what users actually see | [Reddit: "game changer" for debugging](https://reddit.com/r/mcp/comments/1qarjqm/5_mcps_that_have_genuinely_made_me_10x_faster/nza0i7t/) · [Comparison Report](../reports/claude-in-chrome-v-chrome-devtools-mcp.md) |
+- Research (Context7/DeepWiki) -> Debug (Playwright/Chrome) -> Document (Excalidraw)
+- MCP servers are configured in `.mcp.json` at the project root (project-scoped) or in `~/.claude.json` (user-scoped).
+- | Type | Transport | Example |
+- |------|-----------|---------|
+- "args": ["-y", "@upstash/context7-mcp"]
+- "args": ["-y", "@playwright/mcp"]
+- "args": ["-y", "deepwiki-mcp"]
+- "url": "https://mcp.example.com/mcp"
+- Use environment variable expansion for secrets instead of committing API keys in `.mcp.json`:
+- These settings in `.claude/settings.json` control MCP server approval:
+- | `enableAllProjectMcpServers` | boolean | Auto-approve all `.mcp.json` servers without prompting |
+- | `enabledMcpjsonServers` | array | Allowlist of specific server names to auto-approve |
+- | `disabledMcpjsonServers` | array | Blocklist of specific server names to reject |
+- MCP tools follow the `mcp__<server>__<tool>` naming convention in permission rules:
+- "mcp__playwright__browser_snapshot"
+- "mcp__dangerous-server__*"
+- MCP servers can be defined at three levels:
+- | Scope | Location | Purpose |
+- |-------|----------|---------|
+- | **Project** | `.mcp.json` (repo root) | Team-shared servers, committed to git |
+- | **User** | `~/.claude.json` (`mcpServers` key) | Personal servers across all projects |
+- | **Subagent** | Agent frontmatter (`mcpServers` field) | Servers scoped to a specific subagent |
+- Precedence: Subagent > Project > User
+- - [MCP Servers — Claude Code Docs](https://code.claude.com/docs/en/mcp)
+- - [Model Context Protocol Specification](https://modelcontextprotocol.io/)
+- - [MCP Server Overload Discussion — r/mcp](https://reddit.com/r/mcp/comments/1mj0fxs/)
+
+---
+
+## Section: claude-commands
+
+### 📝 General Body Copy / Page Text
+- | ✅ `COMPLETE (reason)` | Action was taken and resolved successfully |
+- | ❌ `INVALID (reason)` | Finding was incorrect, not applicable, or intentional |
+- | ✋ `ON HOLD (reason)` | Action deferred — waiting on external dependency or user decision |
+- | # | Priority | Type | Action | Status |
+- |---|----------|------|--------|--------|
+- | 1 | HIGH | New Field | Add `name` to frontmatter table — display name for the skill | ❌ INVALID (skill-only field, not applicable to commands frontmatter) |
+- | 2 | HIGH | New Field | Add `disable-model-invocation` to frontmatter table — prevents auto-loading | ❌ INVALID (skill-only field, not applicable to commands frontmatter) |
+- | 3 | HIGH | New Field | Add `user-invocable` to frontmatter table — hides from `/` menu | ❌ INVALID (skill-only field, not applicable to commands frontmatter) |
+- | 4 | HIGH | New Field | Add `context` to frontmatter table — fork to run in subagent context | ❌ INVALID (skill-only field, not applicable to commands frontmatter) |
+- | 5 | HIGH | New Field | Add `agent` to frontmatter table — subagent type for context: fork | ❌ INVALID (skill-only field, not applicable to commands frontmatter) |
+- | 6 | HIGH | New Field | Add `hooks` to frontmatter table — lifecycle hooks scoped to skill | ❌ INVALID (skill-only field, not applicable to commands frontmatter) |
+- | 7 | HIGH | New Command | Add `/btw <question>` — ask a quick side question without adding to conversation | ✅ COMPLETE (added as #53 in Session tag) |
+- | 8 | HIGH | New Command | Add `/hooks` — manage hook configurations for tool events | ✅ COMPLETE (added as #30 in Extensions tag) |
+- | 9 | HIGH | New Command | Add `/insights` — generate session analysis report | ✅ COMPLETE (added as #17 in Context tag) |
+- | 10 | HIGH | New Command | Add `/plugin` — manage Claude Code plugins | ✅ COMPLETE (added as #33 in Extensions tag) |
+- | 11 | HIGH | New Command | Add `/skills` — list available skills | ✅ COMPLETE (added as #35 in Extensions tag) |
+- | 12 | HIGH | New Command | Add `/upgrade` — open upgrade page to switch plan tier | ✅ COMPLETE (added as #3 in Auth tag) |
+- | 15 | HIGH | Changed Description | Update `/passes` — repurposed from review passes to referral sharing | ✅ COMPLETE (updated description, kept in Model tag) |
+- | 16 | HIGH | Changed Description | Update `/review` — deprecated, replaced by `code-review` marketplace plugin | ✅ COMPLETE (updated description in Project tag) |
+- | 17 | MED | Changed Description | Update `/stickers` — changed from UI sticker packs to ordering physical stickers | ✅ COMPLETE (updated description in Config tag) |
+- | 1 | HIGH | New Command | Add `/color [color\|default]` to Config tag — set prompt bar color for current session | ✅ COMPLETE (added as #4 in Config tag) |
+- | 2 | HIGH | New Command | Add `/effort [low\|medium\|high\|max\|auto]` to Model tag — set model effort level | ✅ COMPLETE (added as #38 in Model tag) |
+- | 3 | MED | Changed Description | Update `/status` — now "Open the Settings interface (Status tab)" instead of "Show a concise session status summary" | ✅ COMPLETE (updated description at #20 in Context tag) |
+- | 1 | HIGH | New Alias | Add `Alias: /branch` to `/fork` entry (v2.1.77 renamed fork→branch) | ✅ COMPLETE (added "Alias: /branch" to /fork at #59 in Session tag) |
+- | 3 | MED | Changed Description | Update `/diff` — "Open an interactive diff viewer showing uncommitted changes and per-turn diffs" | ✅ COMPLETE (updated description at #44 in Project tag) |
+- | 5 | MED | Changed Description | Update `/copy` — "Copy the last assistant response to clipboard. Shows interactive picker for code blocks" | ✅ COMPLETE (updated description at #27 in Export tag) |
+- | 8 | LOW | Frontmatter Scope | 6 skill-only fields still absent from report (intentional scoping) | ❌ INVALID (skill-only fields — same determination as v2.1.74 run) |
+- | 1 | HIGH | New Command | Add `/voice` to Config tag — toggle push-to-talk voice dictation | ✅ COMPLETE (added as #15 in Config tag) |
+- | 2 | HIGH | Inverted Alias | Swap `/fork` → `/branch` as primary, `/fork` as alias | ✅ COMPLETE (swapped to `/branch` at #56 in Session tag, re-sorted alphabetically) |
+- | 3 | MED | New Alias | Add `/allowed-tools` alias to `/permissions` | ✅ COMPLETE (added alias to #7 in Config tag) |
+- | 4 | MED | New Argument | Add `[N]` argument syntax to `/copy` | ✅ COMPLETE (updated to `/copy [N]` at #28 in Export tag) |
+- | 5 | LOW | Frontmatter Scope | 6 skill-only fields absent from report (intentional scoping) | ❌ INVALID (skill-only fields — same determination as v2.1.74 and v2.1.77 runs) |
+- | 1 | LOW | Frontmatter Scope | 6 skill-only fields absent from report (intentional scoping) | ❌ INVALID (skill-only fields — same determination as v2.1.74, v2.1.77, and v2.1.78 runs) |
+- | 1 | MED | New Field | Add `effort` to frontmatter table — override model effort level when command is invoked (v2.1.80) | ✅ COMPLETE (added as 5th field, then repositioned to 8th when full field set was added) |
+- | 2 | HIGH | QA Correction | Add 6 missing fields (`name`, `disable-model-invocation`, `user-invocable`, `context`, `agent`, `hooks`) — official docs state commands support "the same frontmatter" as skills; previous INVALID determinations (v2.1.74–v2.1.79) were incorrect | ✅ COMPLETE (added all 6 fields, count updated 5 → 11, field order matches official docs) |
+- | 3 | HIGH | Cross-Report Fix | Add `effort` to skills report (`claude-skills.md`) — field was missing there too | ✅ COMPLETE (added as 8th field in skills report, count updated 10 → 11) |
+- | 1 | HIGH | New Field | Add `shell` to frontmatter table — shell for `!command` blocks (`bash` or `powershell`) | ✅ COMPLETE (added as 12th field before `hooks`, count updated 11 → 12) |
+- | 2 | LOW | Changed Argument | Add `[on\|off]` argument hint to `/fast` command | ✅ COMPLETE (updated `/fast` to `/fast [on\|off]` at #40 in Model tag) |
+- | 1 | HIGH | New Field | Add `paths` to frontmatter table — glob patterns that limit when a skill is activated | ✅ COMPLETE (added as 6th field after `user-invocable`, count updated 12 → 13) |
+- | 1 | MED | Changed Argument | Update `/add-dir` — add `<path>` required argument hint per official docs | ✅ COMPLETE (updated at #44 in Project tag) |
+- | 2 | MED | Changed Argument | Update `/branch` — add `[name]` optional argument hint per official docs | ✅ COMPLETE (updated at #57 in Session tag) |
+- | 3 | MED | Changed Argument | Update `/model` — add `[model]` optional argument hint per official docs | ✅ COMPLETE (updated at #41 in Model tag) |
+- | 4 | MED | Changed Argument | Update `/plan` — add `[description]` optional argument hint per official docs | ✅ COMPLETE (updated at #43 in Model tag) |
+- | 5 | MED | Changed Argument | Update `/pr-comments` — add `[PR]` optional argument hint per official docs | ✅ COMPLETE (updated at #47 in Project tag) |
+- | 7 | MED | Changed Argument | Update `/rename` — change from `<name>` (required) to `[name]` (optional) per official docs | ✅ COMPLETE (updated at #62 in Session tag) |
+- | 8 | LOW | Changed Argument | Update `/compact` — change argument label from `[prompt]` to `[instructions]` per official docs | ✅ COMPLETE (updated at #60 in Session tag) |
+- | 9 | LOW | Changed Argument | Update `/feedback` — change argument label from `[description]` to `[report]` per official docs | ✅ COMPLETE (updated at #24 in Debug tag) |
+- | 1 | LOW | Changed Description | Update `/init` — official docs now use `CLAUDE_CODE_NEW_INIT=1` instead of `=true` | ✅ COMPLETE (updated env var value from `=true` to `=1` to match official docs) |
+- | 2 | MED | New Alias | Add `/bashes` alias to `/tasks` command per official docs | ✅ COMPLETE (added "Alias: /bashes" to /tasks at #27 in Debug tag) |
+- | 2 | HIGH | New Command | Add `/setup-bedrock` to Auth tag — Configure Amazon Bedrock authentication, region, and model pins through an interactive wizard | ✅ COMPLETE (added as #3 in Auth tag) |
+- | 6 | MED | Changed Description | Update `/release-notes` — now "View the changelog in an interactive version picker. Select a specific version to see its release notes, or choose to show all versions." | ✅ COMPLETE (updated description at #27 in Debug tag) |
+- | 4 | MED | Changed Description | Update `/add-dir` — official docs now include caveat about `.claude/` config not being discovered from added directory | ✅ COMPLETE (updated description at #46 in Project tag) |
+
+---
+
+## Section: claude-settings
+
+### 📝 General Body Copy / Page Text
+- | ✅ `COMPLETE (reason)` | Action was taken and resolved successfully |
+- | ❌ `INVALID (reason)` | Finding was incorrect, not applicable, or intentional |
+- | ✋ `ON HOLD (reason)` | Action deferred — waiting on external dependency or user decision |
+- | # | Priority | Type | Action | Status |
+- |---|----------|------|--------|--------|
+- | 2 | HIGH | Missing Env Vars | Add missing environment variables including `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING`, `CLAUDE_CODE_DISABLE_1M_CONTEXT`, `CLAUDE_CODE_ACCOUNT_UUID`, `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS`, `ENABLE_CLAUDEAI_MCP_SERVERS`, and more | ✅ COMPLETE (added 13 missing env vars to report) |
+- | 3 | HIGH | Effort Default | Update effort level default from "High" to "Medium" for Max/Team subscribers; add Sonnet 4.6 support (changed v2.1.68) | ✅ COMPLETE (updated default and added Sonnet note) |
+- | 4 | MED | Settings Hierarchy | Add managed settings via macOS plist/Windows Registry (v2.1.61/v2.1.69); document array merge behavior across scopes | ✅ COMPLETE (added plist/registry and merge note) |
+- | 6 | MED | Permission Syntax | Add `Agent(name)` permission pattern; document `MCP(server:tool)` syntax form | ✅ COMPLETE (added to tool syntax table) |
+- | 7 | MED | Plugin Gaps | Add `blockedMarketplaces`, `pluginTrustMessage` | ✅ COMPLETE (added to plugins table) |
+- | 8 | MED | Model Config | Add `availableModels` setting | ✅ COMPLETE (added to general settings table) |
+- | 9 | MED | Suspect Keys | Verify `sandbox.network.deniedDomains`, `sandbox.ignoreViolations`, `pluginConfigs` — present in report but not in official docs | ✋ ON HOLD (kept in report pending verification) |
+- | 10 | LOW | Header Counts | Update header from "38 settings and 84 env vars" to reflect actual counts (~55+ settings, ~110+ env vars) | ✅ COMPLETE (updated header) |
+- | 11 | LOW | CLAUDE.md Sync | Update CLAUDE.md configuration hierarchy (add managed/CLI/user levels) | ✋ ON HOLD (awaiting user approval) |
+- | 13 | MED | Hooks Redirect | Replace hooks section with redirect to claude-code-hooks repo | ✅ COMPLETE (hooks externalized to dedicated repo) |
+- | 1 | HIGH | Changed Behavior | Fix `teammateMode`: type `boolean` → `string`, default `false` → `"auto"`, description → "Agent team display: auto, in-process, tmux" | ✅ COMPLETE (type, default, and description updated) |
+- | 2 | HIGH | New Setting | Add `allowManagedPermissionRulesOnly` to Permissions table (boolean, managed only) | ✅ COMPLETE (added to Permission Keys table) |
+- | 3 | HIGH | Missing Env Vars | Add ~31 missing env vars including confirmed (`CLAUDE_CODE_MAX_OUTPUT_TOKENS`, `CLAUDE_CODE_DISABLE_FAST_MODE`, `CLAUDE_CODE_DISABLE_AUTO_MEMORY`, `CLAUDE_CODE_USER_EMAIL`, `CLAUDE_CODE_ORGANIZATION_UUID`, `CLAUDE_CONFIG_DIR`) and agent-reported (Foundry, Bedrock, mTLS, shell prefix, etc.) | ✅ COMPLETE (added 31 env vars to table) |
+- | 4 | MED | Changed Default | Fix `plansDirectory` default from `.claude/plans/` to `~/.claude/plans` | ✅ COMPLETE (default updated) |
+- | 6 | MED | Scope Fix | Fix `extraKnownMarketplaces` scope from "Any" to "Project" | ✅ COMPLETE (scope and description updated) |
+- | 7 | MED | Boundary Violation | Replace `CLAUDE_CODE_EFFORT_LEVEL` in `claude-cli-startup-flags.md` with cross-reference to settings report | ✅ COMPLETE (replaced with link) |
+- | 8 | MED | Version Badge | Update report version from v2.1.69 to v2.1.71 | ✅ COMPLETE (badge and header updated) |
+- | 9 | LOW | Suspect Keys | Verify `skipWebFetchPreflight`, `sandbox.ignoreViolations`, `sandbox.network.deniedDomains`, `skippedMarketplaces`, `skippedPlugins`, `pluginConfigs` | ✋ ON HOLD (kept in report pending verification — recurring from 2026-03-05) |
+- | 10 | LOW | CLAUDE.md Sync | Update CLAUDE.md configuration hierarchy (3 levels → 5+) | ✅ COMPLETE (updated to 5-level hierarchy with managed layer) |
+- | 1 | HIGH | Changed Behavior | Fix `dontAsk` permission mode description: "Auto-accept all tools" → "Auto-denies tools unless pre-approved via `/permissions` or `permissions.allow` rules" | ✅ COMPLETE (description corrected per official permissions docs) |
+- | 2 | HIGH | New Setting | Add `modelOverrides` to Model Configuration section (object, maps Anthropic model IDs to provider-specific IDs like Bedrock ARNs) | ✅ COMPLETE (added with example and description) |
+- | 5 | MED | Changed Description | Fix `ANTHROPIC_CUSTOM_HEADERS` format description from "JSON string" to "Name: Value format, newline-separated" | ✅ COMPLETE (description updated per official docs) |
+- | 6 | MED | Unverified Modes | `askEdits` and `viewOnly` permission modes not in official docs — only 5 modes documented (default, acceptEdits, plan, dontAsk, bypassPermissions) | ✅ COMPLETE (marked as "not in official docs — unverified" in table) |
+- | 7 | MED | Missing Env Vars | Add `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS`, `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`, `CLAUDE_CODE_DISABLE_TERMINAL_TITLE`, `CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL`, `CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS` | ✅ COMPLETE (added 5 env vars plus `CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS`) |
+- | 9 | LOW | Suspect Keys | Verify `skipWebFetchPreflight`, `sandbox.ignoreViolations`, `sandbox.network.deniedDomains`, `skippedMarketplaces`, `skippedPlugins`, `pluginConfigs` — still not in official docs | ✋ ON HOLD (kept in report pending verification — recurring from 2026-03-05) |
+- | 10 | LOW | Missing Env Var | Add `CLAUDE_CODE_SUBAGENT_MODEL` to env vars table (already in Model env example block but missing from table) | ✅ COMPLETE (added to env vars table) |
+- | 2 | HIGH | Changed Behavior | Fix `availableModels` description: change from complex object array (`title`/`modelId`/`effortOptions`) to simple string array `["sonnet", "haiku"]` per official docs | ✅ COMPLETE (updated description to match official docs format) |
+- | 3 | HIGH | Changed Behavior | Add `cleanupPeriodDays` `0`-value behavior: "Setting to `0` deletes all existing transcripts at startup and disables session persistence entirely" | ✅ COMPLETE (added 0-value behavior to description) |
+- | 4 | HIGH | Permission Syntax | Add evaluation order note to Permissions section: "Rules are evaluated in order: deny rules first, then ask, then allow. The first matching rule wins." | ✅ COMPLETE (added evaluation order before Bash wildcard notes) |
+- | 7 | MED | Model Config | Add Opus 4.6 1M context default note: as of v2.1.75, 1M context is default for Max/Team/Enterprise plans | ✅ COMPLETE (added to Effort Level note) |
+- | 10 | MED | Settings Hierarchy | Update array merge note from "merged" to "concatenated and deduplicated" per official docs | ✅ COMPLETE (updated wording in hierarchy Important section) |
+- | 1 | HIGH | New Setting | Add `effortLevel` to General Settings or Model Configuration — persists effort level across sessions (`"low"`, `"medium"`, `"high"`). Confirmed on official settings page | ✋ ON HOLD (awaiting user approval) |
+- | 2 | HIGH | New Settings | Add Worktree Settings section with `worktree.sparsePaths` (array, sparse-checkout cone mode) and `worktree.symlinkDirectories` (array, symlink dirs to avoid duplication). Confirmed on official settings page | ✋ ON HOLD (awaiting user approval) |
+- | 3 | HIGH | New Setting | Add `feedbackSurveyRate` to General Settings — probability (0-1) for session quality survey. Confirmed on official settings page | ✋ ON HOLD (awaiting user approval) |
+- | 4 | HIGH | Missing Env Vars | Add 20 missing env vars to table: `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`, `CLAUDE_CODE_PLAN_MODE_REQUIRED`, `CLAUDE_CODE_TEAM_NAME`, `CLAUDE_CODE_TASK_LIST_ID`, `CLAUDE_ENV_FILE`, `FORCE_AUTOUPDATE_PLUGINS`, `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`, `MCP_TOOL_TIMEOUT`, `MCP_CLIENT_SECRET`, `MCP_OAUTH_CALLBACK_PORT`, `IS_DEMO`, `SLASH_COMMAND_TOOL_CHAR_BUDGET`, `VERTEX_REGION_CLAUDE_3_5_HAIKU`, `VERTEX_REGION_CLAUDE_3_7_SONNET`, `VERTEX_REGION_CLAUDE_4_0_OPUS`, `VERTEX_REGION_CLAUDE_4_0_SONNET`, `VERTEX_REGION_CLAUDE_4_1_OPUS`. Confirmed on official /en/env-vars page | ✋ ON HOLD (awaiting user approval) |
+- | 5 | HIGH | Missing Env Vars | Move `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL`, `MAX_THINKING_TOKENS` from code-block-only to Common Environment Variables table | ✋ ON HOLD (awaiting user approval) |
+- | 8 | MED | Unverified Env Vars | Mark 7 env vars in report but NOT in official docs as unverified: `CLAUDE_CODE_DISABLE_MCP`, `CLAUDE_CODE_DISABLE_TOOLS`, `CLAUDE_CODE_HIDE_ACCOUNT_INFO`, `CLAUDE_CODE_MAX_TURNS`, `CLAUDE_CODE_PROMPT_CACHING_ENABLED`, `CLAUDE_CODE_SKIP_SETTINGS_SETUP`, `DISABLE_NON_ESSENTIAL_MODEL_CALLS` | ✋ ON HOLD (awaiting user approval) |
+- | 9 | MED | New Source | Add `https://code.claude.com/docs/en/env-vars` to Sources section — official env vars reference page | ✋ ON HOLD (awaiting user approval) |
+- | 10 | MED | Example Update | Update Quick Reference example to include `effortLevel` and `worktree` settings | ✋ ON HOLD (awaiting user approval) |
+- | 11 | LOW | Suspect Keys | `sandbox.ignoreViolations`, `sandbox.network.deniedDomains` still not in official docs sandbox table | ✋ ON HOLD (kept in report pending verification — recurring from 2026-03-05) |
+- | 1 | HIGH | New Setting | Add `effortLevel` to Model Configuration — persists effort level across sessions (`"low"`, `"medium"`, `"high"`). Also added `/effort` command to Useful Commands and updated Effort Level how-to section | ✅ COMPLETE (added to Model Overrides table, updated how-to, added /effort command) |
+- | 2 | HIGH | New Settings | Add Worktree Settings section with `worktree.sparsePaths` (array, sparse-checkout cone mode) and `worktree.symlinkDirectories` (array, symlink dirs to avoid duplication) | ✅ COMPLETE (new Worktree Settings subsection in Core Configuration with table and example) |
+- | 3 | HIGH | New Setting | Add `feedbackSurveyRate` to General Settings — probability (0-1) for session quality survey | ✅ COMPLETE (added to General Settings table) |
+- | 4 | HIGH | Missing Env Vars | Add 23 missing env vars to table (20 genuinely new + 3 from code-block-only) | ✅ COMPLETE (added all 23 env vars to Common Environment Variables table) |
+- | 5 | HIGH | Broken Link | Previous run flagged `https://claudelog.com/configuration/` as ECONNREFUSED — now loads successfully | ✅ COMPLETE (link restored, no action needed) |
+- | 6 | MED | Permission Syntax | Add Read/Edit gitignore-style path patterns (`//path`, `~/path`, `/path`, `./path`), word-boundary wildcard detail, and legacy `:*` deprecation note | ✅ COMPLETE (added path patterns table, word-boundary note, and `:*` deprecation) |
+- | 8 | MED | Unverified Env Vars | Mark 7 env vars not in official docs as unverified | ✅ COMPLETE (added "not in official docs — unverified" markers) |
+- | 9 | MED | New Source | Add `https://code.claude.com/docs/en/env-vars` and `https://code.claude.com/docs/en/permissions` to Sources section | ✅ COMPLETE (added both URLs) |
+- | 10 | MED | Example Update | Update Quick Reference example to include `effortLevel` and `worktree` settings | ✅ COMPLETE (added effortLevel and worktree block to example) |
+- | 2 | HIGH | Changed Description | Update `CLAUDE_CODE_MAX_OUTPUT_TOKENS` description: default for Opus 4.6 increased to 64k, upper bound for Opus 4.6 and Sonnet 4.6 increased to 128k (v2.1.77 changelog) | ✅ COMPLETE (description updated with model-specific defaults and bounds) |
+- | 3 | HIGH | Missing Env Var | Add `CLAUDECODE` to Common Environment Variables table — set to `1` in spawned shell environments. Confirmed on official /en/env-vars page | ✅ COMPLETE (added to env var table) |
+- | 4 | HIGH | Missing Env Var | Add `CLAUDE_CODE_SKIP_FAST_MODE_NETWORK_ERRORS` to Common Environment Variables table — allows fast mode when org status check fails. Confirmed on official /en/env-vars page | ✅ COMPLETE (added to env var table) |
+- | 5 | MED | Env Var Table | Move `ANTHROPIC_MODEL` and `ANTHROPIC_DEFAULT_HAIKU_MODEL` from code-block-only to Common Environment Variables table. Both confirmed on official /en/env-vars page | ✅ COMPLETE (added both to env var table near other ANTHROPIC_ vars) |
+- | 10 | LOW | Header Count | Update header env var count from "160+" to "100+" — actual table has 97 env vars | ✅ COMPLETE (header updated to "100+ environment variables", version to v2.1.77) |
+- | 1 | HIGH | Missing Setting | Add `voiceEnabled` to General Settings table — enable push-to-talk voice dictation (boolean, written by `/voice`, requires Claude.ai account). Confirmed on official settings page | ✅ COMPLETE (added to General Settings table before feedbackSurveyRate) |
+- | 4 | HIGH | Changed Default | Fix `MAX_MCP_OUTPUT_TOKENS` default from 50000 to 25000. Official /en/env-vars page confirms default: 25000 | ✅ COMPLETE (default updated, added warning threshold note) |
+- | 5 | HIGH | Missing Env Vars | Add `CLAUDE_CODE_NEW_INIT`, `CLAUDE_CODE_PLUGIN_SEED_DIR`, `DISABLE_FEEDBACK_COMMAND` to env vars table. All confirmed on official /en/env-vars page | ✅ COMPLETE (added all 3 env vars to table) |
+- | 7 | MED | Env Var Rename | Update `DISABLE_BUG_COMMAND` to `DISABLE_FEEDBACK_COMMAND` — official docs say `DISABLE_FEEDBACK_COMMAND` is the current name, `DISABLE_BUG_COMMAND` is "the older name" | ✅ COMPLETE (renamed with alias note) |
+- | 8 | MED | Changed Description | Update `CLAUDE_CODE_EFFORT_LEVEL` to include `max` (Opus 4.6 only) and `auto` values. Official /en/env-vars page confirms: "Values: low, medium, high, max (Opus 4.6 only), or auto" | ✅ COMPLETE (description updated with all values and precedence note) |
+- | 9 | MED | Changed Description | Fix `CLAUDE_CODE_ENABLE_TASKS` description — official: "Set to true to enable task tracking in non-interactive mode (-p flag). Tasks are on by default in interactive mode." Report currently says "Set to false to disable" | ✅ COMPLETE (description corrected to match official docs) |
+- | 10 | MED | Changed Description | Update `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` to note: "Equivalent of setting DISABLE_AUTOUPDATER, DISABLE_FEEDBACK_COMMAND, DISABLE_ERROR_REPORTING, and DISABLE_TELEMETRY" | ✅ COMPLETE (description updated with equivalent vars list) |
+- | 1 | HIGH | Missing Env Vars | Add `ANTHROPIC_CUSTOM_MODEL_OPTION`, `ANTHROPIC_CUSTOM_MODEL_OPTION_NAME`, `ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION` to Common Environment Variables table — model-config vars for adding custom entries to `/model` picker. Confirmed on official /en/env-vars page | ✅ COMPLETE (added 3 env vars after ANTHROPIC_BASE_URL in table) |
+- | 2 | HIGH | Changed Description | Update `CLAUDE_CODE_PLUGIN_SEED_DIR` from singular to plural: "Path to one or more read-only plugin seed directories, separated by `:` on Unix or `;` on Windows". Changed in v2.1.79 changelog. Confirmed on official /en/env-vars page | ✅ COMPLETE (description updated to multi-directory support) |
+- | 4 | MED | Changed Description | Expand `CLAUDE_CODE_AUTO_COMPACT_WINDOW` description — current "Auto-compact window behavior configuration" is too minimal. Official docs describe: token capacity, defaults (200K standard / 1M extended), interaction with `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`, status line decoupling | ✅ COMPLETE (expanded description with token capacity, model defaults, AUTOCOMPACT_PCT interaction, and status line decoupling) |
+- | 1 | HIGH | New Setting | Add `channelsEnabled` to MCP Settings table — managed-only boolean, controls channel message delivery for Team and Enterprise users. Confirmed on official settings page | ✅ COMPLETE (added to MCP Settings table after allowManagedMcpServersOnly) |
+- | 2 | MED | Version Badge | Update report version from v2.1.79 to v2.1.80 | ✅ COMPLETE (badge and header updated) |
+- | 1 | HIGH | Missing Settings (~/.claude.json) | Add `autoConnectIde` (boolean, default `false`) and `autoInstallIdeExtension` (boolean, default `true`) to Global Config Settings table. Confirmed on official settings page under "Global config settings" | ✅ COMPLETE (added both keys to ~/.claude.json table before showTurnDuration) |
+- | 3 | MED | Version Bump | Update report version badge from v2.1.80 to v2.1.81 | ✅ COMPLETE (badge, header version, and header text updated) |
+- | 4 | MED | New Setting | Add `showClearContextOnPlanAccept` — confirmed in v2.1.81 changelog. When `true`, restores "clear context" option on plan accept (hidden by default). Not yet on official settings page — may be a `~/.claude.json` key | ✅ COMPLETE (added to Global Config Settings table with changelog-source note) |
+- | 5 | MED | Plugin Documentation | Document `source: 'settings'` as a marketplace source type in Plugin Settings section. Official settings page lists it as one of 7 source types for `extraKnownMarketplaces` | ✅ COMPLETE (added all 7 source types list, inline marketplace example) |
+- | 6 | MED | Status Line Fields | Add `rate_limits` field group to Status Line Input Fields table — includes `five_hour.used_percentage`, `five_hour.resets_at`, `seven_day.used_percentage`, `seven_day.resets_at`. Added in v2.1.80 | ✅ COMPLETE (added 4 rate_limits fields to Status Line Input Fields table) |
+- | 1 | HIGH | Missing Setting (~/.claude.json) | Add `editorMode` (string, default `"normal"`, values: `"normal"` or `"vim"`) to Global Config Settings table. Written automatically when running `/vim`. Confirmed on official settings page | ✅ COMPLETE (added to Global Config Settings table after autoInstallIdeExtension) |
+- | 3 | MED | Changed Description | Fix `terminalProgressBarEnabled` supported terminals from "Windows Terminal, iTerm2" to "ConEmu, Ghostty 1.2.0+, and iTerm2 3.6.6+" per official docs | ✅ COMPLETE (terminal list updated) |
+- | 4 | MED | Changed Description | Add "Config tool" to `availableModels` description — official docs say "via `/model`, `--model`, Config tool, or `ANTHROPIC_MODEL`". Report currently omits "Config tool" | ✅ COMPLETE (added "Config tool" to description) |
+- | 1 | HIGH | New Setting | Add `autoMode` to Permissions section — object with `environment`, `allow`, `soft_deny` arrays for configuring auto mode classifier. Not read from shared project settings (`.claude/settings.json`). Available in user, local, and managed settings. Confirmed on official settings + permissions pages | ✅ COMPLETE (added to Permission Keys table with full description, scope restrictions, and `claude auto-mode defaults` note) |
+- | 3 | HIGH | New Permission Mode | Add `auto` to Permission Modes table — background classifier replaces manual prompts. Research preview. Requires Team plan + Sonnet/Opus 4.6. Confirmed on official permission-modes page | ✅ COMPLETE (added to Permission Modes table with classifier details and fallback behavior) |
+- | 4 | HIGH | New Setting | Add `sandbox.failIfUnavailable` to Sandbox Settings table — boolean, default `false`, exit with error when sandbox enabled but cannot start instead of running unsandboxed. Confirmed in v2.1.83 changelog | ✅ COMPLETE (added to Sandbox Settings table after `sandbox.enabled`) |
+- | 5 | HIGH | New Setting | Add `disableDeepLinkRegistration` to General Settings table — boolean, prevent `claude-cli://` protocol handler registration. Confirmed in v2.1.83 changelog | ✅ COMPLETE (added to General Settings table before `feedbackSurveyRate`) |
+- | 6 | HIGH | Missing Env Var | Add `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` to Common Environment Variables table — set to `1` to strip Anthropic and cloud provider credentials from subprocess environments (Bash tool, hooks, MCP stdio servers). Confirmed in v2.1.83 changelog | ✅ COMPLETE (added to env vars table after `CLAUDE_CODE_SUBAGENT_MODEL`) |
+- | 7 | HIGH | Settings Hierarchy | Add `managed-settings.d/` drop-in directory to Managed Settings section — independent policy fragments alongside `managed-settings.json` that merge alphabetically. Confirmed in v2.1.83 changelog | ✅ COMPLETE (added as bullet under managed settings delivery methods) |
+- | 9 | MED | Version Badge | Update report version from v2.1.81 to v2.1.83 | ✅ COMPLETE (badge and header updated in Phase 2.6) |
+- | 11 | MED | Changed Path | Fix Windows registry path from `Software\Anthropic\ClaudeCode` to `SOFTWARE\Policies\ClaudeCode` (HKLM and HKCU). Official docs updated to use `Policies` subkey | ✅ COMPLETE (updated to `HKLM\SOFTWARE\Policies\ClaudeCode` and `HKCU\SOFTWARE\Policies\ClaudeCode` with priority note) |
+- | 12 | LOW | Missing Alias | Add `opus[1m]` to Model Aliases table — Opus 4.6 with 1M context, available by default on Max/Team/Enterprise since v2.1.75 | ✅ COMPLETE (added to Model Aliases table after `sonnet[1m]`) |
+- | 1 | HIGH | New Setting | Add `defaultShell` to General Settings — string, default `"bash"`, accepts `"bash"` or `"powershell"`. Routes interactive `!` commands through PowerShell on Windows. Requires `CLAUDE_CODE_USE_POWERSHELL_TOOL=1`. Confirmed on official settings page | ✅ COMPLETE (added to General Settings table after teammateMode) |
+- | 2 | HIGH | New Setting | Add `allowedChannelPlugins` to MCP Settings — array, managed-only. Allowlist of channel plugins that may push messages. Replaces default Anthropic allowlist when set. Requires `channelsEnabled: true`. Confirmed on official settings page | ✅ COMPLETE (added to MCP Settings table after channelsEnabled) |
+- | 5 | HIGH | Missing Env Var | Add `CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK` — disable non-streaming fallback when streaming fails. Prevents duplicate tool execution via proxy. Confirmed on official /en/env-vars page (added v2.1.83, missed in previous run) | ✅ COMPLETE (added after CLAUDE_CODE_DISABLE_FAST_MODE) |
+- | 6 | HIGH | Missing Env Var | Add `CLAUDE_CODE_USE_POWERSHELL_TOOL` — enable PowerShell tool on Windows (opt-in preview). Native Windows only, not WSL. Confirmed on official /en/env-vars page | ✅ COMPLETE (added after CLAUDE_CODE_USE_FOUNDRY) |
+- | 7 | HIGH | Broken Link | Fix `https://claudelog.com/claude-code-changelog/` in Sources — returns 403 Forbidden. Replace with official GitHub changelog URL | ✅ COMPLETE (replaced with github.com/anthropics/claude-code/blob/main/CHANGELOG.md) |
+- | 8 | MED | Settings Hierarchy | Update managed tier precedence: "file-based (`managed-settings.d/*.json` + `managed-settings.json`)" and add "across tiers" qualifier. Add within-tier merge note per official docs | ✅ COMPLETE (updated precedence description with file-based tier and cross-tier qualifier) |
+- | 10 | MED | Annotation | Add "in changelog, not on official settings page" annotation to `disableDeepLinkRegistration` per Rule 1F inverse completeness check | ✅ COMPLETE (added annotation to description) |
+- | 1 | HIGH | Missing Env Var | Add `CLAUDE_STREAM_IDLE_TIMEOUT_MS` to Common Environment Variables table — timeout in ms before streaming idle watchdog closes stalled connection (default: 90000). Confirmed on official /en/env-vars page. Added in v2.1.84 but missed in previous run | ✅ COMPLETE (added to env vars table after CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS) |
+- | 2 | HIGH | Version Bump | Update report version badge from v2.1.84 to v2.1.85 | ✅ COMPLETE (badge, header version, and header text updated in Phase 2.6) |
+- | 4 | MED | New Env Vars (Ownership) | Decide ownership for `CLAUDE_CODE_MCP_SERVER_NAME` and `CLAUDE_CODE_MCP_SERVER_URL` — env vars passed to MCP `headersHelper` scripts (v2.1.85 changelog). May belong in hooks repo rather than settings report | ✅ COMPLETE (added to settings report with changelog annotation — these are env-configurable via `env` key, not hook-only) |
+- | 3 | HIGH | Version Bump | Update report version badge from v2.1.85 to v2.1.86 | ✅ COMPLETE (badge and header updated in Phase 2.6) |
+- | 1 | HIGH | Missing Env Var | Add `CLAUDE_CODE_NO_FLICKER` to Common Environment Variables table — enable flicker-free alt-screen rendering (v2.1.88). Confirmed on official /en/env-vars page | ✅ COMPLETE (added after CLAUDE_CODE_DISABLE_TERMINAL_TITLE) |
+- | 2 | HIGH | Missing Env Vars | Add `CLAUDE_CODE_SCROLL_SPEED` and `CLAUDE_CODE_DISABLE_MOUSE` to Common Environment Variables table — fullscreen UI controls. Confirmed on official /en/env-vars page | ✅ COMPLETE (added after CLAUDE_CODE_NO_FLICKER) |
+- | 3 | HIGH | Version Bump | Update report version badge from v2.1.86 to v2.1.88 | ✅ COMPLETE (badge, header version, and header text updated in Phase 2.6) |
+- | 5 | MED | Settings Hierarchy | Add `managed-mcp.json` to file-based managed delivery methods — official settings page lists it alongside `managed-settings.json` for MCP server configuration | ✅ COMPLETE (added to File delivery method bullet in Settings Hierarchy) |
+- | 6 | MED | Plugin Source Types | Annotate `url`, `npm`, `file` marketplace source types as "not in official docs — unverified" (only `github`, `git`, `directory`, `hostPattern`, `settings` confirmed) | ✅ COMPLETE (added unverified annotations to all 3 source types) |
+- | 7 | LOW | Header Count | Update header from "60+ settings" to match actual table count after any additions | ❌ INVALID (count is accurate — 60+ settings and 125 env vars, both within stated ranges) |
+- | 1 | HIGH | Missing Setting | Add `skipDangerousModePermissionPrompt` to Permission Keys table — boolean, skip bypass-mode confirmation prompt. Ignored in project settings. Confirmed on official settings page | ✅ COMPLETE (added after disableBypassPermissionsMode in Permission Keys table) |
+- | 2 | HIGH | New Setting | Add `showThinkingSummaries` to General Settings — boolean, default `false`. Thinking summaries no longer generated by default; set `true` to restore. v2.1.89 changelog — not yet on official settings page | ✅ COMPLETE (added before feedbackSurveyRate with changelog annotation) |
+- | 3 | HIGH | Changed Behavior | Update `cleanupPeriodDays` description — v2.1.89 changelog says `0` is now rejected with a validation error. CONTRADICTION: official settings page still describes `0` as valid. Flag for user | ✅ COMPLETE (updated description with contradiction note between changelog and docs page) |
+- | 4 | HIGH | Missing Env Vars | Add ~46 missing env vars confirmed on official /en/env-vars page: `ANTHROPIC_BEDROCK_BASE_URL`, `ANTHROPIC_VERTEX_BASE_URL`, `ANTHROPIC_BETAS`, `ANTHROPIC_VERTEX_PROJECT_ID`, `CLAUDE_CODE_DISABLE_THINKING`, `DISABLE_INTERLEAVED_THINKING`, `ENABLE_PROMPT_CACHING_1H_BEDROCK`, `DISABLE_AUTO_COMPACT`, `DISABLE_COMPACT`, `CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING`, `CLAUDE_CODE_DISABLE_ATTACHMENTS`, `CLAUDE_CODE_DISABLE_CLAUDE_MDS`, `CLAUDE_CODE_GLOB_HIDDEN`, `CLAUDE_CODE_GLOB_NO_IGNORE`, `CLAUDE_CODE_GLOB_TIMEOUT_SECONDS`, `CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL`, `CLAUDE_CODE_SYNC_PLUGIN_INSTALL`, `CLAUDE_CODE_SYNC_PLUGIN_INSTALL_TIMEOUT_MS`, `CLAUDE_CODE_AUTO_CONNECT_IDE`, `CLAUDE_CODE_IDE_HOST_OVERRIDE`, `CLAUDE_CODE_IDE_SKIP_VALID_CHECK`, `CLAUDE_CODE_MAX_RETRIES`, `API_TIMEOUT_MS`, `CLAUDE_CODE_OTEL_FLUSH_TIMEOUT_MS`, `CLAUDE_CODE_OTEL_SHUTDOWN_TIMEOUT_MS`, `CLAUDE_ENABLE_STREAM_WATCHDOG`, `CLAUDE_CODE_ENABLE_FINE_GRAINED_TOOL_STREAMING`, `CLAUDE_CODE_DEBUG_LOGS_DIR`, `CLAUDE_CODE_DEBUG_LOG_LEVEL`, `CLAUDE_CODE_ACCESSIBILITY`, `CLAUDE_CODE_SYNTAX_HIGHLIGHT`, `CLAUDE_CODE_RESUME_INTERRUPTED_TURN`, `CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY`, `CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP`, `FALLBACK_FOR_ALL_PRIMARY_MODELS`, `CLAUDE_CODE_GIT_BASH_PATH`, `CLAUDE_AUTO_BACKGROUND_TASKS`, `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS`, `CLAUDE_AGENT_SDK_MCP_NO_PREFIX`, `DISABLE_DOCTOR_COMMAND`, `DISABLE_LOGIN_COMMAND`, `DISABLE_LOGOUT_COMMAND`, `DISABLE_UPGRADE_COMMAND`, `DISABLE_EXTRA_USAGE_COMMAND`, `DISABLE_INSTALL_GITHUB_APP_COMMAND`, `CLAUDE_CODE_PLUGIN_CACHE_DIR`, `CLAUDE_CODE_SIMPLE` | ✅ COMPLETE (added all 46 env vars to table near related vars) |
+- | 5 | HIGH | Version Bump | Update report version badge from v2.1.88 to v2.1.89 | ✅ COMPLETE (badge and header updated in Phase 2.6) |
+- | 6 | MED | New Env Var | Add `MCP_CONNECTION_NONBLOCKING` to env vars table — set to `true` in `-p` mode to skip MCP connection wait. v2.1.89 changelog only, not yet on official /en/env-vars page | ✅ COMPLETE (added after CLAUDE_AGENT_SDK_MCP_NO_PREFIX with changelog annotation) |
+- | 7 | MED | Ownership Boundary | `CLAUDE_CODE_SIMPLE` is in CLI startup flags file as startup-only, but official /en/env-vars page lists it as configurable. Reconcile ownership | ✅ COMPLETE (added to settings report env table; updated CLI file to cross-reference settings report) |
+- | 8 | MED | Example Update | Update Quick Reference example to include `showThinkingSummaries` if added | ✅ COMPLETE (added showThinkingSummaries: true to example) |
+- | 2 | HIGH | Missing Env Vars | Add `CLAUDE_CODE_OAUTH_TOKEN`, `CLAUDE_CODE_OAUTH_REFRESH_TOKEN`, `CLAUDE_CODE_OAUTH_SCOPES` to Common Environment Variables table. All confirmed on official /en/env-vars page | ✅ COMPLETE (added 3 OAuth env vars after ANTHROPIC_AUTH_TOKEN) |
+- | 6 | HIGH | Version Bump | Update report version badge from v2.1.89 to v2.1.90 | ✅ COMPLETE (badge, header version, and header text updated) |
+- | 7 | MED | New Env Var | Add `CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE` to env vars table — keep marketplace cache on git pull failure (v2.1.90 changelog, not yet on official /en/env-vars page) | ✅ COMPLETE (added after CLAUDE_CODE_SYNC_PLUGIN_INSTALL_TIMEOUT_MS with changelog annotation) |
+- | 8 | MED | Hook Redirect Count | Update redirect text from "all 19 hook events" to "all 25 hook events" per official hooks page count | ✅ COMPLETE (updated count in hooks redirect section) |
+- | 9 | MED | Ownership Boundary | `CLAUDE_CODE_TMPDIR` is on official /en/env-vars page as configurable via `env` key, but CLI startup flags report lists it as startup-only. Reconcile ownership | ✅ COMPLETE (added to settings report env table; updated CLI flags file to cross-reference settings report) |
+- | 2 | HIGH | Version Bump | Update report version badge from v2.1.90 to v2.1.91 | ✅ COMPLETE (badge and header updated in Phase 2.6) |
+- | 6 | MED | Changed Description | Enrich `disableDeepLinkRegistration` — add multi-line prompt support via `%0A` per official settings page | ✅ COMPLETE (multi-line prompt detail added) |
+- | 7 | MED | Changed Description | Enrich `includeGitInstructions` — update to include git status snapshot and env var precedence per official settings page | ✅ COMPLETE (description expanded with git status snapshot and CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS precedence) |
+- | 8 | MED | Changed Description | Enrich `language` — add "Also sets the voice dictation language" per official settings page | ✅ COMPLETE (voice dictation detail added) |
+- | 9 | MED | Changed Description | Enrich `allowUnsandboxedCommands` — add enterprise policy detail per official settings page | ✅ COMPLETE (expanded with fail-closed behavior and enterprise use case) |
+- | 1 | HIGH | Missing Env Vars | Add `CLAUDE_CODE_USE_MANTLE`, `ANTHROPIC_BEDROCK_MANTLE_BASE_URL`, `CLAUDE_CODE_SKIP_MANTLE_AUTH` to Common Environment Variables table — Bedrock Mantle endpoint support (v2.1.94). All confirmed on official /en/env-vars page | ✅ COMPLETE (added near related cloud provider vars) |
+- | 2 | HIGH | Changed Default | Update Effort Level section — default changed from Medium to High for API-key, Bedrock/Vertex/Foundry, Team, and Enterprise users (v2.1.94). Update table default marker and historical note | ✅ COMPLETE (table updated High as default, historical note expanded with v2.1.94 change) |
+- | 3 | HIGH | Version Bump | Update report version badge from v2.1.92 to v2.1.96 | ✅ COMPLETE (badge, header version, and header text updated in Phase 2.6) |
+- | 5 | MED | Changed Description | Update `CLAUDE_CODE_GLOB_HIDDEN` description to match official: "Set to `false` to exclude dotfiles from Glob results. Included by default. Does not affect `@` file autocomplete, `ls`, Grep, or Read" | ✅ COMPLETE (description rewritten per official env-vars page) |
+- | 1 | HIGH | New Setting | Add `sandbox.network.allowMachLookup` to Sandbox Settings table — array, macOS only, XPC/Mach service names with trailing `*` wildcard support. Confirmed on official settings page | ✅ COMPLETE (added after allowManagedDomainsOnly in sandbox network sub-keys) |
+- | 2 | HIGH | Display & UX | Add `refreshInterval` field to Status Line Configuration section — optional, re-runs command every N seconds, minimum 1 (v2.1.97). Confirmed on official status line docs | ✅ COMPLETE (added to config table with `padding` field, updated JSON example) |
+- | 3 | HIGH | Display & UX | Expand Status Line Input Fields table from 9 to 30+ fields to match official status line docs. Add `model.*`, `workspace.*`, `cost.*`, `session_id`, `session_name`, `transcript_path`, `version`, `output_style.name`, `vim.mode`, `agent.name`, `worktree.*` fields | ✅ COMPLETE (expanded from 9 to 30 fields per official status line documentation) |
+- | 4 | HIGH | Version Bump | Update report version badge from v2.1.96 to v2.1.97 | ✅ COMPLETE (badge and header updated in Phase 2.6) |
+- | 5 | MED | Field Naming | Fix `current_usage` → `context_window.current_usage` in Status Line Input Fields table | ✅ COMPLETE (renamed with full path and expanded description) |
+- | 7 | MED | Changed Description | Update `CLAUDE_CODE_GLOB_NO_IGNORE` description to match official: "Set to `false` to make the Glob tool respect `.gitignore` patterns. By default, Glob returns all matching files including gitignored ones. Does not affect `@` file autocomplete" | ✅ COMPLETE (description rewritten per official env-vars page) |
+- Rules accumulate over time. Each workflow-changelog run MUST execute ALL rules at the specified depth. When a new type of drift is caught that an existing rule should have caught (but didn't exist or was too shallow), append a new rule here.
+- | Depth | Meaning | Example |
+- |-------|---------|---------|
+- | `exists` | Check if a section/table/file exists | "Does the report have a Sandbox Settings table?" |
+- | `content-match` | Compare actual values word-by-word against source | "Does the `model` setting description match official docs?" |
+- | `field-level` | Verify every individual field is accounted for | "Does each settings key from official docs appear in the correct table?" |
+- | `cross-file` | Same value must match across multiple files | "Does CLAUDE.md hooks section match the report's hook events?" |
+- Rules that verify settings key tables against official docs.
+- | # | Category | Check | Depth | Compare Against | Added | Origin |
+- |---|----------|-------|-------|-----------------|-------|--------|
+- | 1A | Key Completeness | For each settings key in official docs, verify it appears in the correct section table in the report | field-level | settings documentation page | 2026-03-05 | Initial checklist — ensures no new settings keys are missed |
+- | 1B | Key Types | For each key in the tables, verify the Type column matches official docs | content-match | settings documentation page | 2026-03-05 | Initial checklist — type mismatches cause user confusion |
+- | 1C | Key Defaults | For each key with a default, verify the Default column matches official docs | content-match | settings documentation page | 2026-03-05 | Initial checklist — wrong defaults cause unexpected behavior |
+- | 1D | Key Descriptions | For each key, verify the Description column accurately reflects official docs behavior | content-match | settings documentation page | 2026-03-05 | Initial checklist — stale descriptions mislead users |
+- Rules that verify the settings hierarchy table.
+- | 2A | Priority Levels | Verify all priority levels in the hierarchy table match official docs (5-level chain + managed policy) | field-level | settings documentation page | 2026-03-05 | Initial checklist — wrong priority causes override confusion |
+- | 2B | File Locations | For each priority level, verify the file location path matches official docs | content-match | settings documentation page | 2026-03-05 | Initial checklist — wrong paths cause settings to be ignored |
+- | 2D | Managed Internals | Verify managed-tier delivery methods (server-managed, MDM, registry, file) and internal precedence order match official docs. Verify platform-specific file paths and deprecation notes | field-level | settings documentation page | 2026-03-15 | v2.1.75 restructured managed tier with internal precedence and Windows path deprecation. These sub-details had no dedicated rule |
+- Rules that verify permission configuration accuracy.
+- | 3A | Permission Modes | Verify all permission modes in the table match official docs | field-level | settings documentation page | 2026-03-05 | Initial checklist — missing modes limit user options |
+- | 3B | Tool Syntax Patterns | Verify all tool permission syntax patterns and examples match official docs | content-match | settings documentation page | 2026-03-05 | Initial checklist — wrong syntax causes permission failures |
+- | 3C | Bidirectional Mode Check | Verify every permission mode in the report exists in official docs, AND every mode in official docs exists in the report. Modes in report but not in docs must be marked "unverified" | field-level | settings + permissions documentation pages | 2026-03-15 | v2.1.74 caught `askEdits`/`viewOnly` in report but not in official docs — they had been unverified since run 1. Unidirectional check (docs→report) missed this for 3 runs |
+- Hook analysis is excluded from this workflow. Hooks are maintained in the [claude-code-hooks](https://github.com/shanraisshan/claude-code-hooks) repo. Only verify the redirect link is still valid.
+- | 4A | Hooks Redirect | Verify the hooks section in the report contains a valid redirect link to the claude-code-hooks repo | exists | report file | 2026-03-05 | Hooks externalized to dedicated repo — only check redirect link validity |
+- Rules that verify environment variable completeness and ownership.
+- | 5A | Env Var Completeness | Verify all `env`-configurable environment variables from official docs appear in the report | field-level | settings documentation page | 2026-03-05 | Initial checklist — missing env vars limit user configuration options |
+- | 5B | Ownership Boundary | Verify no env vars from `best-practice/claude-cli-startup-flags.md` are duplicated in the settings report, and vice versa | cross-file | claude-cli-startup-flags.md vs settings report | 2026-03-05 | Initial checklist — env var refactoring split vars across two files, must prevent re-duplication |
+- | 5C | Env Var Descriptions | For each env var in the table, verify the description (format, values, behavior) matches official /en/env-vars page | content-match | env-vars documentation page | 2026-03-15 | v2.1.74 caught `ANTHROPIC_CUSTOM_HEADERS` described as "JSON string" instead of "Name: Value format, newline-separated". Rule 5A only checked presence, not description accuracy |
+- | 5D | Inverse Env Var Check | For each env var in the report table, verify it exists on the official /en/env-vars page OR is explicitly marked "not in official docs — unverified" | field-level | env-vars documentation page | 2026-03-15 | v2.1.76 found 7 env vars in report with no official backing. Without inverse checking, undocumented vars accumulate silently |
+- Rules that verify example accuracy.
+- Rules that verify consistency between the report and other repo files.
+- Meta-rules about the workflow verification process itself.
+- | 10A | Version Metadata | Verify the report's version badge, header settings count, and env var count reflect the actual audited version and current table row counts | content-match | report file internal consistency | 2026-03-15 | v2.1.71 caught version badge mismatch; v2.1.69 caught header counts wrong. No rule existed to verify these meta-fields |
+- Rules that verify all hyperlinks in the report are valid.
+- | 9C | Anchor Links | Verify all internal anchor links point to existing headings within the same file | exists | file headings | 2026-03-05 | Initial checklist — section renames can break anchor links |
+
+---
+
+## Section: claude-skills
+
+### 📝 General Body Copy / Page Text
+- | ✅ `COMPLETE (reason)` | Action was taken and resolved successfully |
+- | ❌ `INVALID (reason)` | Finding was incorrect, not applicable, or intentional |
+- | ✋ `ON HOLD (reason)` | Action deferred — waiting on external dependency or user decision |
+- | # | Priority | Type | Action | Status |
+- |---|----------|------|--------|--------|
+- | 1 | LOW | Field Accuracy | `name` field Required column reads "Recommended" in local report but official docs now list it as "No" (optional) — update to match | ✅ COMPLETE (updated `name` Required from "Recommended" to "No" to match official docs) |
+- No drift detected — frontmatter fields (10) and bundled skills (5) are fully synchronized with official docs.
+- No drift detected — frontmatter fields (11) and bundled skills (5) are fully synchronized with official docs.
+- | 1 | HIGH | New Field | Add `shell` field to frontmatter table — accepts `bash` (default) or `powershell`, controls shell for `!command` blocks in skill content | ✅ COMPLETE (added to frontmatter table, count updated 11→12) |
+- | 1 | HIGH | New Field | Add `paths` field to frontmatter table — accepts glob patterns (string or YAML list) that limit when a skill auto-activates | ✅ COMPLETE (added to frontmatter table, count updated 12→13) |
+- No drift detected — frontmatter fields (13) and bundled skills (5) are fully synchronized with official docs.
+
+---
+
+## Section: claude-subagents
+
+### 📝 General Body Copy / Page Text
+- | ✅ `COMPLETE (reason)` | Action was taken and resolved successfully |
+- | ❌ `INVALID (reason)` | Finding was incorrect, not applicable, or intentional |
+- | ✋ `ON HOLD (reason)` | Action deferred — waiting on external dependency or user decision |
+- | # | Priority | Type | Action | Status |
+- |---|----------|------|--------|--------|
+- | 2 | HIGH | Agents Table | Fix presentation-curator skills column — add `presentation/` prefix to skill names | ✅ COMPLETE (updated to presentation/vibe-to-agentic-framework etc.) |
+- | 3 | MED | Field Documentation | Add note to `color` field that it is functional but absent from official frontmatter table | ✅ COMPLETE (added note about unofficial status in description column) |
+- | 4 | MED | Invocation Section | Expand invocation section with --agents CLI flag, /agents command, claude agents CLI, agent resumption | ✅ COMPLETE (added invocation methods table with 5 methods) |
+- | 2 | HIGH | Changed Behavior | Update `tools` field description: `Task(agent_type)` → `Agent(agent_type)` (v2.1.63 rename) | ✅ COMPLETE |
+- | 3 | HIGH | Changed Behavior | Update invocation section: Task tool → Agent tool (v2.1.63 rename) | ✅ COMPLETE (updated heading, code example, and added rename note) |
+- | 4 | HIGH | Example Update | Update full-featured example: `Task(monitor, rollback)` → `Agent(monitor, rollback)` | ✅ COMPLETE |
+- | 5 | HIGH | Built-in Agent | Add `Bash` agent to Official Claude Agents table (model: inherit, purpose: terminal commands in separate context) | ✅ COMPLETE (added to table) |
+- | 6 | HIGH | Agents Table | Add `workflow-concepts-agent` to Agents in This Repository table (model: opus, color: green) | ✅ COMPLETE |
+- | 7 | HIGH | Agents Table | Add `workflow-claude-settings-agent` to Agents in This Repository table (model: opus, color: yellow) | ✅ COMPLETE |
+- | 8 | MED | Built-in Agent | Fix `statusline-setup` model: `inherit` → `Sonnet` | ✅ COMPLETE |
+- | 10 | MED | Agents Table | Fix `weather-agent` color: `teal` → `green` | ✅ COMPLETE |
+- | 11 | MED | Invocation | Add `--agent <name>` CLI flag to invocation methods table | ✅ COMPLETE (added as first row in invocation methods table) |
+- | 12 | MED | Changed Behavior | Update line 147 text: "Task tool" → "Agent tool" in Official Claude Agents table header | ✅ COMPLETE (user rewrote header text) |
+- | 13 | MED | Cross-File | Update CLAUDE.md: `Task(...)` → `Agent(...)` references (lines 50-53, 61) | ✅ COMPLETE (updated orchestration section and tools field description) |
+- No drift detected — report is fully in sync with official docs. All 13 frontmatter fields and 6 built-in agents match.
+- | 1 | HIGH | New Field | Add `effort` field to Frontmatter Fields table (string, optional — effort level override: `low`, `medium`, `high`, `max`) | ✅ COMPLETE (added between `background` and `isolation`, count updated 14→15) |
+- No drift detected — report is fully in sync with official docs. All 15 frontmatter fields and 6 built-in agents match.
+- No drift detected — report is fully in sync with official docs. All 15 frontmatter fields (14 official + 1 unofficial `color`) and 6 built-in agents match.
+- | 1 | HIGH | New Field | Add `initialPrompt` to Frontmatter Fields table (string, optional — auto-submitted as first user turn when agent runs as main session agent via `--agent` or `agent` setting) | ✅ COMPLETE (added between `isolation` and `color`, count updated 15→16) |
+- No drift detected — report is fully in sync with official docs. All 16 frontmatter fields (15 official + 1 unofficial `color`) and 6 built-in agents match.
+- | 1 | LOW | Field Docs | Update `permissionMode` field description — add `auto` as a valid value (official docs now list: `default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, `plan`) | ✅ COMPLETE (added `auto` between `acceptEdits` and `dontAsk` in permissionMode description) |
+- No drift detected — report is fully in sync with official docs. All 16 frontmatter fields and 5 built-in agents match.
+- | 1 | LOW | Field Docs | Update `model` field description — add full model ID support (e.g., `claude-opus-4-6`) alongside aliases | ✅ COMPLETE (updated description to match official docs wording) |
+- | 2 | LOW | Field Docs | Update `effort` field description — add `max (Opus 4.6 only)` qualifier | ✅ COMPLETE (added Opus 4.6 only note to max option) |
+- | 3 | LOW | Field Docs | Update `color` field description — replace `(e.g., green, magenta)` with explicit valid values: `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, `cyan` | ✅ COMPLETE (replaced example-based description with exhaustive valid values list) |
+- Rules accumulate over time. Each workflow-changelog run MUST execute ALL rules at the specified depth. When a new type of drift is caught that an existing rule should have caught (but didn't exist or was too shallow), append a new rule here.
+- | Depth | Meaning | Example |
+- |-------|---------|---------|
+- | `content-match` | Compare actual values word-by-word against source | "Does the `model` field description match official docs?" |
+- | `field-level` | Verify every individual field is accounted for | "Does each frontmatter field from official docs appear in the table?" |
+- | `cross-file` | Same value must match across multiple files | "Does CLAUDE.md agent section match the report's field list?" |
+- Rules that verify the Frontmatter Fields table against official docs.
+- | # | Category | Check | Depth | Compare Against | Added | Origin |
+- |---|----------|-------|-------|-----------------|-------|--------|
+- | 1A | Field Completeness | For each agent frontmatter field in official docs, verify it appears in the report's Frontmatter Fields table | field-level | sub-agents reference page | 2026-02-28 | Initial checklist — ensures no new fields are missed |
+- | 1B | Field Types | For each field in the table, verify the Type column matches official docs | content-match | sub-agents reference page | 2026-02-28 | Initial checklist — type mismatches cause user confusion |
+- | 1C | Required Status | For each field, verify the Required column matches official docs | content-match | sub-agents reference page | 2026-02-28 | Initial checklist — wrong required status causes broken agents |
+- | 1D | Field Descriptions | For each field, verify the Description column accurately reflects official docs behavior | content-match | sub-agents reference page | 2026-02-28 | Initial checklist — stale descriptions mislead users |
+- | 2B | Storage Locations | For each scope, verify the Storage Location column matches official docs | content-match | sub-agents reference page | 2026-02-28 | Initial checklist — wrong paths cause data loss |
+- Rules that verify example accuracy.
+- | 3A | Minimal Example | Verify the minimal example uses only required fields with valid syntax | content-match | sub-agents reference page | 2026-02-28 | Initial checklist — minimal example should stay minimal |
+- Rules that verify scope and priority information.
+- | 4A | Priority Order | Verify the Scope and Priority table lists all agent locations in correct priority order | content-match | sub-agents reference page + CLI reference page | 2026-02-28 | Initial checklist — wrong priority order causes resolution bugs |
+- | 4B | Invocation Methods | Verify the invocation methods table lists ALL invocation methods from CLI reference and sub-agents docs, including `--agent` (singular), `--agents` (plural), `/agents`, `claude agents`, Agent tool, and agent resumption | field-level | CLI reference page + sub-agents reference page | 2026-03-07 | `--agent` CLI flag was missing from the invocation table — it's a distinct invocation method for running Claude as a specific agent |
+- Rules that verify consistency between the report and other repo files.
+- | 5A | CLAUDE.md Sync | Verify CLAUDE.md's Subagent Definition Structure section lists the same fields as the report's Frontmatter Fields table | cross-file | CLAUDE.md vs report | 2026-02-28 | Initial checklist — CLAUDE.md could drift from report |
+- Meta-rules about the workflow verification process itself.
+- Rules that verify the Official Claude Agents and Agents in This Repository tables.
+- | 7A | Built-in Agent Completeness | Verify the "Official Claude Agents" table lists all built-in agent types with correct model, tools, and description | field-level | sub-agents reference page + changelog | 2026-02-28 | Report only had 3 of 5 built-in agents — `claude-code-guide` and `statusline-setup` were missing |
+- | 7C | Repository Agent Links | Verify each agent name in the "Agents in This Repository" table has a clickable link that resolves to the correct `.md` file | exists | resolved file path from `best-practice/` | 2026-02-28 | Agent names were made clickable — links must stay valid after file moves |
+- Rules that verify all hyperlinks in the report are valid.
+
+---
+
+## Section: concepts
+
+### 📝 General Body Copy / Page Text
+- Tracks drift between the README CONCEPTS table and official Claude Code documentation.
+- | ✅ `COMPLETE (reason)` | Action was taken and resolved successfully |
+- | ❌ `INVALID (reason)` | Finding was incorrect, not applicable, or intentional |
+- | ✋ `ON HOLD (reason)` | Action deferred — waiting on external dependency or user decision |
+- | # | Priority | Type | Action | Status |
+- |---|----------|------|--------|--------|
+- | 1 | HIGH | Broken URL | Fix Permissions URL from `/iam` to `/permissions` | ✅ COMPLETE (URL updated to /permissions) |
+- | 2 | HIGH | Missing Concept | Add Agent Teams row to CONCEPTS table | ✅ COMPLETE (row added with ~\/\.claude\/teams\/ location) |
+- | 3 | HIGH | Missing Concept | Add Keybindings row to CONCEPTS table | ✅ COMPLETE (row added with ~\/\.claude\/keybindings\.json location) |
+- | 4 | HIGH | Missing Concept | Add Model Configuration row to CONCEPTS table | ✅ COMPLETE (row added with \.claude\/settings\.json location) |
+- | 6 | HIGH | Stale Anchor | Fix Rules URL anchor from `#modular-rules-with-clauderules` to `#organize-rules-with-clauderules` | ✅ COMPLETE (anchor updated) |
+- | 7 | MED | Missing Concept | Add Checkpointing row to CONCEPTS table | ✅ COMPLETE (row added with automatic git-based location) |
+- | 8 | MED | Missing Concept | Add Status Line row to CONCEPTS table | ✅ COMPLETE (row added with ~\/\.claude\/settings\.json location) |
+- | 10 | MED | Missing Concept | Add Fast Mode row to CONCEPTS table | ✅ COMPLETE (row added with \.claude\/settings\.json location) |
+- | 11 | MED | Missing Concept | Add Headless Mode row to CONCEPTS table | ✅ COMPLETE (row added with CLI flag -p location) |
+- | 13 | LOW | Changed Location | Update MCP Servers location to include `.mcp.json` | ✅ COMPLETE (location updated to include .mcp.json) |
+- | 1 | HIGH | Table Consolidation | Consolidate CONCEPTS table from 22 rows to 10 rows — fold related concepts as inline doc links | ✅ COMPLETE (22 → 10 rows) |
+- | 2 | MED | Merged Concept | Fold Marketplaces into Plugins row as inline link | ✅ COMPLETE (linked to /discover-plugins) |
+- | 3 | MED | Merged Concept | Fold Agent Teams into Sub-Agents row as inline link | ✅ COMPLETE (linked to /agent-teams) |
+- | 4 | MED | Merged Concept | Fold Permissions, Model Config, Output Styles, Sandboxing, Keybindings, Status Line, Fast Mode into Settings row as inline links | ✅ COMPLETE (7 concepts folded with doc links) |
+- | 7 | LOW | Reorder | Reorder table by logical grouping: building blocks → extension → config → context → runtime | ✅ COMPLETE (grouped by concern, not chronology) |
+- | 2 | HIGH | Broken URL | Fix `model-configuration` → `model-config` in TIPS (lines 115, 116, 135) | ✅ COMPLETE (3 occurrences replaced with model-config) |
+- | 3 | HIGH | Broken URL | Fix `usage-billing` → `costs` in TIPS (line 115) | ✅ COMPLETE (replaced with costs) |
+- | 5 | HIGH | Missing Concept | Add Scheduled Tasks row to CONCEPTS and Hot section (`/loop`, cron tools) | ✅ COMPLETE (added by user to both tables + /loop tip + Boris tweet) |
+- | 6 | MED | Changed Location | Update Agent Teams location from `.claude/agents/<name>.md` to `built-in (env var)` | ✅ COMPLETE (location updated to built-in env var) |
+- | 1 | HIGH | Broken URL | Fix Commands URL from `/slash-commands` to `/skills` in CONCEPTS table (line 24) — `/slash-commands` serves Skills page content; docs say "commands merged into skills" | ❌ INVALID (URL still resolves; user chose to keep as-is) |
+- | 2 | HIGH | Broken URL | Fix Commands URL from `/slash-commands` to `/skills` in TIPS section (line 108) — same stale URL | ❌ INVALID (URL still resolves; user chose to keep as-is) |
+- | 3 | MED | Missing Inline Link | Add Interactive Mode (`/interactive-mode`) as inline link to CLI Startup Flags row — covers /compact, /clear, /context, /extra-usage | ✅ COMPLETE (inline link added to CLI Startup Flags description) |
+- | 4 | MED | Missing Inline Link | Add Costs (`/costs`) as inline link to Settings row — covers /usage, billing, pay-as-you-go | ❌ INVALID (user chose to skip) |
+- | 5 | LOW | Missing Concept | Consider adding IDE Integrations row (VS Code, JetBrains, Desktop App, Web) or inline links to Best Practices | ❌ INVALID (user chose to skip — platform surfaces, not configuration concepts) |
+- | 6 | HIGH | Missing Concept | Add Code Review row to Hot table — multi-agent PR analysis (research preview, Teams & Enterprise) | ✅ COMPLETE (row added as first Hot entry with blog link and best practice tweet) |
+- | 1 | HIGH | Broken URL | Fix Commands URL from `/slash-commands` to `/skills` in CONCEPTS table (line 24) — `/slash-commands` redirects to `/skills` page | ❌ INVALID (RECURRING from 2026-03-10; URL still resolves; user chose to keep as-is) |
+- | 2 | LOW | Verification | All external docs URLs validated — no broken links found | ✅ COMPLETE (all 20+ URLs return valid pages) |
+- | 5 | LOW | Verification | All CONCEPTS descriptions checked against official docs | ✅ COMPLETE (no description drift detected) |
+- | 1 | HIGH | Stale URL | Commands URL `/slash-commands` serves Skills page — docs say "commands merged into skills" | ❌ INVALID (RECURRING from 2026-03-10; URL still resolves; user chose to keep as-is) |
+- | 3 | LOW | Naming | "Sub-Agents" in README vs "subagents" (one word) in official docs — cosmetic inconsistency | ✅ COMPLETE (renamed to "Subagents" in CONCEPTS table) |
+- | 4 | LOW | Verification | All 27 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages) |
+- | 7 | LOW | Verification | All CONCEPTS descriptions checked against official docs — no drift detected | ✅ COMPLETE (descriptions accurate for all 13 CONCEPTS + 9 Hot rows) |
+- | 2 | HIGH | Changed Description | Hooks description says "Deterministic scripts" but hooks now include 4 types: command, HTTP, prompt, and agent — only command hooks are deterministic | ✅ COMPLETE (updated to "User-defined handlers (scripts, HTTP, prompts, agents)" in CONCEPTS table) |
+- | 3 | MED | Missing Concept | Desktop App has dedicated docs page at `/desktop` — not in CONCEPTS or Hot table | ❌ INVALID (user chose to skip — Desktop is a platform surface, not a configuration concept) |
+- | 4 | MED | Changed URL | Hooks docs now split into Guide (`/hooks-guide`) and Reference (`/hooks`) — CONCEPTS links only to Reference | ✅ COMPLETE (Guide link added as inline link in Hooks row description) |
+- | 5 | LOW | Verification | All 28 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages including /slash-commands redirect) |
+- | 8 | LOW | Verification | All CONCEPTS descriptions checked against official docs | ✅ COMPLETE (Hooks description drift detected — see #2) |
+- | 2 | HIGH | Changed URL+Name | Voice Mode in Hot table links to tweet instead of official docs `/voice-dictation`; official name is "Voice Dictation" | ✅ COMPLETE (renamed to "Voice Dictation", linked to /voice-dictation, description updated; BP badge kept linking to tweet; also updated in STARTUPS table) |
+- | 3 | LOW | Verification | All 29 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages including /slash-commands redirect) |
+- | 6 | LOW | Verification | All CONCEPTS descriptions checked against official docs — no drift detected | ✅ COMPLETE (all descriptions accurate) |
+- | 2 | LOW | Verification | All 30 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages including /slash-commands redirect) |
+- | 5 | LOW | Verification | All CONCEPTS descriptions checked against official docs — no drift detected | ✅ COMPLETE (all descriptions accurate) |
+- | 1 | HIGH | Missing Concept | Add Channels row to Hot table — push events from Telegram/Discord/webhooks into running sessions (research preview, v2.1.80) | ✅ COMPLETE (row added as first Hot entry with beta badge and Reference link) |
+- | 2 | HIGH | Stale URL | Commands URL `/slash-commands` serves Skills page — docs say "commands merged into skills" | ❌ INVALID (RECURRING from 2026-03-10; URL still resolves; user chose to keep as-is) |
+- | 3 | MED | Missing Deep Link | Git Worktrees URL should anchor to `#run-parallel-claude-code-sessions-with-git-worktrees` | ✅ COMPLETE (anchor added to Git Worktrees URL in Hot table) |
+- | 4 | LOW | Missing Inline Link | Plugins row could add `[Marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)` sub-link | ✅ COMPLETE (Create Marketplaces inline link added to Plugins row) |
+- | 5 | LOW | Verification | All 31 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages including /slash-commands redirect) |
+- | 8 | LOW | Verification | All CONCEPTS descriptions checked against official docs — no drift detected | ✅ COMPLETE (all descriptions accurate) |
+- | 2 | LOW | Verification | All 32 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages including /slash-commands redirect) |
+- | 5 | LOW | Verification | Git Worktrees anchor `#run-parallel-claude-code-sessions-with-git-worktrees` confirmed on /common-workflows page | ✅ COMPLETE (section heading exists) |
+- | 2 | LOW | Verification | All 33 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages including /slash-commands redirect) |
+- | 2 | MED | Changed URL | Simplify & Batch primary link points to tweet instead of official docs `/skills#bundled-skills` — now officially bundled skills | ✅ COMPLETE (primary link updated to /skills#bundled-skills; BP badge kept linking to Boris's tweet) |
+- | 3 | LOW | Verification | All 34 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages including /slash-commands redirect) |
+- | 6 | LOW | Verification | Git Worktrees anchor `#run-parallel-claude-code-sessions-with-git-worktrees` confirmed on /common-workflows page | ✅ COMPLETE (section heading exists) |
+- | 7 | LOW | Verification | All CONCEPTS descriptions checked against official docs — no drift detected | ✅ COMPLETE (all descriptions accurate) |
+- | 8 | HIGH | Missing Concept | Add Auto Mode row to Hot table — background safety classifier replaces permission prompts (research preview, Team/Enterprise) | ✅ COMPLETE (row added as first Hot entry with beta badge, BP badge linking to @claudeai tweet, and blog link) |
+- | 2 | MED | Missing Concept | Add Slack integration to Hot table — mention @Claude in Slack to route coding tasks to Claude Code web sessions | ✅ COMPLETE (row added after Channels with @Claude location and web session description) |
+- | 3 | MED | Missing Concept | Add GitHub Actions / CI-CD to Hot table — automate PR reviews, issue triage, and code generation in CI/CD pipelines | ✅ COMPLETE (row added after Code Review with .github/workflows/ location and GitLab CI/CD inline link) |
+- | 4 | LOW | Verification | All 35 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages including /slash-commands redirect) |
+- | 7 | LOW | Verification | Git Worktrees anchor `#run-parallel-claude-code-sessions-with-git-worktrees` confirmed on /common-workflows page | ✅ COMPLETE (section heading exists) |
+- | 8 | LOW | Verification | Auto Mode anchor `#eliminate-prompts-with-auto-mode` confirmed on /permission-modes page | ✅ COMPLETE (section heading exists) |
+- | 9 | LOW | Verification | Bundled Skills anchor `#bundled-skills` confirmed on /skills page | ✅ COMPLETE (section heading exists) |
+- | 10 | LOW | Verification | All CONCEPTS descriptions checked against official docs — no drift detected | ✅ COMPLETE (all descriptions accurate) |
+- | 2 | MED | Missing Concept | Add Chrome integration to Hot table — browser automation via Claude in Chrome extension (beta, dedicated docs at `/chrome`) | ✅ COMPLETE (row added after GitHub Actions with --chrome location and beta badge) |
+- | 3 | LOW | Verification | All 36 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages including /slash-commands redirect) |
+- | 7 | LOW | Verification | Auto Mode anchor `#eliminate-prompts-with-auto-mode` confirmed on /permission-modes page | ✅ COMPLETE (section heading exists) |
+- | 8 | LOW | Verification | Bundled Skills anchor `#bundled-skills` confirmed on /skills page | ✅ COMPLETE (section heading exists) |
+- | 9 | LOW | Verification | All CONCEPTS descriptions checked against official docs — no drift detected | ✅ COMPLETE (all descriptions accurate) |
+- | 2 | MED | Missing Badge | Chrome row in Hot table has no BP badge — report exists at `reports/claude-in-chrome-v-chrome-devtools-mcp.md` | ✅ COMPLETE (BP badge added linking to reports/claude-in-chrome-v-chrome-devtools-mcp.md) |
+- | 3 | LOW | Changed Description | Plugins description missing LSP servers — official docs list `.lsp.json` as plugin component | ✅ COMPLETE (added "and LSP servers" to Plugins description) |
+- | 4 | LOW | Verification | All 37 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages including /slash-commands redirect) |
+- | 10 | LOW | Verification | All CONCEPTS descriptions checked against official docs — no drift detected | ✅ COMPLETE (all descriptions accurate except Plugins LSP note — see #3) |
+- | 1 | HIGH | Missing Concept | Add Computer Use row to Hot table — screen control on macOS via built-in MCP server (research preview, v2.1.85+) | ✅ COMPLETE (row added after Fullscreen Rendering with beta badge and Desktop inline link) |
+- | 3 | MED | Missing Concept | Add Fullscreen Rendering row to Hot table — flicker-free alt-screen rendering with mouse support (research preview, v2.1.88+) | ✅ COMPLETE (row added as first Hot entry with CLAUDE_CODE_NO_FLICKER=1 location) |
+- | 4 | LOW | Verification | All 38 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages including /slash-commands redirect) |
+- | 2 | LOW | Verification | All 39 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages including /slash-commands redirect) |
+- | 6 | LOW | Verification | Auto Mode anchor `#eliminate-prompts-with-auto-mode` confirmed on /permission-modes page | ✅ COMPLETE (section heading exists) |
+- | 7 | LOW | Verification | Bundled Skills anchor `#bundled-skills` confirmed on /skills page | ✅ COMPLETE (section heading exists) |
+- | 1 | HIGH | Missing Concept | Add Ultraplan row to Hot table — cloud-based plan drafting with browser review, inline comments, and flexible execution (`/ultraplan`) | ✅ COMPLETE (row added after Power-ups with beta badge and /ultraplan location) |
+- | 2 | HIGH | Missing Concept | Add Claude Code Web row to Hot table — run tasks on cloud infrastructure at claude.ai/code with PR auto-fix and parallel sessions | ✅ COMPLETE (row added after Ultraplan with beta badge, claude.ai/code location, and Web Scheduled Tasks inline link) |
+- | 4 | MED | Missing Concept | Add Desktop App row to Hot table — standalone app with visual diff, Dispatch, computer use, and parallel sessions | ❌ INVALID (RECURRING from 2026-03-17; user considers it a platform surface, not a configuration concept) |
+- | 2 | MED | Changed Name | "No Flicker Mode" in Hot table — official docs page title is "Fullscreen rendering"; consider renaming or adding subtitle | ❌ INVALID (user chose to keep "No Flicker Mode" per Boris's tweet naming convention; env var is `CLAUDE_CODE_NO_FLICKER`) |
+- | 3 | MED | Missing Concept | Add Desktop App row to Hot table — standalone app with visual diff, Dispatch, computer use, and parallel sessions | ❌ INVALID (RECURRING from 2026-03-17; user considers it a platform surface, not a configuration concept) |
+- | 4 | LOW | Verification | All 41 external docs URLs validated — no broken links found | ✅ COMPLETE (all URLs return valid pages including /slash-commands redirect) |
+- | 1 | HIGH | Missing Concept | Add Agent SDK row to Hot table — build production AI agents with Python/TypeScript SDKs (29 docs pages, `/en/agent-sdk/overview`) | ✅ COMPLETE (row added after Claude Code Web with Quickstart and Examples inline links) |
+- | 3 | MED | Missing Inline Link | Add Environment Variables (`/env-vars`) inline link to CLI Startup Flags row — new dedicated docs page | ✅ COMPLETE (Env Vars inline link added after Interactive Mode) |
+- Rules for verifying CONCEPTS table accuracy. Each rule is checked during every workflow run.
+- - **Category**: URL Accuracy
+- - **What to check**: Every external URL in the CONCEPTS table (docs links) returns a valid page
+- - **Depth**: Fetch each URL and confirm it loads the expected page (not a redirect to wrong page)
+- - **Source to compare against**: `https://code.claude.com/docs/llms.txt` for canonical URL list
+- - **Date added**: 2026-03-02
+- - **Origin**: Permissions URL `/iam` was found to redirect to Authentication page instead of Permissions
+- - **What to check**: Any URL with an anchor fragment (`#section-name`) matches an actual heading on the target page
+- - **Depth**: Fetch the page and verify the heading exists with the expected anchor
+- - **Source to compare against**: Fetched page content
+- - **Origin**: Rules anchor `#modular-rules-with-clauderules` was stale; section renamed to `#organize-rules-with-clauderules`
+- - **Category**: Missing Concepts
+- - **What to check**: Every page in the official docs index (`llms.txt`) that represents a user-facing feature has a corresponding row in the CONCEPTS table
+- - **Depth**: Compare full docs index against CONCEPTS table entries
+- - **Source to compare against**: `https://code.claude.com/docs/llms.txt`
+- - **Origin**: Multiple missing concepts found (Agent Teams, Keybindings, Model Configuration, etc.)
+- - **Category**: Badge Accuracy
+- - **Depth**: Use Read/Glob to verify file existence
+- - **Origin**: Initial checklist creation
+- - **Category**: Description Accuracy
+- - **What to check**: Each concept's description accurately reflects the current official docs description
+- - **Depth**: Compare README description against the official page's meta description or first paragraph
+- - **Source to compare against**: Official docs page content
+
+---
+
+## Section: cross-model-workflow
+
+### 📝 General Body Copy / Page Text
+- based on [claude-code-best-practice](https://github.com/shanraisshan/claude-code-best-practice) and [codex-cli-best-practice](https://github.com/shanraisshan/codex-cli-best-practice)
+- ┌─────────────────────────────────────────────────────────────────────────┐
+- │ CROSS-MODEL CLAUDE CODE + CODEX WORKFLOW │
+- ├─────────────────────────────────────────────────────────────────────────┤
+- │ STEP 1: PLAN Claude Code │
+- │ ───────────── Opus 4.6 │
+- │ Open Claude Code in plan mode (Terminal 1). Plan Mode │
+- │ Claude interviews you via AskUserQuestion. │
+- │ Produces a phased plan with test gates. │
+- │ STEP 2: QA REVIEW Codex CLI │
+- │ ────────────────── GPT-5.4 │
+- │ Open Codex CLI in another terminal (Terminal 2). │
+- │ Codex reviews plan against the actual codebase. │
+- │ Inserts intermediate phases ("Phase 2.5") │
+- │ with "Codex Finding" headings. │
+- │ Adds to the plan — never rewrites original phases. │
+- │ STEP 3: IMPLEMENT Claude Code │
+- │ ────────────────── Opus 4.6 │
+- │ Start a new Claude Code session (Terminal 1). │
+- │ with test gates at each phase. │
+- │ STEP 4: VERIFY Codex CLI │
+- │ ──────────────── GPT-5.4 │
+- │ Start a new Codex CLI session (Terminal 2). │
+- │ against the plan. │
+- └─────────────────────────────────────────────────────────────────────────┘
+- *Last Updated: 2026-03-06*
+
+---
+
+## Section: day0
+
+### 📝 General Body Copy / Page Text
+- You need **Node.js v18 or higher** and **npm**.
+- **fnm** (Fast Node Manager) is officially recommended by Node.js. It's fast, lightweight, and lets you switch Node versions easily if needed later.
+- 1. Open your browser and go to [nodejs.org/en/download](https://nodejs.org/en/download).
+- 2. You'll see a row of dropdowns that says: **"Get Node.js® vXX.XX.X (LTS) for __ using __ with __"**. Set the dropdowns as follows:
+- | Dropdown | Select |
+- |----------|--------|
+- | Version | **vXX.XX.X (LTS)** — keep the default LTS version, don't change it |
+- | Package Manager | **fnm** (under "Recommended (Official)") |
+- | Package Format | **npm** — keep the default |
+- curl -fsSL https://fnm.vercel.app/install | bash
+- source ~/.bashrc # or: source ~/.zshrc (if you use zsh)
+- fnm install 24 # The page will show the exact version number
+- > The version number may differ from above — always use whatever the website shows.
+- 4. **Close and reopen your terminal** (or run the `source` command above) so that `fnm`, `node`, and `npm` are available.
+- > **Why fnm?** It's in the "Recommended (Official)" category on the Node.js download page. Like nvm, it installs Node into your home directory so you never need `sudo` for npm global installs — but fnm is significantly faster (written in Rust) and works the same across Windows, macOS, and Linux.
+- This is quicker but may install an older version of Node.js. **Check the version after installing** — if it's below v18, use Option A instead.
+- sudo apt install -y nodejs npm
+- node --version # Must be v18 or higher
+- sudo dnf install -y nodejs npm
+- sudo pacman -S nodejs npm
+- For Ubuntu/Debian users who want the latest LTS without using nvm:
+- curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+- sudo apt install -y nodejs
+- Both should print version numbers. `node --version` must show v18.x or higher.
+- npm install -g @anthropic-ai/claude-code
+- > - If you used **fnm** or **nvm**: this shouldn't happen. Check that it's active (`which node` should point to a path inside your home directory, not `/usr/...`).
+- > mkdir -p ~/.npm-global
+- > npm config set prefix '~/.npm-global'
+- > echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+- You should see the Claude Code version printed. Now head back to [README.md](README.md) for authentication setup.
+- - **PATH issues:** If `claude` is not found after install, ensure npm's global bin is in your PATH. Run `npm config get prefix` — the `bin/` subdirectory of that path needs to be in your PATH.
+- - Go to [nodejs.org](https://nodejs.org)
+- - Click the **"Download Node.js (LTS)"** button — this downloads the `.msi` installer
+- - Run the `.msi` file and click **Next** through the wizard
+- - Accept the defaults, click **Install**, wait for it to finish
+- - Open a **new** terminal (PowerShell or Windows Terminal) and run:
+- - If you get a permission error, run your terminal as **Administrator** (right-click > Run as administrator)
+- Now head back to [README.md](README.md) for authentication setup.
+- - Open Terminal (press `Cmd + Space`, type "Terminal", hit Enter)
+- - Check if Homebrew is already installed:
+- - If you get "command not found", install Homebrew first:
+- brew install --cask claude-code
+
+---
+
+## Section: development-workflows
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> | 6 | LOW | Star Update | Update oh-my-claudecode ★ from 23k to 24k (23,709 actual — v4.10.2 HUD, Bedrock hardening) | COMPLETE (updated README table) |
+
+> | 9 | LOW | Star Update | Update oh-my-claudecode ★ from 24k to 25k (24,921 actual — v4.10.0 HUD upgrades, LSP diagnostics) | COMPLETE (updated README table) |
+
+> | 7 | MED | Count Update | Update oh-my-claudecode skills from 36 to 37 (skillify skill added) | COMPLETE (updated README table) |
+
+> | 7 | LOW | Star Update | Update oh-my-claudecode ★ from 26k to 27k (26,900 actual — v4.11.4 daily releases) | COMPLETE (updated README table) |
+
+### 📝 General Body Copy / Page Text
+- | `COMPLETE (reason)` | Action was taken and resolved successfully |
+- | `INVALID (reason)` | Finding was incorrect, not applicable, or intentional |
+- | `ON HOLD (reason)` | Action deferred, waiting on external dependency or user decision |
+- | # | Priority | Type | Action | Status |
+- |---|----------|------|--------|--------|
+- | 2 | HIGH | Count Update | Added counts for context-hub: 0 agents · 7 skills · 7 commands | COMPLETE (was showing —) |
+- | 3 | HIGH | Count Update | Added counts for agent-os: 0 agents · 0 skills · 5 commands | COMPLETE (was showing —) |
+- | 5 | MED | Count Update | Updated OpenSpec commands from 10+ to 11 (confirmed exact count) | COMPLETE (agents confirmed 11 commands) |
+- | 6 | MED | Count Update | Updated gstack from "21 skills · 21 commands" to "21 skills/commands" (skills serve as command surface) | COMPLETE (no separate commands/ directory, skills ARE commands) |
+- | 7 | MED | Description | Added uniqueness descriptions for context-hub, agent-os, humanlayer | COMPLETE (was showing generic descriptions) |
+- | 8 | LOW | Sort Order | Moved humanlayer up from ★ 1.6k to ★ 10k position (after context-hub) | COMPLETE (repo change resulted in higher star count) |
+- | 9 | LOW | Report Update | Updated cross-workflow analysis report "Workflows at a Glance" table with all 9 workflows | COMPLETE (was only 6, now includes all 9 sorted by stars) |
+- | 2 | HIGH | Count Update | Update obra/superpowers skills from 44+ to 14 core (community repo obra/superpowers-skills archived Oct 2025) | COMPLETE (updated README table and report) |
+- | 4 | HIGH | Count Update | Update context-hub counts from 7 skills · 7 commands to: 0 agents · 1 skill · 0 commands | COMPLETE (corrected previous run's inaccurate counts; only 1 SKILL.md in cli/skills/get-api-docs/) |
+- | 5 | MED | Star Update | Update spec-kit stars from 78k to 79k (78.5k displayed) | COMPLETE (updated README table and report) |
+- | 6 | MED | Count Update | agent-os counts already in README from previous run: 0 agents · 0 skills · 5 commands | COMPLETE (verified counts match) |
+- | 7 | MED | Star Update | Update agent-os stars from 4.1k to 4k (4,100 actual) | COMPLETE (updated README table and report) |
+- | 8 | MED | Report Update | Update cross-workflow analysis report with current counts for obra, spec-kit, context-hub, agent-os | COMPLETE (updated Workflows at a Glance table) |
+- | 9 | LOW | Count Update | OpenSpec commands: table shows 11, research found 9-11 depending on counting | INVALID (11 is within range of findings, keeping current value) |
+- | 1 | HIGH | Star Update | Update Superpowers ★ from 98k to 100k (99,603 actual — approaching 100k milestone) | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update Everything Claude Code ★ from 87k to 89k (88,580 actual) | COMPLETE (updated README table) |
+- | 3 | HIGH | Star Update | Update Get Shit Done ★ from 35k to 36k (36,307 actual) | COMPLETE (updated README table) |
+- | 4 | HIGH | Count Update | Update Get Shit Done commands from 46 to 50 (v1.26.0 added /gsd:ship, /gsd:next, /gsd:do, /gsd:ui-phase) | COMPLETE (updated README table) |
+- | 5 | MED | Star Update | Update gstack ★ from 26k to 29k (28,889 actual — v0.9.0 multi-AI expansion) | COMPLETE (updated README table) |
+- | 6 | MED | Count Update | Update BMAD-METHOD skills from 43 to 42 (v6.2.0 recount: 30 bmm-skills + 12 core-skills) | COMPLETE (updated README table) |
+- | 7 | LOW | Sort Order | Reorder table by Plan type groups (commands → agents → skills, stars descending within) | COMPLETE (commands: Spec Kit, OpenSpec, HumanLayer; agents: ECC, GSD; skills: Superpowers, BMAD, gstack) |
+- | 1 | HIGH | Star Update | Update Superpowers ★ from 100k to 103k (102,767 actual) | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update Everything Claude Code ★ from 89k to 93k (93,145 actual) | COMPLETE (updated README table) |
+- | 4 | HIGH | Star Update | Update Get Shit Done ★ from 36k to 38k (37,748 actual) | COMPLETE (updated README table) |
+- | 5 | HIGH | Count Update | Update GSD agents 16→18, commands 50→52 (v1.27.0: advisor mode, multi-repo workspaces, /gsd:fast, /gsd:review) | COMPLETE (updated README table) |
+- | 6 | HIGH | Star Update | Update gstack ★ from 29k to 34k (34,456 actual — v0.9.4 Codex reviews, Windows 11 support) | COMPLETE (updated README table) |
+- | 8 | MED | Star Update | Update BMAD ★ from 41k to 42k (41,629 actual) | COMPLETE (updated README table) |
+- | 9 | MED | Star Update | Update OpenSpec ★ from 32k to 33k (32,862 actual) | COMPLETE (updated README table) |
+- | 10 | MED | Sort Order | Swap gstack (34k) above OpenSpec (33k) — stars descending order | COMPLETE (updated README table) |
+- | 1 | HIGH | Star Update | Update Superpowers ★ from 103k to 107k (107,308 actual) | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update ECC ★ from 93k to 101k (101,098 actual — crossed 100k milestone!) | COMPLETE (updated README table) |
+- | 3 | HIGH | Count Update | Update ECC commands 59→60, skills 116→125 (v1.9.0 continued: new skills pytorch-patterns, documentation-lookup, claude-devfleet, prompt-optimizer) | COMPLETE (updated README table) |
+- | 4 | HIGH | Star Update | Update gstack ★ from 34k to 41k (41,224 actual — v0.9.x multi-AI expansion, CSO security audit) | COMPLETE (updated README table) |
+- | 5 | HIGH | Count Update | Update gstack skills 21→27 (6 new: gstack-autoplan, gstack-benchmark, gstack-cso, gstack-design-consultation, gstack-office-hours, gstack-freeze/unfreeze) | COMPLETE (updated README table) |
+- | 6 | HIGH | Sort Order | Move gstack (41k) above GSD (40k) — stars descending order | COMPLETE (updated README table) |
+- | 7 | HIGH | Star Update | Update GSD ★ from 38k to 40k (39,588 actual) | COMPLETE (updated README table) |
+- | 8 | HIGH | Count Update | Update GSD commands 52→57 (v1.28.0: /gsd:forensics, /gsd:milestone-summary, /gsd:plant-seed, /gsd:profile-user, /gsd:workstreams) | COMPLETE (updated README table) |
+- | 10 | MED | Plan Update | Update gstack Plan from plan-eng-review to autoplan (higher-level orchestrator that reads CEO, design, eng review sequentially) | COMPLETE (updated README table) |
+- | 11 | LOW | Count Update | Update OpenSpec commands 11→10 (recount: /opsx:propose, apply, archive, new, continue, ff, verify, sync, bulk-archive, onboard) | COMPLETE (updated README table) |
+- | 12 | LOW | Count Correction | Correct OpenSpec skills 11→0 (no skills/ or .claude/skills/ directory exists — OpenSpec is a CLI tool, not skills-based) | COMPLETE (updated README table) |
+- | 1 | HIGH | Star Update | Update Superpowers ★ from 107k to 110k (109,846 actual) | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update ECC ★ from 101k to 104k (103,960 actual) | COMPLETE (updated README table) |
+- | 3 | HIGH | Star Update | Update gstack ★ from 41k to 44k (44,300 actual — v0.11.x triple-voice multi-model review) | COMPLETE (updated README table) |
+- | 4 | HIGH | Sort Order | Move gstack (44k) above BMAD (42k) — stars descending order | COMPLETE (updated README table) |
+- | 5 | HIGH | Count Update | Update BMAD skills from 42 to 44 (recount: 32 bmm-skills + 12 core-skills, including 3 nested research sub-skills) | COMPLETE (updated README table) |
+- | 6 | HIGH | Count Update | Update gstack skills from 27 to 28 (README states 28; 27 confirmed individually) | COMPLETE (updated README table) |
+- | 7 | MED | Star Update | Update Spec Kit ★ from 81k to 82k (81,780 actual) | COMPLETE (updated README table) |
+- | 8 | MED | Star Update | Update GSD ★ from 40k to 41k (40,500 actual) | COMPLETE (updated README table) |
+- | 9 | MED | Star Update | Update OpenSpec ★ from 33k to 34k (33,800 actual) | COMPLETE (updated README table) |
+- | 1 | HIGH | Star Update | Update Superpowers ★ from 110k to 112k (112,163 actual) | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update ECC ★ from 104k to 107k (106,913 actual) | COMPLETE (updated README table) |
+- | 3 | HIGH | Count Update | Update ECC commands from 60 to 63 (3 new in .claude/commands/: add-language-rules, database-migration, feature-development) | COMPLETE (updated README table) |
+- | 4 | HIGH | Star Update | Update gstack ★ from 44k to 47k (46,703 actual — infrastructure hardening, test coverage gates) | COMPLETE (updated README table) |
+- | 5 | MED | Count Update | Update BMAD skills from 44 to 42 (recount: 30 bmm-skills + 12 core-skills; v6.2.1 consolidated 2 sub-skills) | COMPLETE (updated README table) |
+- | 1 | HIGH | Star Update | Update Superpowers ★ from 112k to 114k (114,107 actual) | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update ECC ★ from 107k to 109k (108,839 actual) | COMPLETE (updated README table) |
+- | 3 | HIGH | Star Update | Update gstack ★ from 47k to 48k (48,303 actual) | COMPLETE (updated README table) |
+- | 4 | HIGH | Star Update | Update GSD ★ from 41k to 42k (42,092 actual) | COMPLETE (updated README table) |
+- | 5 | MED | Count Update | Update OpenSpec commands from 10 to 11 (v1.2.0 added /opsx:explore) | COMPLETE (updated README table) |
+- | 1 | HIGH | Star Update | Update Superpowers ★ from 114k to 118k (117,568 actual) | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update ECC ★ from 109k to 111k (111,487 actual) | COMPLETE (updated README table) |
+- | 3 | HIGH | Star Update | Update gstack ★ from 48k to 52k (51,544 actual — v0.12.x skill namespacing, Codex fallback, worktree parallelization) | COMPLETE (updated README table) |
+- | 4 | HIGH | Count Update | Update gstack skills from 27 to 31 (4 new: canary, codex, connect-chrome, land-and-deploy among others) | COMPLETE (updated README table) |
+- | 5 | HIGH | Star Update | Update GSD ★ from 42k to 43k (43,136 actual) | COMPLETE (updated README table) |
+- | 6 | HIGH | Sort Order | Swap GSD (43,136) above BMAD (42,529) — both round to 43k but GSD has more stars | COMPLETE (updated README table) |
+- | 7 | MED | Star Update | Update Spec Kit ★ from 82k to 83k (82,878 actual) | COMPLETE (updated README table) |
+- | 8 | MED | Star Update | Update BMAD ★ from 42k to 43k (42,529 actual) | COMPLETE (updated README table) |
+- | 9 | MED | Star Update | Update OpenSpec ★ from 34k to 35k (34,821 actual) | COMPLETE (updated README table) |
+- | 10 | MED | Count Update | Update Compound Engineering agents from 43 to 47 (4 new review/workflow agents) | COMPLETE (updated README table) |
+- | 11 | MED | Count Update | Update Compound Engineering skills from 44 to 42 (recount: 41 compound-engineering + 1 coding-tutor) | COMPLETE (updated README table) |
+- | 1 | HIGH | Star Update | Update Superpowers ★ from 118k to 120k (120,147 actual) | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update ECC ★ from 111k to 114k (114,134 actual) | COMPLETE (updated README table) |
+- | 3 | HIGH | Star Update | Update gstack ★ from 52k to 54k (53,533 actual — v0.13.x design binary, security audit) | COMPLETE (updated README table) |
+- | 4 | HIGH | Star Update | Update GSD ★ from 43k to 44k (43,816 actual — v1.30.0 GSD SDK headless CLI) | COMPLETE (updated README table) |
+- | 6 | MED | Count Update | Update BMAD skills from 42 to 43 (31 bmm-skills + 12 core-skills) | COMPLETE (updated README table) |
+- | 7 | MED | Count Update | Update Compound Engineering skills from 42 to 43 (42 compound-eng + 1 coding-tutor) | COMPLETE (updated README table) |
+- | 1 | HIGH | Star Update | Update Superpowers ★ from 120k to 122k (122,129 actual) | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update ECC ★ from 114k to 116k (115,898 actual) | COMPLETE (updated README table) |
+- | 3 | HIGH | Count Update | Update ECC agents from 28 to 30, skills from 125 to 135 (healthcare agent, token-budget-advisor among new additions) | COMPLETE (updated README table) |
+- | 4 | HIGH | Star Update | Update gstack ★ from 54k to 55k (55,000 actual) | COMPLETE (updated README table) |
+- | 5 | MED | Count Update | Update gstack skills from 29 to 28 (28 root-level SKILL.md dirs confirmed by README) | COMPLETE (updated README table) |
+- | 6 | MED | Count Update | Update BMAD skills from 43 to 40 (recount: 29 bmm-skills + 11 core-skills; consolidation in recent patches) | COMPLETE (updated README table) |
+- | 7 | MED | Star Update | Update Compound Engineering ★ from 11k to 12k (11,500 actual) | COMPLETE (updated README table) |
+- | 8 | MED | Count Update | Update Compound Eng agents from 47 to 48 (1 new), skills from 43 to 42 (41 compound-eng + 1 coding-tutor) | COMPLETE (updated README table) |
+- | 1 | HIGH | Star Update | Update Superpowers ★ from 122k to 127k (127,473 actual) | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update ECC ★ from 116k to 124k (124,279 actual) | COMPLETE (updated README table) |
+- | 3 | HIGH | Star Update | Update gstack ★ from 55k to 59k (59,046 actual — v0.14.x Review Army, composable skills, adversarial review) | COMPLETE (updated README table) |
+- | 4 | HIGH | Star Update | Update GSD ★ from 44k to 46k (45,773 actual) | COMPLETE (updated README table) |
+- | 5 | HIGH | Count Update | Update gstack skills from 28 to 32 (4 new: design-html, sidebar CSS inspector, composable skill resolver, scope drift detection) | COMPLETE (updated README table) |
+- | 6 | MED | Star Update | Update Spec Kit ★ from 83k to 84k (84,042 actual) | COMPLETE (updated README table) |
+- | 7 | MED | Star Update | Update OpenSpec ★ from 35k to 36k (35,985 actual) | COMPLETE (updated README table) |
+- | 8 | MED | Count Update | Update BMAD skills from 40 to 43 (32 bmm-skills + 11 core-skills; 3 new bmm-skills added including PRFAQ) | COMPLETE (updated README table) |
+- | 9 | LOW | Count Verify | ECC commands 63→3, skills 135→30 — research agent only checked .claude/ dirs, missed root commands/ and .agents/skills/ breadth | INVALID (agent undercounting — keeping current values 63 commands, 135 skills) |
+- | 10 | LOW | Count Verify | Superpowers agents 5→8 — agent counted 1 explicit + 7 implicit sub-agents, but v5.0.6 replaced subagent review loops with inline self-review | ON HOLD (contradictory signals — v5.0.6 reduced review agents while brainstorm added new ones, needs manual verification) |
+- | 1 | HIGH | Star Update | Update Superpowers ★ from 127k to 129k (128,925 actual) | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update ECC ★ from 124k to 129k (128,606 actual — neck-and-neck with Superpowers) | COMPLETE (updated README table) |
+- | 3 | HIGH | Count Update | Update ECC agents 30→36, commands 63→71, skills 135→143 (6 new agents incl. gan-evaluator/generator/planner, cpp/kotlin/flutter reviewers; 8 new commands; 8 new skills) | COMPLETE (updated README table) |
+- | 4 | MED | Star Update | Update gstack ★ from 59k to 60k (60,036 actual — v0.15.0 /checkpoint, /health, cross-session timeline) | COMPLETE (updated README table) |
+- | 5 | MED | Count Update | Update gstack skills 32→33 (v0.15.0 added /checkpoint and /health, but some consolidated — net +1) | COMPLETE (updated README table) |
+- | 7 | LOW | Count Verify | BMAD skills 43→34 — agent counted from module-help.csv (25 bmm + 9 core), previous directory counts found 43 (32 bmm + 11 core) | ON HOLD (agent likely undercounting — module-help.csv may not list all skills; keeping 43 until manual verification) |
+- | 1 | HIGH | Sort Order | Move ECC (133k) above Superpowers (132k) — ECC now has more stars | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update ECC ★ from 129k to 133k (133,114 actual — overtook Superpowers) | COMPLETE (updated README table) |
+- | 3 | HIGH | Star Update | Update Superpowers ★ from 129k to 132k (131,818 actual) | COMPLETE (updated README table) |
+- | 4 | HIGH | Count Update | Update ECC commands 71→68, skills 143→152 (legacy commands collapsed into skills; +9 new skills incl. brand-voice, network-ops) | COMPLETE (updated README table) |
+- | 5 | HIGH | Star Update | Update gstack ★ from 60k to 62k (61,800 actual — v0.15.1 design-html routing, Session Intelligence Layer) | COMPLETE (updated README table) |
+- | 7 | MED | Star Update | Update Spec Kit ★ from 84k to 85k (84,701 actual) | COMPLETE (updated README table) |
+- | 8 | MED | Star Update | Update GSD ★ from 46k to 47k (46,900 actual) | COMPLETE (updated README table) |
+- | 10 | MED | Star Update | Update OpenSpec ★ from 36k to 37k (36,600 actual) | COMPLETE (updated README table) |
+- | 11 | MED | Star Update | Update CE ★ from 12k to 13k (12,600 actual) | COMPLETE (updated README table) |
+- | 12 | MED | Count Update | Update CE agents 48→49, commands 3→4, skills 40→42 (triage-prs command added; +1 agent, +2 skills) | COMPLETE (updated README table) |
+- | 1 | HIGH | Star Update | Update ECC ★ from 133k to 136k (135,765 actual — widening lead over Superpowers) | COMPLETE (updated README table) |
+- | 2 | HIGH | Count Update | Update ECC agents 36→38, commands 68→75, skills 152→156 (NestJS patterns, Jira integration, C#/Dart support, web frontend rules) | COMPLETE (updated README table) |
+- | 3 | HIGH | Star Update | Update Superpowers ★ from 132k to 134k (133,718 actual — v5.0.7 Copilot CLI support, contributor guardrails) | COMPLETE (updated README table) |
+- | 4 | MED | Star Update | Update gstack ★ from 62k to 63k (63,065 actual — Session Intelligence Layer, AquaVoice aliases) | COMPLETE (updated README table) |
+- | 5 | MED | Count Update | Update gstack skills from 33 to 31 (31 root-level SKILL.md dirs confirmed; checkpoint/health may be subcommands) | COMPLETE (updated README table) |
+- | 6 | LOW | Count Update | Update GSD commands from 59 to 60 (v1.31.0: /gsd:docs-update added) | COMPLETE (updated README table) |
+- | 7 | LOW | Count Update | Update BMAD skills from 40 to 39 (28 bmm-skills + 11 core-skills; minor consolidation) | COMPLETE (updated README table) |
+- | 1 | MED | Star Update | Update ECC ★ from 136k to 137k (137,404 actual) | COMPLETE (updated README table) |
+- | 2 | MED | Star Update | Update Superpowers ★ from 134k to 135k (134,933 actual) | COMPLETE (updated README table) |
+- | 3 | MED | Star Update | Update gstack ★ from 63k to 64k (63,841 actual — GStack Browser .app with CDP, anti-bot stealth) | COMPLETE (updated README table) |
+- | 4 | MED | Star Update | Update GSD ★ from 47k to 48k (47,705 actual — v1.32.0 Trae/Kilo/Augment/Cline runtimes) | COMPLETE (updated README table) |
+- | 5 | LOW | Star Update | Update BMAD ★ from 43k to 44k (43,538 actual) | COMPLETE (updated README table) |
+- | 1 | HIGH | Star Update | Update ECC ★ from 137k to 142k (142,218 actual — v1.10.0 Surface Refresh, 10 commits on Apr 6 alone) | COMPLETE (updated README table) |
+- | 2 | HIGH | Count Update | Update ECC agents 38→47, commands 75→82, skills 156→182 (agent-introspection-debugging, hookify bundle restored, 26 new skills) | COMPLETE (updated README table) |
+- | 3 | HIGH | Star Update | Update Superpowers ★ from 135k to 137k (137,166 actual) | COMPLETE (updated README table) |
+- | 4 | HIGH | Count Update | Update GSD agents 21→24, commands 60→68 (v1.33.0: unified behavioral refs, STATE.md drift detection, autonomous --to N) | COMPLETE (updated README table) |
+- | 5 | MED | Star Update | Update gstack ★ from 64k to 65k (65,279 actual — v0.15.15.0 token redaction, team mode) | COMPLETE (updated README table) |
+- | 6 | MED | Count Update | Update gstack skills from 31 to 34 (3 new: retro, setup-deploy, learn among others) | COMPLETE (updated README table) |
+- | 7 | MED | Star Update | Update Spec Kit ★ from 85k to 86k (85,617 actual — v0.5.0 native skills arch) | COMPLETE (updated README table) |
+- | 8 | LOW | Star Update | Update OpenSpec ★ from 37k to 38k (37,604 actual) | COMPLETE (updated README table) |
+- | 10 | LOW | Count Update | Update CE agents from 49 to 50 (1 new agent added) | COMPLETE (updated README table) |
+- | 1 | HIGH | Star Update | Update ECC ★ from 142k to 146k (146,462 actual — v1.10.0 Surface Refresh momentum, ecc2 alpha development) | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update Superpowers ★ from 137k to 141k (141,071 actual) | COMPLETE (updated README table) |
+- | 3 | HIGH | Star Update | Update gstack ★ from 65k to 67k (67,178 actual — v0.16.0.0 browser data platform, per-tab state isolation) | COMPLETE (updated README table) |
+- | 4 | HIGH | Count Update | Update gstack skills from 34 to 37 (3 new: setup-browser-cookies, pair-agent, open-gstack-browser among confirmed additions) | COMPLETE (updated README table) |
+- | 5 | MED | Star Update | Update GSD ★ from 48k to 49k (49,343 actual — v1.34.0 four-category gate taxonomy, post-merge verification) | COMPLETE (updated README table) |
+- | 8 | MED | Star Update | Update CE ★ from 13k to 14k (13,671 actual — v2.62.0 decision matrices, headless mode) | COMPLETE (updated README table) |
+- | 9 | LOW | Count Update | Update CE agents from 50 to 51 (1 new agent added) | COMPLETE (updated README table) |
+- | 10 | LOW | Count Update | Update CE skills from 42 to 44 (2 new: onboarding skill, interactive deepening mode) | COMPLETE (updated README table) |
+- | 1 | HIGH | Star Update | Update ECC ★ from 146k to 148k (148,000 actual — v1.10.0 momentum, ecc2 alpha) | COMPLETE (updated README table) |
+- | 2 | HIGH | Star Update | Update Superpowers ★ from 141k to 143k (143,000 actual — v5.0.7 Copilot CLI) | COMPLETE (updated README table) |
+- | 3 | MED | Star Update | Update Spec Kit ★ from 86k to 87k (86,600 actual — v0.5.1 dev docs) | COMPLETE (updated README table) |
+- | 4 | MED | Star Update | Update gstack ★ from 67k to 68k (68,200 actual — v0.16.0.0 browser data platform) | COMPLETE (updated README table) |
+- | 5 | MED | Star Update | Update GSD ★ from 49k to 50k (49,900 actual — v1.34.0 persistent learnings, intel queries) | COMPLETE (updated README table) |
+- | 6 | MED | Star Update | Update OpenSpec ★ from 38k to 39k (38,700 actual) | COMPLETE (updated README table) |
+- | 8 | LOW | Count Update | Update CE skills from 44 to 43 (42 compound-eng + 1 coding-tutor; minor consolidation) | COMPLETE (updated README table) |
+
+---
+
+## Section: implementation
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> Ask Claude to create one for you — it will generate the markdown file with YAML frontmatter and body in `.claude/skills/my-skill/SKILL.md`
+
+### 📝 General Body Copy / Page Text
+- <td><a href="../">← Back to Claude Code Best Practice</a></td>
+- <td align="right"><img src="../!/claude-jumping.svg" alt="Claude" width="60" /></td>
+- **File**: [`.claude/commands/weather-orchestrator.md`](../.claude/commands/weather-orchestrator.md)
+- description: Fetch weather data for Dubai and create an SVG weather card
+- in Celsius or Fahrenheit.
+- Use the Agent tool to invoke the weather agent:
+- - subagent_type: weather-agent
+- Use the Skill tool to invoke the weather-svg-creator skill:
+- - skill: weather-svg-creator
+- > /weather-orchestrator
+- Ask Claude to create one for you — it will generate the markdown file with YAML frontmatter and body in `.claude/commands/<name>.md`
+- <a href="https://github.com/shanraisshan/claude-code-best-practice#orchestration-workflow"><img src="../!/tags/orchestration-workflow-hd.svg" alt="Orchestration Workflow"></a>
+- <img src="../orchestration-workflow/orchestration-workflow.svg" alt="Command Skill Agent Architecture Flow" width="100%">
+- | Component | Role | This Repo |
+- |-----------|------|-----------|
+- | **Command** | Entry point, user interaction | [`/weather-orchestrator`](../.claude/commands/weather-orchestrator.md) |
+- | **Agent** | Fetches data with preloaded skill (agent skill) | [`weather-agent`](../.claude/agents/weather-agent.md) with [`weather-fetcher`](../.claude/skills/weather-fetcher/SKILL.md) |
+- | **Skill** | Creates output independently (skill) | [`weather-svg-creator`](../.claude/skills/weather-svg-creator/SKILL.md) |
+- **File**: [`.claude/skills/weather-svg-creator/SKILL.md`](../.claude/skills/weather-svg-creator/SKILL.md)
+- name: weather-svg-creator
+- Dubai. Writes the SVG to orchestration-workflow/weather.svg and updates
+- orchestration-workflow/output.md.
+- This skill creates a visual SVG weather card and writes the output files.
+- and write it along with a summary to output files.
+- from the calling context.
+- Generate a clean SVG weather card...
+- Write the SVG content to `orchestration-workflow/weather.svg`.
+- Write to `orchestration-workflow/output.md`...
+- **File**: [`.claude/skills/weather-fetcher/SKILL.md`](../.claude/skills/weather-fetcher/SKILL.md)
+- name: weather-fetcher
+- for Dubai, UAE from Open-Meteo API
+- user-invocable: false
+- This skill provides instructions for fetching current weather data.
+- (Celsius or Fahrenheit).
+- 1. Fetch Weather Data: Use the WebFetch tool to get current weather data
+- This is an **agent skill** — preloaded into the `weather-agent` at startup via the `skills:` frontmatter field. It is not invoked directly; instead, it serves as domain knowledge injected into the agent's context. Note `user-invocable: false` which hides it from the `/` command menu.
+- | Pattern | Invocation | Example | Key Difference |
+- |---------|-----------|---------|----------------|
+- | **Skill** | `Skill(skill: "name")` | `weather-svg-creator` | Invoked directly via Skill tool |
+- | **Agent Skill** | Preloaded via `skills:` field | `weather-fetcher` | Injected into agent context at startup |
+- **Skill** — invoke directly via slash command:
+- > /weather-svg-creator
+- Instructions for what the skill does.
+- <img src="assets/impl-loop-1.png" alt="/loop 1m tell current time — scheduling and cron setup" width="100%">
+- `/loop 1m "tell current time"` parses the interval (`1m` → every 1 minute), creates a cron job, and confirms the schedule. Key notes:
+- - Cron's minimum granularity is **1 minute** — `1m` maps to `*/1 * * * *`
+- - Recurring tasks **auto-expire after 3 days**
+- - Cancel anytime with `cron cancel <job-id>`
+- <img src="assets/impl-loop-2.png" alt="Recurring task firing every minute" width="100%">
+- > /loop 1m "tell current time"
+- > /loop 10m "check deploy status"
+- `/loop` is a built-in Claude Code skill — no setup required. It uses the cron tools (`CronCreate`, `CronList`, `CronDelete`) under the hood to manage recurring schedules.
+- <img src="assets/impl-agent-teams.png" alt="Agent Teams in action — split pane mode with tmux" width="100%">
+- Agent Teams spawn **multiple independent Claude Code sessions** that coordinate via a shared task list. Unlike subagents (isolated context forks within one session), each teammate gets its own full context window with CLAUDE.md, MCP servers, and skills loaded automatically.
+- The time orchestration workflow was built entirely by an agent team. To run the finished product:
+- This invokes the **Command → Agent → Skill** pipeline: the agent fetches Dubai's current time, and the skill renders an SVG time card to `agent-teams/output/dubai-time.svg`.
+- You can create a replica of the weather orchestration workflow using agent teams — in this example, the time orchestration workflow was built entirely by an agent team.
+- brew install --cask iterm2
+- CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude
+- <a id="time-orchestration"></a>
+- Paste this prompt into Claude to bootstrap a complete time orchestrator workflow using agent teams:
+- Main prompt: **[agent-teams-prompt.md](../agent-teams/agent-teams-prompt.md)**
+- ┌──────────────────────────────────────────────────────────────┐
+- │ "Create an agent team to build time orchestration" │
+- └──────────────────────────┬───────────────────────────────────┘
+- │ spawns team (all parallel)
+- ┌────────────┼────────────┐
+- ┌────────────────┐ ┌──────────┐ ┌──────────────┐
+- │ Command │ │ Agent │ │ Skill │
+- │ Architect │ │ Engineer │ │ Designer │
+- │ agent-teams/ │ │ agent- │ │ agent-teams/ │
+- │ .claude/ │ │ teams/ │ │ .claude/ │
+- │ commands/ │ │ .claude/ │ │ skills/ │
+- │ time- │ │ agents/ │ │ time-svg- │
+- │ orchestrator.md│ │ time- │ │ creator/ │
+- └───────┬────────┘ └────┬─────┘ └──────┬───────┘
+- ┌──────────────────────────────────────────────────┐
+- │ ☐ Command uses Agent tool (not bash) │
+- │ ☐ Agent preloads time-fetcher skill │
+- │ ☐ Skill reads time from context (no re-fetch) │
+- │ ☐ All files inside agent-teams/.claude/ │
+- └──────────────────────────────────────────────────┘
+- ┌──────────────────────────────┐
+- │ cd agent-teams && claude │
+- │ /time-orchestrator │
+- │ Command → Agent → Skill │
+- └──────────────────────────────┘
+- **File**: [`.claude/agents/weather-agent.md`](../.claude/agents/weather-agent.md)
+- description: Use this agent PROACTIVELY when you need to fetch weather data for
+- using its preloaded weather-fetcher skill.
+- tools: WebFetch, Read, Write, Edit
+- permissionMode: acceptEdits
+- You are a specialized weather agent that fetches weather data for Dubai,
+- Execute the weather workflow by following the instructions from your preloaded
+- 1. **Fetch**: Follow the `weather-fetcher` skill instructions to fetch the
+- > what is the weather in dubai?
+- You can create an agent using the `/agents` command,
+- or ask Claude to create one for you — it will generate the markdown file with YAML frontmatter and body in `.claude/agents/<name>.md`
+
+---
+
+## Section: orchestration-workflow
+
+### 📝 General Body Copy / Page Text
+- <td><a href="../">← Back to Claude Code Best Practice</a></td>
+- <td align="right"><img src="../!/claude-jumping.svg" alt="Claude" width="60" /></td>
+- - **Agent Skills** (preloaded): `weather-fetcher` is injected into the `weather-agent` at startup as domain knowledge
+- - **Skills** (independent): `weather-svg-creator` is invoked directly by the command via the Skill tool
+- This showcases the **Command → Agent → Skill** architecture pattern, where:
+- - A command orchestrates the workflow and handles user interaction
+- - An agent fetches data using its preloaded skill
+- - A skill creates the visual output independently
+- | Component | Role | Example |
+- |-----------|------|---------|
+- | **Command** | Entry point, user interaction | [`/weather-orchestrator`](../.claude/commands/weather-orchestrator.md) |
+- | **Agent** | Fetches data with preloaded skill (agent skill) | [`weather-agent`](../.claude/agents/weather-agent.md) with [`weather-fetcher`](../.claude/skills/weather-fetcher/SKILL.md) |
+- | **Skill** | Creates output independently (skill) | [`weather-svg-creator`](../.claude/skills/weather-svg-creator/SKILL.md) |
+- ╔══════════════════════════════════════════════════════════════════╗
+- ║ ORCHESTRATION WORKFLOW ║
+- ║ Command → Agent → Skill ║
+- ╚══════════════════════════════════════════════════════════════════╝
+- ┌───────────────────┐
+- └─────────┬─────────┘
+- ┌─────────────────────────────────────────────────────┐
+- │ /weather-orchestrator — Command (Entry Point) │
+- └─────────────────────────┬───────────────────────────┘
+- ┌────────────────────────┐
+- │ AskUser — C° or F°? │
+- └────────────┬───────────┘
+- │ weather-agent — Agent ● skill: weather-fetcher │
+- │ weather-svg-creator — Skill ● SVG card + output │
+- ┌────────────┐ ┌────────────┐
+- │weather.svg │ │ output.md │
+- └────────────┘ └────────────┘
+- - **Location**: `.claude/commands/weather-orchestrator.md`
+- - **Purpose**: Entry point — orchestrates the workflow and handles user interaction
+- 2. Invokes weather-agent via Agent tool
+- 3. Invokes weather-svg-creator via Skill tool
+- - **Location**: `.claude/agents/weather-agent.md`
+- - **Purpose**: Fetch weather data using its preloaded skill
+- - **Skills**: `weather-fetcher` (preloaded as domain knowledge)
+- - **Tools Available**: WebFetch, Read
+- - **Location**: `.claude/skills/weather-svg-creator/SKILL.md`
+- - **Purpose**: Create a visual SVG weather card and write output files
+- - **Invocation**: Via Skill tool from the command (not preloaded into any agent)
+- - `orchestration-workflow/weather.svg` — SVG weather card
+- - `orchestration-workflow/output.md` — Weather summary
+- - **Location**: `.claude/skills/weather-fetcher/SKILL.md`
+- - **Data Source**: Open-Meteo API for Dubai, UAE
+- - **Note**: This is an agent skill — preloaded into `weather-agent`, not invoked directly
+- 1. **User Invocation**: User runs `/weather-orchestrator` command
+- 3. **Agent Invocation**: Command invokes `weather-agent` via Agent tool
+- 4. **Skill Execution** (within agent context):
+- 5. **SVG Creation**: Command invokes `weather-svg-creator` via Skill tool
+- - Skill creates SVG weather card at `orchestration-workflow/weather.svg`
+- - Skill writes summary to `orchestration-workflow/output.md`
+- 6. **Result Display**: Summary shown to user with:
+- - Output file location
+- Input: /weather-orchestrator
+- ├─ Step 1: Asks: Celsius or Fahrenheit?
+- ├─ Step 2: Agent tool → weather-agent
+- │ ├─ Preloaded Skill:
+- │ │ └─ weather-fetcher (domain knowledge)
+- │ ├─ Fetches from Open-Meteo → 26°C
+- ├─ Step 3: Skill tool → /weather-svg-creator
+- │ ├─ Creates: orchestration-workflow/weather.svg
+- │ └─ Writes: orchestration-workflow/output.md
+- ├─ SVG: orchestration-workflow/weather.svg
+- └─ Summary: orchestration-workflow/output.md
+- 2. **Command as Orchestrator**: The command handles user interaction and coordinates the workflow
+- 3. **Agent for Data Fetching**: The agent uses its preloaded skill to fetch data, then returns it
+- 4. **Skill for Output**: The SVG creator runs independently, receiving data from the command context
+- 5. **Clean Separation**: Fetch (agent) → Render (skill) — each component has a single responsibility
+- - weather-fetcher # Preloaded into agent context at startup
+- - **Skills are preloaded**: Full skill content is injected into agent's context at startup
+- - **Agent uses skill knowledge**: Agent follows instructions from preloaded skills
+- - **No dynamic invocation**: Skills are reference material, not invoked separately
+- name: weather-svg-creator
+- description: Creates an SVG weather card...
+- - **Invoked via Skill tool**: Command calls `Skill(skill: "weather-svg-creator")`
+- - **Independent execution**: Runs in the command's context, not inside an agent
+
+---
+
+## Section: output
+
+### 📝 General Body Copy / Page Text
+- - **Date**: 2026-03-12
+- - **Full**: 2026-03-12 17:24:20 +0400
+- - **SVG**: `agent-teams/output/dubai-time.svg`
+- Generated by time-svg-creator skill.
+
+---
+
+## Section: presentation
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> level. Claude will guess at everything. That's okay. We'll fix it step by step.
+
+> Read the README.md and give me a summary of this project
+
+> The difference between vibe coding and professional usage — shown on our TodoApp:
+
+### 📝 General Body Copy / Page Text
+- From Vibe Coding to Agentic Engineering
+- A journey through every best practice — with a real project.
+- The Example Project: TodoApp
+- — showing the transformation from a plain project to one with full Claude Code configuration.
+- After (Agentic Engineering)
+- # With Claude Code Best Practices
+- # Modular instructions
+- # Backend instructions
+- # Frontend instructions
+- # Managed MCP servers
+- # Project instructions
+- This is where everyone starts. The question is: how fast can you move beyond it?
+- What Happens (Low Level)
+- > add a notes feature
+- Frontend gets a standalone page with no sidebar nav
+- Tests? None. Patterns? Ignored.
+- Every new feature is a coin flip. Code entropy increases with every prompt.
+- What We Want (High Level)
+- Claude knows the TodoApp architecture
+- New routes follow existing patterns in
+- nav and Tailwind tokens
+- Tests written automatically matching
+- Consistent, tested, production-quality code — every time.
+- Each section adds techniques that move you from vibe coding toward fully agentic engineering.
+- Better Prompting — Low
+- Structured Workflows — Medium
+- Domain Knowledge — High
+- Agentic Engineering — High
+- Installing Claude Code
+- Homebrew must be installed on your Mac.
+- Run this in your terminal:
+- brew install claude-code
+- brew upgrade claude-code
+- anytime to check your installation health.
+- Login Option A: Subscription
+- Use your Claude Pro or Max subscription via OAuth login:
+- # Select "Claude.ai" at the login prompt
+- # Opens browser for OAuth
+- Weekly limits reset every 7 days. Usage is shared across Claude web, desktop, and Claude Code. Opus 4.6 requires a Max plan.
+- Login Option B: API Key
+- Pay per token with an Anthropic API key — no weekly caps:
+- ANTHROPIC_API_KEY=sk-ant-...
+- Heavy usage, CI/CD pipelines, teams needing predictable billing
+- Navigate to your project and run:
+- Claude Code scans your project structure, reads CLAUDE.md (if it exists), and opens an interactive REPL where you can type prompts.
+- Right now, with no CLAUDE.md, no skills, no agents — you're at the
+- +-----------------------------------------+
+- Model: claude-opus-4-6
+- Type your prompt here...
+- New line (multiline input)
+- Cancel current generation
+- Level: Low — effective prompting that produces real, production-quality results.
+- Start simple — ask Claude to understand your project:
+- tool to open the file, then summarize it. You'll see the tool call in the output.
+- Claude read your prompt
+- Understood you want a summary
+- Opened README.md from your project
+- Responded with a summary
+- Based on actual file contents, not guessing
+- Claude creates a random
+- . Frontend page has no sidebar nav.
+- Vague, no context, no constraints.
+- In backend/routes/todos.py, add a
+- Follow the existing route pattern and
+- update the Todo model's is_completed field.
+- Add a test in tests/test_todos.py.
+- Specific file, specific endpoint, specific pattern.
+- The more context you give, the better Claude performs. Use
+- to reference files directly in your prompt.
+- Look at @backend/routes/todos.py and @backend/models/todo.py
+- Add a priority field to the Todo model and update
+- the create endpoint to accept it.
+- Reference specific files for Claude to read
+- Ctrl+V to paste images of errors or UI
+- Copy the full error message into your prompt
+- Context Window & /compact
+- Your prompts and messages
+- Every file Claude reads
+- Claude's own responses
+- Compresses conversation history into a summary. Claude continues from that summary.
+- . Don't wait until it auto-compacts — you lose control over what gets preserved.
+- Add user authentication to the TodoApp backend
+- Claude writes code immediately
+- Wrong approach — redo everything
+- 50% of context gone before real work starts
+- Claude explores codebase read-only
+- Proposes approach for your approval
+- Right approach from the start
+- Always start with plan mode for any task that touches more than 2-3 files or involves architectural decisions.
+- Plan Mode in Practice
+- # Step 1: Enter plan mode
+- # Step 2: Describe what you want
+- Add pagination to the /api/todos endpoint
+- # Step 3: Claude explores and writes a plan
+- # (reads routes/todos.py, checks models, proposes approach)
+- # Step 4: Review the plan and approve it
+- # Claude then executes the approved plan
+- Prompting Best Practices
+- Be specific about files
+- "In backend/routes/todos.py" not "in the backend code"
+- "The API returns 500 when..." not "make it work"
+- Reference existing patterns
+- Small, focused requests get better results than mega-prompts
+- "Run pytest after making changes" catches errors early
+- Provide screenshots for UI issues
+- A picture is worth a thousand words of description
+- CLAUDE.md is a markdown file that Claude reads at the
+- start of every session
+- . It's your project's instruction manual for Claude.
+- TodoApp monorepo: FastAPI backend + Next.js frontend.
+- - backend/routes/ — FastAPI route handlers
+- - frontend/components/ — React components
+- - frontend/lib/api.ts — API client
+- - cd backend && uvicorn main:app --reload
+- - cd frontend && npm run dev
+- - cd backend && pytest
+- - Backend: follow route patterns in routes/todos.py
+- - Frontend: use Tailwind, add nav to Sidebar.tsx
+- - Always add tests for new endpoints
+- What to Include in CLAUDE.md
+- Project architecture overview
+- Build and test commands
+- Common patterns to follow
+- Critical do's and don'ts
+- Entire API documentation
+- Information that changes often
+- Anything over 150 lines total
+- . Longer files dilute the instructions — Claude may ignore parts of it. Use Rules and Skills for detail.
+- Keep It Under 150 Lines
+- If You Need More Space
+- Put topic-specific instructions in
+- Put domain knowledge in
+- Point to docs rather than inlining content
+- (always loaded, <150 lines) →
+- (path-scoped, auto-loaded) →
+- Rules (.claude/rules/)
+- Modular, topic-specific instructions in individual markdown files. Unlike CLAUDE.md, rules can be
+- scoped to specific paths
+- TodoApp Backend Testing Rule
+- # .claude/rules/backend-testing.md
+- When writing tests for the backend:
+- - Use pytest with the existing conftest.py fixtures
+- - Follow the pattern in test_todos.py:
+- - Use TestClient from FastAPI
+- - Create test data with factory functions
+- - Assert status codes AND response body
+- - Clean up test database after each test
+- - Always test both success and error cases
+- This rule only activates when Claude is working on test files — keeping context clean for other tasks.
+- Three Scopes (loaded in order)
+- # All combined at session start:
+- # Global — all projects
+- # Project — shared with team via git
+- .claude/CLAUDE.local.md
+- # Local — personal, git-ignored
+- Put your TodoApp CLAUDE.md in the repo root so the whole team shares it. Put personal preferences (editor, style) in
+- CLAUDE.md under 150 lines
+- Brief, focused, high-signal instructions
+- Use rules for specifics
+- Path-scoped rules in .claude/rules/ for targeted guidance
+- Commit project CLAUDE.md
+- Team shares project conventions via git
+- Use .local.md for personal prefs
+- Git-ignored, won't affect teammates
+- Review and trim regularly
+- Outdated instructions cause confusion
+- For complex tasks, Claude creates a
+- Add user authentication to the TodoApp:
+- - POST /api/register endpoint
+- - POST /api/login endpoint
+- - JWT auth middleware
+- - Protect /api/todos endpoints
+- - Tests for all auth endpoints
+- Claude breaks this into individual tasks and shows progress as it works through each one.
+- Break subtasks small enough that each can be completed in under
+- . Commit after each subtask.
+- Opens the model picker. Match the model to the task:
+- Complex tasks — "Add auth to the TodoApp backend with JWT"
+- Everyday coding — "Add a completed_at field to the Todo model"
+- Simple tasks — "Read backend/routes/todos.py and summarize the endpoints"
+- to quickly switch models. Use
+- for faster Opus output on non-complex tasks.
+- Workflow Best Practices
+- Always start with plan mode
+- For any non-trivial task
+- Break tasks into small pieces
+- Each subtask should complete in under 50% context
+- Commit after each subtask
+- Clean rollback points, not one mega-commit
+- Manual /compact at ~50%
+- Don't wait for auto-compact
+- Vanilla Claude Code for small tasks
+- Simple tasks don't need elaborate workflows
+- Skills are markdown files that contain
+- Progressive Disclosure
+- Knowledge loaded only when relevant — doesn't bloat every session
+- Same skill works across agents and workflows
+- Commit to git — your whole team benefits
+- = always loaded, every session.
+- Creating Skills: TodoApp Frontend
+- Frontend Conventions Skill
+- # .claude/skills/frontend-conventions/SKILL.md
+- TodoApp frontend patterns and conventions
+- # Frontend Conventions
+- When creating or modifying frontend components:
+- ## Sidebar Navigation
+- - Add new page routes to frontend/components/Sidebar.tsx
+- - Use the existing NavLink pattern with icon + label
+- - Keep alphabetical order in the nav list
+- ## Component Patterns
+- - Use functional components with TypeScript
+- - Import API functions from lib/api.ts
+- - Follow TodoList.tsx as the reference component
+- - Use Tailwind classes: bg-white, rounded-lg, shadow-sm
+- - All API calls go through lib/api.ts
+- - Use the existing fetch wrapper with error handling
+- - Base URL: process.env.NEXT_PUBLIC_API_URL
+- Skill Frontmatter & Invocation
+- Skill identifier (uses directory name if omitted)
+- When to invoke — helps Claude auto-discover the skill
+- Override which model runs the skill
+- Restrict which tools the skill can use
+- Run the skill in an isolated subagent context for complex workflows
+- Invocation & Execution Modes
+- # 1. Manual: slash command
+- # 2. Auto: Claude discovers via description field
+- # (happens when task matches description)
+- # 3. Preloaded: in an agent's frontmatter
+- - frontend-conventions
+- # 4. Optional isolation for heavy workflows
+- Markdown files with domain knowledge
+- Have SKILL.md + optional supporting files
+- Auto-discovered by description
+- Preloaded into agents via
+- # Skill directory structure
+- frontend-conventions/
+- # Main skill file (required)
+- # Supporting file (optional)
+- Level: High — custom agents that know your codebase and follow your patterns.
+- Agents are markdown files in
+- custom Claude persona
+- with its own tools, model, skills, and behavior.
+- Two Ways to Use Agents
+- Replaces default Claude for your conversation.
+- claude --agent frontend-engineer
+- Spawned in an isolated context via Agent tool.
+- "Add a settings page"
+- Frontend Engineer Agent
+- > add a settings page
+- • Inline CSS (no Tailwind)
+- • Direct fetch calls (ignores api.ts)
+- • No sidebar nav entry
+- Standalone page that doesn't fit the app.
+- Frontend agent already knows:
+- • Import API functions from
+- Integrated page matching the app perfectly.
+- # .claude/agents/frontend-engineer.md
+- Frontend development following TodoApp conventions
+- Read, Write, Edit, Bash, Glob, Grep
+- You are a frontend engineer for the TodoApp.
+- Always add new pages to the Sidebar navigation.
+- Use the existing API client in lib/api.ts.
+- Follow TodoList.tsx as your reference component.
+- Backend Engineer Agent
+- Claude creates random endpoint structure
+- Different error handling than existing routes
+- No tests, no model validation
+- Backend agent follows existing patterns:
+- • Route structure from
+- # .claude/agents/backend-engineer.md
+- Backend development following TodoApp patterns
+- You are a backend engineer for the TodoApp.
+- Follow the route patterns in routes/todos.py.
+- Always add pytest tests for new endpoints.
+- # .claude/agents/code-reviewer.md
+- Reviews code for quality and best practices
+- You are a code reviewer. Check for security issues,
+- What the agent can do (Read, Write, Edit, Bash, etc.)
+- Knowledge preloaded at startup
+- Persistent learning across sessions (user/project/local)
+- # Read-only agent — can't modify anything
+- Read, Write, Edit, Bash, WebFetch
+- # Research-only agent
+- Read, Grep, Glob, WebSearch, WebFetch
+- (what to do). Agents provide
+- (how to do it, with which tools). Together, they're powerful.
+- Complex reasoning, architecture decisions
+- Good balance of speed and capability
+- Fast, cheap — great for simple, focused tasks
+- Subagents via Task Tool
+- — separate from the main conversation. They do their work, return a summary, and their context is discarded.
+- # Claude spawns a subagent automatically or you can ask:
+- Use the frontend-engineer agent to add a settings page
+- # Claude uses the Agent tool internally:
+- "Add a user settings page to the TodoApp"
+- Built-in Subagent Types
+- Commands & Orchestration
+- Commands are the entry points for complex workflows — the
+- Command → Agent → Skills
+- # .claude/commands/add-feature.md
+- Add a new feature to the TodoApp
+- # Add Feature Command
+- 1. Ask the user what feature to add (AskUserQuestion)
+- 2. Invoke the backend-engineer agent for API work:
+- - Task(subagent_type="backend-engineer", ...)
+- 3. Invoke the frontend-engineer agent for UI work:
+- - Task(subagent_type="frontend-engineer", ...)
+- 4. Run tests to verify: pytest + npm test
+- 5. Summarize what was built
+- Custom scripts at specific moments in Claude's lifecycle:
+- — check task completion
+- 16 hook events, 5 can block execution.
+- Connect Claude to external tools via Model Context Protocol:
+- — query data directly
+- The full architecture pattern for complex workflows:
+- +-----------------------------------------------+
+- Entry point — user invokes this
+- +----------+----------+
+- = domain knowledge. Clean separation, maximum reusability.
+- High — Agentic Engineering
+- Your TodoApp now has: CLAUDE.md for project context, Rules for path-scoped conventions, Skills for domain knowledge, Agents for consistent execution, Commands for orchestrated workflows, Hooks for lifecycle automation, and MCP servers for external tools.
+- learn across sessions
+- to the frontmatter and the agent builds its own persistent knowledge store.
+- # First 200 lines auto-loaded
+- # Topic-specific notes
+- security-checklist.md
+- project — team-shared
+- to manage interactively
+- Feature-specific agents, not generic ones
+- Preload skills for domain knowledge
+- Use haiku model for simple focused tasks
+- Progressive disclosure of knowledge
+- Single execution context per agent
+- Command references, workflows, settings, and customization options.
+- How Claude Uses Tools
+- Claude Code doesn't just generate text — it
+- — Modify existing files
+- — Find files by pattern
+- — Search file contents
+- Claude asks for permission before running potentially dangerous commands. Always review what it's about to do.
+- Read the package.json file
+- In src/utils/format.ts, change the date format from MM/DD to DD/MM
+- Create a new test file for the user service at tests/user.test.ts
+- to edit. Don't say "fix the bug" — say "fix the null check in
+- Bash Commands & Search
+- Run the test suite: npm test
+- Check which port the server is using
+- Install express as a dependency
+- Searching the Codebase
+- Find all files that import the UserService class
+- Search for any TODO comments in the src directory
+- Find where the API_KEY environment variable is used
+- prefix for quick bash commands:
+- runs the command and shows output without Claude analyzing it.
+- Shows all available slash commands. This is your starting point when you forget a command.
+- When Opus 4.6 is selected, you can adjust the
+- , select Opus, then use
+- arrow keys to change effort.
+- Full reasoning depth — complex architecture, tricky bugs, large refactors
+- Balanced — everyday coding tasks
+- Minimal reasoning — quick, simple tasks where speed matters
+- Toggles fast mode — same Opus 4.6 model with faster token output. It does NOT switch to a different model.
+- Shows a colored grid of your context window — how much is used, what's taking space.
+- Shows token usage and cost for the current session.
+- Clears conversation history completely. Use when switching tasks.
+- Rewinds conversation and/or code to an earlier point.
+- = same topic, wrong turn.
+- = same topic, low on context.
+- # Resume most recent session
+- # Or from inside Claude Code:
+- Opens a session picker showing your recent conversations. Select one to continue where you left off.
+- Checks the health of your Claude Code installation:
+- Verifies your login is valid
+- Checks settings.json for errors
+- Detects unreachable permission rules
+- Checks if a newer version is available
+- Opens the interactive settings UI. Key things you can configure:
+- Explanatory, Learning, or Custom
+- Enable desktop notifications
+- How Claude asks for approval
+- Manage what Claude can do without asking. Supports
+- Enables file and network isolation for bash commands. Safer, with fewer permission prompts.
+- Commit these changes with a descriptive message
+- Run git status & diff
+- Reviews all staged and unstaged changes
+- Draft a commit message
+- Focuses on "why" not "what", following your repo's style
+- Adds specific files (not git add -A) and creates the commit
+- Ask Claude to Create a PR
+- Create a pull request for these changes
+- Review all commits on the branch
+- Analyzes the full diff from base branch
+- Write PR title & description
+- Summary, test plan, and changes overview
+- Push and create PR via gh CLI
+- Uses GitHub CLI to create the pull request
+- Setting a Default Agent
+- Now every time you run
+- in this project, you'll talk to the
+- agent instead of default Claude.
+- claude --agent backend-engineer
+- to view, create, edit, or delete agents interactively.
+- settings.json Overview
+- Settings cascade from most specific to least specific. Higher priority wins.
+- # User-writable override order (highest to lowest):
+- 1. Command line flags
+- 2. .claude/settings.local.json
+- # Personal, git-ignored
+- 3. .claude/settings.json
+- # Team-shared, committed
+- 4. ~/.claude/settings.local.json
+- # Global personal override
+- 5. ~/.claude/settings.json
+- # Global personal default
+- managed-settings.json
+- # Organization policy (enforced)
+- Customize the loading messages that appear while Claude thinks:
+- A custom info bar below the composer showing model, context, cost, git branch, etc.
+- "git branch --show-current 2>/dev/null"
+- # Navigate to Output Style
+- Claude explains code patterns and frameworks as it works
+- Claude coaches you through making changes yourself
+- Define your own output style
+- Terminal Setup & Vim Mode
+- for newlines in IDE terminals.
+- Enables vim-style editing mode in the Claude Code prompt.
+- Customization Summary
+- — Fun loading messages
+- Hooks — Custom lifecycle scripts
+- Plugins — Installable packages
+- MCP Servers — External tools
+- Sandbox — Security isolation
+- First thing to try when something isn't working
+- Background tasks for logs
+- Ask Claude to run the server as a background task so you can see logs while working
+- Browser MCPs for console logs
+- Use Playwright, Chrome DevTools, or Claude in Chrome to let Claude see browser console
+- Screenshots for UI issues
+- Paste screenshots directly — Ctrl+V. Worth a thousand words.
+- For any non-trivial task. Review the plan before Claude writes code.
+- Keep CLAUDE.md under 150 lines
+- Longer instructions get diluted. Use skills and rules for detail.
+- Don't wait for auto-compact. Stay in control of what's preserved.
+- Small, frequent commits. Clean rollback points.
+- Small, focused requests get better results than mega-prompts.
+- "Fix the null check in backend/routes/todos.py line 42" not "fix the bug".
+- code.claude.com/docs/en
+- Boris Cherny's 12 Tips
+- tips/claude-boris-12-tips-12-feb-26.md
+- Working examples of skills, agents, hooks, and the Command → Agent → Skills pattern
+- github.com/shanraisshan/claude-code-hooks
+- Get Claude Code running on your machine today
+- Run /init on your project
+- Create a CLAUDE.md — give Claude context about your codebase
+- Use plan mode for your first real task
+- Pick a bug or small feature and work through it with planning
+- Create your first skill
+- Document a workflow your team repeats and make it a skill
+- Build a feature-specific agent
+- Give Claude domain knowledge about your codebase
+- github.com/shanraisshan/claude-code-best-practice
+
+---
+
+## Section: reports
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> Sam Altman acknowledged the rollout was "a little more bumpy than we hoped for." Reddit threads received thousands of upvotes calling the new model a "disaster" and a "downgrade."
+
+> - [LLMs Are Getting Dumber and We Have No Idea Why — Ignorance.ai](https://www.ignorance.ai/p/llms-are-getting-dumber-and-we-have) — Five theories for perceived degradation
+
+> endpoints = ["us-east", "eu-west", "apac"]
+
+> CLAUDE_CODE_TASK_LIST_ID=my-project-tasks claude
+
+> Based on extensive research, I've analyzed the two tools from your screenshots plus a third major contender. Here's my comprehensive breakdown to help you choose the best option for automated testing of your work.
+
+> **Ideal workflow:** "Check if my changes look right" or "Test this form with my login"
+
+### 📝 General Body Copy / Page Text
+- <td><a href="../">← Back to Claude Code Best Practice</a></td>
+- <td align="right"><img src="../!/claude-jumping.svg" alt="Claude" width="60" /></td>
+- | Component | Description | Loading |
+- |-----------|-------------|---------|
+- | **Tool Instructions** | 18+ builtin tools (Write, Read, Edit, Bash, TodoWrite, etc.) | Always |
+- | **Coding Guidelines** | Code style, formatting rules, security practices | Always |
+- | **Safety Rules** | Refusal rules, injection defense, harm prevention | Always |
+- | **Environment Context** | Working directory, git status, platform info | Always |
+- | **Project Context** | CLAUDE.md content, settings, hooks configuration | Conditional |
+- | **Subagent Prompts** | Plan mode, Explore agent, Task agent | Conditional |
+- | **Security Review** | Extended security instructions (~2,610 tokens) | Conditional |
+- **Key Characteristics:**
+- - Base prompt is modest (~269 tokens), total varies by features activated
+- - Includes extensive security and injection defense layers
+- - Automatically loads CLAUDE.md files in the working directory
+- - Session-persistent context in interactive mode
+- | Component | Description | Token Impact |
+- |-----------|-------------|--------------|
+- | **Essential Tool Instructions** | Only tools explicitly provided | Minimal |
+- | **Basic Safety** | Minimal safety instructions | Minimal |
+- - No coding guidelines or style preferences by default
+- - No project context unless explicitly configured
+- - No extensive tool descriptions
+- - Requires explicit configuration to match CLI behavior
+- ├── Tool instructions (Write, Read, Edit, Bash, Grep, Glob, etc.)
+- ├── Git safety protocols
+- ├── Code reference guidelines
+- ├── Professional objectivity instructions
+- ├── Security and injection defense rules
+- ├── Environment context (OS, directory, date)
+- ├── CLAUDE.md content (if present) [conditional]
+- ├── MCP tool descriptions (if configured) [conditional]
+- ├── Plan/Explore mode prompts [conditional]
+- └── Session/conversation context
+- User Message: "What is the capital of Norway?"
+- ├── Essential tool instructions (if any tools provided)
+- └── Basic operational context
+- const response = await query({
+- prompt: "What is the capital of Norway?",
+- preset: "claude_code"
+- ├── Tool instructions
+- ├── Coding guidelines
+- | Method | Command | Effect |
+- |--------|---------|--------|
+- | **Project context** | CLAUDE.md file | Automatically loaded, persistent |
+- | **Output styles** | `/output-style [name]` | Apply predefined response styles |
+- | Method | Configuration | Effect |
+- |--------|---------------|--------|
+- | **CLAUDE.md loading** | `settingSources: ["project"]` | Loads project-level instructions |
+- | **Output styles** | `settingSources: ["user"]` or `settingSources: ["project"]` | Loads saved output styles |
+- | Feature | CLI Default | SDK Default | SDK with Preset |
+- |---------|-------------|-------------|-----------------|
+- | Tool instructions | ✅ Full | ❌ Minimal | ✅ Full |
+- | Coding guidelines | ✅ Yes | ❌ No | ✅ Yes |
+- | Safety rules | ✅ Yes | ❌ Basic | ✅ Yes |
+- | CLAUDE.md auto-load | ✅ Yes | ❌ No | ❌ No* |
+- | Project context | ✅ Automatic | ❌ No | ❌ No* |
+- *Requires explicit `settingSources: ["project"]` configuration
+- **The Claude Messages API does not provide a seed parameter for reproducibility.** This is a fundamental architectural limitation.
+- | Factor | Description | Controllable? |
+- |--------|-------------|---------------|
+- | **Floating-point arithmetic** | Parallel hardware quirks | ❌ No |
+- | **MoE routing** | Mixture-of-Experts architecture variations | ❌ No |
+- | **Batching/scheduling** | Cloud infrastructure differences | ❌ No |
+- | **Numeric precision** | Inference engine variations | ❌ No |
+- | **Model snapshots** | Version updates/changes | ❌ No |
+- - Full determinism is **NOT guaranteed**
+- - Minor variations can still occur due to infrastructure factors
+- - Known bug: [Claude CLI produces non-deterministic output for identical inputs](https://github.com/anthropics/claude-code/issues/3370)
+- To get the **closest possible** identical outputs between SDK and CLI:
+- const client = new Anthropic();
+- const response = await client.messages.create({
+- model: "claude-sonnet-4-20250514",
+- for await (const message of query({
+- settingSources: ["project"]
+- claude -p "What is the capital of Norway?" \
+- --model claude-sonnet-4-20250514 \
+- Even with perfectly matching configurations:
+- - Output may differ between runs
+- - Output may differ between SDK and CLI
+- - No seed parameter exists to force reproducibility
+- | Use Case | Recommended Interface | Reason |
+- |----------|----------------------|--------|
+- | Interactive development | Claude CLI | Full tool suite, project context |
+- | Batch processing | Agent SDK | Better for automation pipelines |
+- | One-off tasks | Claude CLI | Faster setup, immediate context |
+- 1. **Don't rely on bit-perfect reproducibility**
+- - Build applications robust to minor output variations
+- - Use structured outputs and validation
+- 2. **For production pipelines requiring consistency:**
+- - Cache results when possible
+- - Combine with deterministic logic and validation
+- - Consider multiple generations with consensus
+- 3. **For matching CLI behavior in SDK:**
+- preset: "claude_code",
+- append: "Your additional instructions"
+- settingSources: ["project", "user"]
+- | Configuration | Architecture | Notes |
+- |---------------|-------------|-------|
+- | SDK (minimal) | Minimal default | Only essential tool instructions |
+- | SDK (claude_code preset) | Modular (~269+ base) | Matches CLI, varies by features |
+- | CLI (default) | Modular (~269+ base) | Additional context loaded conditionally |
+- | CLI (with MCP tools) | Modular + MCP | MCP tool descriptions add significant tokens |
+- **Implication:** The SDK's minimal default gives you more context for your actual task, but at the cost of Claude Code's full capabilities.
+- | Aspect | Claude CLI | Agent SDK (Default) | Agent SDK (Preset) |
+- |--------|------------|--------------------|--------------------|
+- | **Tools included** | 18+ builtin | Only if provided | 18+ builtin |
+- | **CLAUDE.md auto-load** | Yes | No | No (needs config) |
+- | **Coding guidelines** | Yes | No | Yes |
+- | **Safety rules** | Full | Basic | Full |
+- | **Determinism guarantee** | No | No | No |
+- | **Identical outputs?** | N/A | No (vs CLI) | Closer, but no |
+- **Q: Is there a guarantee of identical output?**
+- - Absence of a seed parameter in Claude's API
+- - Floating-point arithmetic variations
+- - Infrastructure-level non-determinism
+- - Model architecture (Mixture-of-Experts) routing variations
+- - [Claude Code CLI Reference](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/cli)
+- - [Claude Code Headless Mode](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/headless)
+- - [Claude Code Best Practices - Anthropic Engineering](https://www.anthropic.com/engineering/claude-code-best-practices)
+- - [Claude Messages API Reference](https://docs.anthropic.com/en/api/messages)
+- - [GitHub Issue #3370: Non-deterministic output](https://github.com/anthropics/claude-code/issues/3370)
+- - [Why Deterministic Output from LLMs is Nearly Impossible](https://unstract.com/blog/understanding-why-deterministic-output-from-llms-is-nearly-impossible/)
+- *This report was generated by Claude Code using the Opus 4.5 model on February 3, 2026.*
+- description: Reviews code for quality and best practices
+- tools: Read, Write, Edit, Bash
+- patterns, conventions, and recurring issues you discover.
+- | Scope | Storage Location | Version Controlled | Shared | Best For |
+- |-------|-----------------|-------------------|--------|----------|
+- These scopes mirror the settings hierarchy (`~/.claude/settings.json` → `.claude/settings.json` → `.claude/settings.local.json`).
+- 4. **Curation**: If `MEMORY.md` exceeds 200 lines, the agent moves details into topic-specific files
+- ├── MEMORY.md # Primary file (first 200 lines loaded)
+- ├── react-patterns.md # Topic-specific file
+- └── security-checklist.md # Topic-specific file
+- |--------|-----------|-----------|-------|
+- | **CLAUDE.md** | You (manually) | Main Claude + all agents | Project |
+- - error-handling-patterns
+- - **Choose the right scope** — `user` for cross-project, `project` for team-shared, `local` for personal
+- - [Create custom subagents — Claude Code Docs](https://code.claude.com/docs/en/sub-agents)
+- - [Claude Code v2.1.33 Release Notes](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
+- Can a deployed LLM's performance change day-to-day even though the model weights are frozen? A deep-dive into proven causes, infrastructure bugs, and psychological factors.
+- <td width="50%"><a href="https://x.com/nicksdot/status/2029520949176049704"><img src="assets/llm-degradation.png" alt="Twitter users reporting day-to-day Claude quality degradation" width="100%" /></a></td>
+- <td width="50%"><a href="https://x.com/levelsio/status/2029369159893569680"><img src="assets/llm-degradation-2.png" alt="Twitter users reporting day-to-day Claude quality degradation" width="100%" /></a></td>
+- When Anthropic launches a model like Opus 4.6, the **model weights** — billions of learned parameters — are frozen. Training is enormously expensive (millions of dollars, weeks of compute). Nobody is retraining the model overnight.
+- | Question | Answer |
+- |----------|--------|
+- | Do model weights change after launch? | **No** — confirmed by all providers |
+- | Can the model behave differently day-to-day? | **Yes** — proven with ±8-14% variance |
+- | Is it intentional "nerfing"? | **No** — no evidence of deliberate degradation |
+- | Are infrastructure bugs real? | **Yes** — Anthropic confirmed 3 bugs affecting up to 16% of requests |
+- | Is some of it psychological? | **Yes** — confirmation bias and honeymoon effects are real |
+- ┌──────────────────────────────────────────────┐
+- │ YOUR SESSION CONTEXT │ ← Degrades within session
+- │ (accumulated errors, long conversations) │
+- ├──────────────────────────────────────────────┤
+- │ SYSTEM PROMPT │ ← Updated regularly
+- │ (safety rules, behavior instructions) │
+- │ POST-TRAINING (RLHF / Fine-tuning) │ ← Can be updated quietly
+- │ (instruction following, safety alignment) │
+- │ SAMPLING PARAMETERS │ ← Can be tuned server-side
+- │ SPECULATIVE DECODING │ ← Draft model quality varies
+- │ (draft model predictions + verification) │
+- │ MoE ROUTING / BATCH COMPOSITION │ ← ±8-14% variance proven
+- │ (which experts activate per request) │
+- │ HARDWARE ROUTING │ ← TPU vs GPU vs Trainium
+- │ (which cluster serves your request) │
+- │ QUANTIZATION LEVEL │ ← May vary under load
+- │ (FP16 vs INT8 vs INT4 precision) │
+- │ COMPILER & RUNTIME │ ← XLA bugs proven real
+- │ (XLA:TPU, CUDA, hardware-specific code) │
+- │ MODEL WEIGHTS (FROZEN) │ ← These DON'T change
+- │ (billions of learned parameters) │
+- └──────────────────────────────────────────────┘
+- The key mental model: **frozen weights ≠ frozen behavior**. This is like saying "same engine = same driving experience" while ignoring the tires, road conditions, fuel quality, and driver fatigue.
+- Sonnet 4 requests were accidentally routed to servers configured for 1M token context windows instead of standard servers.
+- - **Timeline**: Introduced August 5, worsened August 29 after a load balancing change
+- - **Peak impact**: 16% of Sonnet 4 requests affected at worst hour (August 31)
+- - **User impact**: ~30% of Claude Code users had at least one degraded message
+- - **Insidious detail**: Routing was "sticky" — once you hit a bad server, subsequent requests kept going there
+- A misconfiguration on TPU servers caused errors during token generation, assigning high probability to tokens that should rarely appear.
+- - **Symptoms**: Thai or Chinese characters appearing mid-English response, obvious code syntax errors
+- - **Scope**: Only Claude API; third-party platforms unaffected
+- A code change to fix precision issues accidentally exposed a **latent compiler bug** in Google's XLA:TPU.
+- - **Root cause**: The approximate top-k operation (used to pick the most likely next tokens) "sometimes returned completely wrong results, but only for certain batch sizes and model configurations"
+- - **Why it was hard to find**: It changed behavior depending on what operations ran before or after it, and whether debugging tools were enabled
+- - **Affected**: Haiku 3.5 confirmed; subset of Sonnet 4 and Opus 3 suspected
+- - **Resolution**: Switched from approximate to exact top-k; accepted "minor efficiency impact" because "Model quality is non-negotiable"
+- Anthropic's own automated evaluations didn't catch the degradation users reported, "in part because Claude often recovers well from isolated mistakes." Each bug produced different symptoms on different platforms at different rates, creating "a confusing mix of reports that didn't point to any single cause."
+- Key context: Claude runs on **three different hardware platforms** (AWS Trainium, NVIDIA GPUs, Google TPUs), each with different failure modes, compilers, and precision behaviors. Your request might hit different hardware on different days.
+- Modern large models often use a **Mixture-of-Experts (MoE)** architecture, where only a subset of the model's parameters ("experts") activate for each input. A learned router decides which experts to use.
+- Scale AI's research revealed a critical finding:
+- > "The combination of Sparse MoE and batched inference creates unpredictable results because the composition of a batch can determine which expert your query gets routed to, and the mix of queries from other users in the same batch is not deterministic."
+- | Provider | Day-to-Day Score Variance |
+- |----------|--------------------------|
+- | OpenAI (GPT-4 variants) | ±10–12% |
+- | Anthropic (Claude variants) | ±8–11% |
+- Concrete example: the same model scored **77% on jailbreak resistance one day and 63% the next**. Same model, same weights, same test — 14 percentage points of swing from infrastructure alone.
+- This means even with zero bugs and zero changes, the same model can produce noticeably different quality outputs on different days purely due to how requests are batched and routed. An A/B test cannot reliably detect a 5% quality signal when the day-to-day noise is 10–15%.
+- OpenAI has been documented multiple times silently changing which model users interact with:
+- - Making GPT-4o a hidden "legacy model" requiring a manual toggle in settings, with no in-app notification
+- - An "autoswitcher" bug routing users to wrong models
+- - Plus subscribers reported models switching to a "restricted version" without consent
+- **Practical tip**: Use `/compact` or start fresh sessions when quality feels off. This is the single most actionable thing you can do.
+- The landmark 2023 study by Stanford and UC Berkeley (Chen, Zaharia, Zou) — "How is ChatGPT's Behavior Changing Over Time?" — is frequently cited as proof that LLMs degrade. The headline finding:
+- > GPT-4's accuracy on "Is this number prime? Think step by step" fell from **97.6% to 2.4%** between March and June 2023.
+- - The behavior of the "same" LLM service **can change substantially** in a short period
+- - Different capabilities can move in opposite directions (GPT-4 got worse at math, GPT-3.5 got better)
+- - Code generation quality dropped (GPT-4 executable code: 52% → 10%)
+- - The study coined the term **"LLM drift"**
+- - Only **500 queries per task** — too small for definitive statistical claims
+- - Changes likely reflected intentional **post-training safety updates**, not degradation
+- The study proved something important — LLM behavior changes over time — but the mechanism was likely intentional updates, not unintentional degradation.
+- Once someone tweets "Claude is dumb today," you start noticing every mistake. On days when nobody complains, you brush off the same errors. Social media amplifies this effect.
+- Users experience an initial honeymoon period with new models, then gradually discover limitations. The model didn't change — expectations adjusted upward faster than capabilities warranted.
+- LLMs are probabilistic. The same prompt can produce different outputs each time. On a bad luck streak, you might get several poor responses in a row — pure randomness, not degradation.
+- The phenomenon users describe is **real but misattributed**:
+- - **Correct**: their experience degraded on certain days
+- - **Incorrect**: the model was intentionally "nerfed"
+- The actual causes are a combination of:
+- 2. **MoE routing variance** — ±8-14% quality swing measured by Scale AI, even with zero changes
+- 4. **Hardware heterogeneity** — TPU vs GPU vs Trainium, each with different failure modes
+- 5. **Context pollution** — long sessions degrade within-session quality
+- 6. **Confirmation bias** — social media amplifies perceived patterns
+- 7. **Stochastic variance** — same model, same prompt, different output every time
+- - [How is ChatGPT's Behavior Changing Over Time? — Stanford/UC Berkeley](https://arxiv.org/abs/2307.09009) — Landmark study on LLM drift (2023)
+- - [The Truth About ChatGPT's Degrading Capabilities — TechTalks](https://bdtechtalks.com/2023/07/24/chatgpt-capabilities-degrading-study/) — Methodological critique of the Stanford study
+- - [When Claude Forgets How to Code — Robert Matsuoka](https://hyperdev.matsuoka.com/p/when-claude-forgets-how-to-code) — Analysis of Claude quality fluctuations and infrastructure causes
+- - [Smoothing Out LLM Variance — Scale AI](https://scale.com/blog/smoothing-out-llm-variance) — Measured ±8-14% day-to-day variance across providers
+- - [Complaints About Secretly Switching Models — OpenAI Forum](https://community.openai.com/t/complaints-about-secretly-switching-models/1360150) — Documented silent model swaps
+- - [Speculative Decoding — BentoML LLM Inference Handbook](https://bentoml.com/llm/inference-optimization/speculative-decoding) — How draft models affect serving
+- - [A Visual Guide to Mixture of Experts — Maarten Grootendorst](https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-mixture-of-experts) — MoE architecture and routing explained
+- This section explains why users can experience a short window where Claude output quality drops while Codex 5.3 feels stable or stronger on coding tasks. The focus is not on permanent model quality rankings. The focus is short-horizon production behavior under real serving conditions.
+- Report date: March 5, 2026.
+- The reported pattern is:
+- 1. Model quality is acceptable for a period.
+- 2. Quality appears to degrade for several days.
+- 3. Quality returns close to prior baseline.
+- This shape is usually a serving-stack or rollout pattern, not a permanent base-model capability change. Permanent capability decline would not normally recover this quickly without an explicit rollback or fix.
+- Codex 5.3 can appear clearly stronger during another provider's degraded period for several technical reasons that can all happen at the same time:
+- 1. Product-objective fit. Codex 5.3 is optimized for code-generation and agentic coding workflows, so even equal raw model strength can yield better coding outcomes due to tool orchestration, repository reasoning, and code-centric instruction tuning.
+- 2. Inference policy differences. Providers tune latency, reasoning depth, and decoding defaults independently. A more conservative policy at one provider can look "smarter" than an aggressive speed-optimized policy at another for the same day.
+- 3. Serving-path separation. Even if two providers host state-of-the-art models, they run different routing layers, compiler/runtime stacks, and rollout pipelines. An incident in one stack does not imply correlated degradation in the other.
+- 5. Session-level contamination effects. In long coding chats, error accumulation can amplify perceived decline. A competing assistant can feel better simply because the failing session was reset or because its tool loop recovered faster.
+- For a report like "Claude felt very weak for about four days, then came back," the most probable explanation is:
+- 1. A provider-side incident, routing issue, decoding/runtime bug, or rollout regression affected a subset of requests.
+- 2. The issue persisted long enough to be noticed repeatedly in real workflows.
+- 3. The issue was fixed or rolled back.
+- 4. Perceived quality returned quickly.
+- During that same period, Codex 5.3 could feel substantially better because it did not share the same incident path and because coding-task optimization magnified the gap in practical outcomes.
+- | Hypothesis | Likelihood | Rationale |
+- |------------|------------|-----------|
+- | Provider incident plus rollback | High | Best match for multi-day dip followed by fast recovery |
+- | Serving configuration change (sampling/latency/reasoning budget) | High | Common source of sudden behavior shifts without model retraining |
+- | Prompt drift and context contamination only | Medium | Can degrade sessions, but less likely to explain broad multi-day reports alone |
+- | Permanent base-model degradation | Low | Inconsistent with fast return to previous quality |
+- 1. Exact model identifier and snapshot/alias at request time.
+- 2. Any backend fingerprint or release marker exposed by the provider.
+- 4. Latency, timeout, and error-rate traces.
+- 5. Structured quality scores on a fixed coding benchmark prompt set.
+- 6. Session length and token-context depth at failure points.
+- If quality drops correlate with an incident window, a config change, or a backend fingerprint shift, the incident/config hypothesis is confirmed. If no such shifts exist and degradation is only in long sessions, context contamination becomes the primary explanation.
+- To reduce day-to-day variance in production:
+- 1. Pin model snapshots when available instead of using floating aliases.
+- 2. Store request metadata (model ID, parameters, latency, errors, response quality label).
+- 3. Run a fixed daily canary suite for coding tasks and alert on regression.
+- 4. Reset or compact long-running sessions after several failed turns.
+- 5. Keep a fallback provider/model path for incident windows.
+- 6. Separate "model quality" from "serving reliability" in internal dashboards.
+- API-level features (now GA) that reduce token consumption, latency, and improve tool accuracy. Released with Opus/Sonnet 4.6.
+- 2. [Programmatic Tool Calling (PTC)](#programmatic-tool-calling-ptc)
+- 3. [Dynamic Filtering for Web Search/Fetch](#dynamic-filtering-for-web-searchfetch)
+- 4. [Tool Search Tool](#tool-search-tool)
+- 5. [Tool Use Examples](#tool-use-examples)
+- 6. [Claude Code Relevance](#claude-code-relevance)
+- |---------|---------------|---------------|--------------|
+- | Programmatic Tool Calling | Multi-step agent loops burn tokens on round trips | ~37% reduction | API, Foundry (GA) |
+- | Dynamic Filtering | Web search/fetch results bloat context with irrelevant content | ~24% fewer input tokens | API, Foundry (GA) |
+- | Tool Search Tool | Too many tool definitions bloat context | ~85% reduction | API, Foundry (GA) |
+- All features are **generally available** as of February 18, 2026.
+- **Strategic layering** — start with your biggest bottleneck:
+- - Context bloat from tool definitions → Tool Search Tool
+- - Large intermediate results → Programmatic Tool Calling
+- - Web search noise → Dynamic Filtering
+- - Parameter errors → Tool Use Examples
+- <img src="assets/programmatic-tool-calling-diagram.svg" alt="PTC Diagram — Traditional vs Programmatic Tool Calling" width="100%" />
+- **Before (Traditional Tool Calling):**
+- User prompt → Claude → Tool call 1 → Response 1 → Claude → Tool call 2 → Response 2 → Claude → Tool call 3 → Response 3 → Claude → Final answer
+- Each tool call requires a full model round trip. 3 tools = 3 inference passes.
+- **After (Programmatic Tool Calling):**
+- User prompt → Claude → writes Python script → Script calls Tool 1, Tool 2, Tool 3 internally → stdout → Claude → Final answer
+- Claude writes code that orchestrates all tools. Only the final `stdout` enters the context window. 3 tools = 1 inference pass.
+- 1. You define tools with `allowed_callers: ["code_execution_20250825"]`
+- 2. Claude writes Python that calls those tools as async functions inside a sandbox
+- 3. When a tool function is called, the sandbox pauses and the API returns a `tool_use` block
+- 4. You provide the tool result — it goes to the **running code**, not Claude's context
+- 5. Code resumes, processes results, calls more tools if needed
+- 6. Only `stdout` from the final execution reaches Claude
+- "type": "code_execution_20250825",
+- "name": "code_execution"
+- "name": "query_database",
+- "description": "Execute a SQL query. Returns rows as JSON objects with fields: id (str), name (str), revenue (float).",
+- "allowed_callers": ["code_execution_20250825"]
+- | `["direct"]` | Traditional tool calling only (default if omitted) |
+- | `["code_execution_20250825"]` | Only callable from Python sandbox |
+- | `["direct", "code_execution_20250825"]` | Both modes available |
+- **Recommendation:** Choose one mode per tool, not both. This gives Claude clearer guidance.
+- Every tool use block includes a `caller` field so you know how it was invoked:
+- regions = ["West", "East", "Central", "North", "South"]
+- for region in regions:
+- results[region] = data[0]["revenue"]
+- **Early termination** — stop as soon as success criteria are met:
+- for endpoint in endpoints:
+- status = await check_health(endpoint)
+- if status == "healthy":
+- **Conditional tool selection:**
+- file_info = await get_file_info(path)
+- if file_info["size"] < 10000:
+- content = await read_full_file(path)
+- content = await read_file_summary(path)
+- **Data filtering** — reduce what Claude sees:
+- logs = await fetch_logs(server_id)
+- errors = [log for log in logs if "ERROR" in log]
+- for error in errors[-10:]:
+- | Model | Supported |
+- |-------|-----------|
+- | Claude Opus 4.6 | Yes |
+- | Claude Sonnet 4.6 | Yes |
+- | Claude Sonnet 4.5 | Yes |
+- | Claude Opus 4.5 | Yes |
+- | Constraint | Detail |
+- |-----------|--------|
+- | **Not on Bedrock/Vertex** | API and Foundry only |
+- | **No MCP tools** | MCP connector tools cannot be called programmatically |
+- | **No web search/fetch** | Web tools not supported in PTC |
+- | **No structured outputs** | `strict: true` tools incompatible |
+- | **No forced tool choice** | `tool_choice` cannot force PTC |
+- | **Container lifetime** | ~4.5 minutes before expiry |
+- | **ZDR** | Not covered by Zero Data Retention |
+- | **Tool results as strings** | Validate external results for code injection risks |
+- | Good Use Cases | Less Ideal |
+- |----------------|------------|
+- | Processing large datasets needing aggregates | Single tool calls with simple responses |
+- | 3+ dependent tool calls in sequence | Tools needing immediate user feedback |
+- | Conditional logic based on intermediate results | |
+- - Tool results from programmatic calls are **not added to Claude's context** — only final `stdout`
+- - Intermediate processing happens in code, not model tokens
+- - 10 tools programmatically ≈ 1/10th the tokens of 10 direct calls
+- Web search and fetch tools dump full HTML pages into Claude's context window. Most of that content is irrelevant — navigation, ads, boilerplate. Claude then reasons over all of it, wasting tokens and reducing accuracy.
+- Claude now **writes and executes Python code to filter web results** before they enter the context window. Instead of reasoning over raw HTML, Claude filters, parses, and extracts only relevant content in a sandbox.
+- Query → Search results → Fetch full HTML × N pages → All content enters context → Claude reasons over everything
+- Query → Search results → Claude writes filtering code → Code extracts relevant content only → Filtered results enter context
+- Uses updated tool type versions with a beta header:
+- "model": "claude-opus-4-6",
+- "type": "web_search_20260209",
+- "type": "web_fetch_20260209",
+- **Header required:** `anthropic-beta: code-execution-web-tools-2026-02-09`
+- **Enabled by default** when using the new tool type versions with Sonnet 4.6 and Opus 4.6.
+- **BrowseComp** (finding specific information on websites):
+- |-------|-------------------|----------------|-------------|
+- | Sonnet 4.6 | 33.3% | **46.6%** | +13.3 pp |
+- | Opus 4.6 | 45.3% | **61.6%** | +16.3 pp |
+- **DeepsearchQA** (multi-step research, F1 score):
+- | Sonnet 4.6 | 52.6% | **59.4%** | +6.8 pp |
+- | Opus 4.6 | 69.8% | **77.3%** | +7.5 pp |
+- **Token efficiency:** Average 24% fewer input tokens. Sonnet 4.6 sees cost reduction; Opus 4.6 may increase slightly due to more complex filtering code.
+- - Sifting through technical documentation
+- - Verifying citations across multiple sources
+- - Cross-referencing search results
+- - Multi-step research queries
+- - Finding specific data points buried in large pages
+- Loading all tool definitions upfront wastes context. If you have 50 MCP tools at ~1.5K tokens each, that's 75K tokens before the user even asks a question.
+- "type": "mcp_toolset",
+- "mcp_server_name": "google-drive",
+- - Keep 3-5 most-used tools always loaded, defer the rest
+- - Tool definitions consuming > 10K tokens
+- - 10+ tools available
+- - Multiple MCP servers
+- - Tool selection accuracy issues from too many options
+- ~85% reduction in tool definition tokens (77K → 8.7K in Anthropic's benchmarks).
+- Claude Code has **MCP tool search auto mode** (enabled by default since v2.1.7). When MCP tool descriptions exceed 10% of context, they're deferred and discovered via `MCPSearch`. Configure the threshold with `ENABLE_TOOL_SEARCH=auto:N` where N is the context percentage (0-100).
+- - When to include optional parameters
+- - Which parameter combinations make sense
+- - Format conventions (date formats, ID patterns)
+- - Nested structure usage
+- "name": "create_ticket",
+- "description": "Create a support ticket",
+- "required": ["title"]
+- "title": "Login page returns 500 error",
+- "priority": "critical",
+- "assignee": "oncall-team",
+- "labels": ["bug", "auth", "production"]
+- "title": "Add dark mode support",
+- "labels": ["feature-request", "ui"]
+- "title": "Update API docs for v2 endpoints"
+- - Use **realistic data**, not placeholder strings like "example_value"
+- - Show **variety**: minimal, partial, and full specifications
+- - Keep concise: **1-5 examples per tool**
+- - Show parameter correlations (e.g., `priority: "critical"` tends to have `assignee`)
+- 72% → 90% accuracy on complex parameter handling in Anthropic's benchmarks.
+- | Feature | Claude Code Status | Action |
+- |---------|-------------------|--------|
+- | Tool Search | Built-in since v2.1.7 as MCPSearch auto mode | Tune `ENABLE_TOOL_SEARCH=auto:N` if you have many MCP tools |
+- | Dynamic Filtering | Not available in CLI (API-level web tools) | Relevant for Agent SDK users doing web research |
+- | PTC | Not available in CLI | Relevant for Agent SDK users building custom agents |
+- | Tool Use Examples | Not configurable in CLI | Relevant for custom MCP server authors |
+- If you're building agents with `@anthropic-ai/claude-agent-sdk`, PTC is immediately actionable:
+- 1. Add `code_execution_20250825` to your tools array
+- 2. Set `allowed_callers` on tools that benefit from batching/filtering
+- 4. Return structured data (JSON) from tools for easier programmatic parsing
+- If you're building custom MCP servers, Tool Use Examples can improve how Claude uses your tools:
+- - [Anthropic Engineering: Advanced Tool Use](https://www.anthropic.com/engineering/advanced-tool-use)
+- - [Programmatic Tool Calling Documentation](https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling)
+- - [Code Execution Tool Documentation](https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool)
+- - [Improved Web Search with Dynamic Filtering](https://claude.com/blog/improved-web-search-with-dynamic-filtering)
+- A comprehensive comparison of which Claude Code features are global-only (`~/.claude/`) versus which have both global and project-level (`.claude/`) equivalents.
+- 2. [Global-Only Features](#global-only-features)
+- 3. [Dual-Scope Features](#dual-scope-features)
+- 4. [Settings Precedence](#settings-precedence)
+- 5. [Directory Structure Comparison](#directory-structure-comparison)
+- 7. [Agent Teams](#agent-teams)
+- 8. [Design Principles](#design-principles)
+- Claude Code uses a **scope hierarchy** where some features exist at both the global (`~/.claude/`) and project (`.claude/`) levels, while others are exclusively global. The design principle: things that are *personal state* or *cross-project coordination* live globally; things that are *team-shareable project config* can live at the project level.
+- - `~/.claude/` is your **user-level home** (global, all projects)
+- - `.claude/` inside a repo is your **project-level home** (scoped to that project)
+- These live **only** under `~/.claude/` and cannot be scoped to a project:
+- | Feature | Location | Purpose |
+- |---------|----------|---------|
+- | **Tasks** | `~/.claude/tasks/` | Persistent task lists across sessions and agents |
+- | **Agent Teams** | `~/.claude/teams/` | Multi-agent coordination configs (experimental, Feb 2026) |
+- | **Keybindings** | `~/.claude/keybindings.json` | Custom keyboard shortcuts |
+- | **MCP User Servers** | `~/.claude.json` (`mcpServers` key) | Personal MCP servers across all projects |
+- These exist at both levels, with **project-level taking precedence** over global:
+- | Feature | Global (`~/.claude/`) | Project (`.claude/`) | Precedence |
+- |---------|----------------------|---------------------|------------|
+- | **CLAUDE.md** | `~/.claude/CLAUDE.md` | `./CLAUDE.md` or `.claude/CLAUDE.md` | Project overrides global |
+- | **Settings** | `~/.claude/settings.json` | `.claude/settings.json` + `.claude/settings.local.json` | Project > Global |
+- | **Rules** | `~/.claude/rules/*.md` | `.claude/rules/*.md` | Project overrides |
+- | **Agents/Subagents** | `~/.claude/agents/*.md` | `.claude/agents/*.md` | Project overrides |
+- | **Commands** | `~/.claude/commands/*.md` | `.claude/commands/*.md` | Both available |
+- | **Skills** | `~/.claude/skills/` | `.claude/skills/` | Both available |
+- | **Hooks** | `~/.claude/hooks/` | `.claude/hooks/` | Both execute |
+- | **MCP Servers** | `~/.claude.json` (user scope) | `.mcp.json` (project scope) | Three scopes: local > project > user |
+- User-writable settings apply in this override order (highest to lowest):
+- | Priority | Location | Scope | Version Control | Purpose |
+- |----------|----------|-------|-----------------|---------|
+- | 1 | Command line flags | Session | N/A | Single-session overrides |
+- | 2 | `.claude/settings.local.json` | Project | No (git-ignored) | Personal project-specific |
+- | 3 | `.claude/settings.json` | Project | Yes (committed) | Team-shared settings |
+- | 4 | `~/.claude/settings.local.json` | User | N/A | Personal global overrides |
+- | 5 | `~/.claude/settings.json` | User | N/A | Global personal settings |
+- Policy layer: `managed-settings.json` is organization-enforced and cannot be overridden by local files.
+- **Important**: `deny` rules have the highest safety precedence and cannot be overridden by lower-priority allow/ask rules.
+- ├── settings.json # User-level settings (all projects)
+- ├── settings.local.json # Personal overrides
+- ├── agents/ # User subagents (available to all projects)
+- ├── rules/ # User-level modular rules
+- ├── commands/ # User-level commands
+- ├── skills/ # User-level skills
+- ├── tasks/ # GLOBAL-ONLY: Task lists
+- ├── teams/ # GLOBAL-ONLY: Agent team configs
+- ├── keybindings.json # GLOBAL-ONLY: Keyboard shortcuts
+- └── hooks/ # User-level hooks
+- ~/.claude.json # GLOBAL-ONLY: MCP servers, OAuth, preferences, caches
+- ├── settings.json # Team-shared settings
+- ├── settings.local.json # Personal project overrides (git-ignored)
+- ├── agents/ # Project subagents
+- ├── rules/ # Project-level modular rules
+- ├── commands/ # Custom slash commands
+- ├── skills/ # Custom skills
+- │ └── supporting-files/
+- ├── hooks/ # Project-level hooks
+- └── plugins/ # Installed plugins
+- .mcp.json # Project-scoped MCP servers (repo root)
+- | **TaskCreate** | Create a new task with `subject`, `description`, and `activeForm` |
+- | **TaskGet** | Retrieve full details of a specific task by ID |
+- | **TaskUpdate** | Change status, set owner, add dependencies, or delete |
+- | **TaskList** | List all tasks with their current status |
+- pending → in_progress → completed
+- All sessions sharing the same ID see task updates in real-time, enabling parallel workstreams and session resumption.
+- | Feature | Old Todos | New Tasks |
+- |---------|-----------|-----------|
+- | Scope | Single session | Cross-session, cross-agent |
+- | Dependencies | None | Full dependency graph |
+- | Persistence | Lost on session end | Survives restarts and crashes |
+- | Multi-session | Not possible | Via `CLAUDE_CODE_TASK_LIST_ID` |
+- Announced **February 5, 2026** as an experimental feature. Agent Teams allow multiple Claude Code sessions to coordinate on shared work.
+- "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+- |------|-------------|--------------|
+- | **In-process** (default) | All teammates run inside your terminal | None |
+- | **Split panes** | Each teammate gets its own pane | tmux or iTerm2 (not VS Code terminal) |
+- The global-only vs dual-scope split follows a clear pattern:
+- | Category | Scope | Rationale |
+- |----------|-------|-----------|
+- | **Coordination state** (tasks, teams) | Global-only | Needs to persist beyond any single project |
+- | **Security state** (credentials, OAuth) | Global-only | Prevents accidental commits to version control |
+- | **Configuration** (settings, rules, agents) | Both levels | Teams need to share project-specific behavior |
+- | **Workflow definitions** (commands, skills) | Both levels | Can be personal or team-shared |
+- - [Claude Code Settings Documentation](https://code.claude.com/docs/en/settings)
+- - [Orchestrate Teams of Claude Code Sessions](https://code.claude.com/docs/en/agent-teams)
+- - [What are Tasks in Claude Code - ClaudeLog](https://claudelog.com/faqs/what-are-tasks-in-claude-code/)
+- - [Claude Code Tasks Update - VentureBeat](https://venturebeat.com/orchestration/claude-codes-tasks-update-lets-agents-work-longer-and-coordinate-across)
+- - [Where Are Claude Code Global Settings - ClaudeLog](https://claudelog.com/faqs/where-are-claude-code-global-settings/)
+- - [Claude Opus 4.6 Agent Teams - VentureBeat](https://venturebeat.com/technology/anthropics-claude-opus-4-6-brings-1m-token-context-and-agent-teams-to-take)
+- - [How to Set Up Claude Code Agent Teams (Full Walkthrough) - r/ClaudeCode](https://www.reddit.com/r/ClaudeCode/comments/1qz8tyy/how_to_set_up_claude_code_agent_teams_full/)
+- - [Anthropic replaced Claude Code's old 'Todos' with Tasks - r/ClaudeAI](https://www.reddit.com/r/ClaudeAI/comments/1qkjznp/anthropic_replaced_claude_codes_old_todos_with/)
+- When working with Claude Code in a monorepo, understanding how skills are discovered and loaded into context is crucial for organizing your project-specific capabilities effectively.
+- **Skills do NOT have the same loading behavior as CLAUDE.md files.** While CLAUDE.md files walk UP the directory tree (ancestor loading), skills use a different discovery mechanism focused on nested directories within your project.
+- Skills are loaded from these fixed locations based on scope:
+- | Location | Path | Applies to |
+- |----------|------|------------|
+- | Enterprise | Managed settings | All users in organization |
+- | Personal | `~/.claude/skills/<skill-name>/SKILL.md` | All your projects |
+- | Project | `.claude/skills/<skill-name>/SKILL.md` | This project only |
+- | Plugin | `<plugin>/skills/<skill-name>/SKILL.md` | Where plugin is enabled |
+- When you work with files in subdirectories, Claude Code automatically discovers skills from nested `.claude/skills/` directories. For example, if you're editing a file in `packages/frontend/`, Claude Code also looks for skills in `packages/frontend/.claude/skills/`.
+- This supports monorepo setups where packages have their own skills.
+- Consider a typical monorepo with separate packages:
+- │ └── shared-conventions/SKILL.md # Project-level skill
+- │ │ │ └── react-patterns/SKILL.md # Frontend-specific skill
+- │ │ │ └── api-design/SKILL.md # Backend-specific skill
+- │ │ └── utils-patterns/SKILL.md # Shared utilities skill
+- When you run Claude Code from `/mymonorepo/` and haven't edited any files yet:
+- | Skill | In Context? | Reason |
+- |-------|-------------|--------|
+- | `shared-conventions` | **Yes** | Project-level skill in root `.claude/skills/` |
+- | `react-patterns` | **No** | Not discovered - haven't worked with files in `packages/frontend/` |
+- | `api-design` | **No** | Not discovered - haven't worked with files in `packages/backend/` |
+- | `utils-patterns` | **No** | Not discovered - haven't worked with files in `packages/shared/` |
+- After you ask Claude to edit `packages/frontend/src/App.tsx`:
+- | `react-patterns` | **Yes** | Discovered when editing files in `packages/frontend/` |
+- | `api-design` | **No** | Still not discovered - haven't worked with files in `packages/backend/` |
+- | `utils-patterns` | **No** | Still not discovered - haven't worked with files in `packages/shared/` |
+- Skill descriptions are loaded into context so Claude knows what's available, but **full skill content only loads when invoked**. This is an important optimization:
+- - **Descriptions**: Always in context (within character budget)
+- > Note: Subagents with preloaded skills work differently - the full skill content is injected at startup.
+- When skills share the same name across levels, higher-priority locations win:
+- | Priority | Location | Scope |
+- |----------|----------|-------|
+- | 1 (highest) | Enterprise | Organization-wide |
+- | 2 | Personal (`~/.claude/skills/`) | All your projects |
+- | 3 (lowest) | Project (`.claude/skills/`) | This project only |
+- Plugin skills use a `plugin-name:skill-name` namespace, so they cannot conflict with other levels.
+- - **Package-specific skills stay isolated** - Frontend developers working in `packages/frontend/` get frontend-specific skills without backend skills cluttering context.
+- - **Automatic discovery reduces configuration** - No need to explicitly register package-level skills; they're discovered when you work in those directories.
+- - **Teams can maintain their own skills** - Each package team can define skills specific to their domain without coordinating with other teams.
+- Skill descriptions are loaded into context up to a character budget (default 15,000 characters). In large monorepos with many packages and skills, you may hit this limit.
+- - Run `/context` to check for warnings about excluded skills
+- - Set `SLASH_COMMAND_TOOL_CHAR_BUDGET` environment variable to increase the limit
+- 1. **Put shared workflows in root `.claude/skills/`** - Repository-wide conventions, commit workflows, and shared patterns.
+- 2. **Put package-specific skills in package `.claude/skills/`** - Framework-specific patterns, component conventions, testing utilities unique to that package.
+- 3. **Use `disable-model-invocation: true` for dangerous skills** - Deployment or destructive skills should require explicit user invocation.
+- 4. **Keep skill descriptions concise** - Descriptions are always in context (up to the character budget), so verbose descriptions waste context space.
+- 5. **Use namespacing in skill names** - Consider prefixing with package names (e.g., `frontend-review`, `backend-deploy`) to avoid confusion.
+- | Behavior | CLAUDE.md | Skills |
+- |----------|-----------|--------|
+- | Ancestor loading (UP directory tree) | Yes | No |
+- | Nested/descendant discovery (DOWN directory tree) | Yes (lazy) | Yes (automatic discovery) |
+- | Global location | `~/.claude/CLAUDE.md` | `~/.claude/skills/` |
+- | Project location | `.claude/` or repo root | `.claude/skills/` |
+- | Content loading | Full content | Description only (full on invocation) |
+- - [Claude Code Documentation - Extend Claude with Skills](https://code.claude.com/docs/en/skills)
+- - [Claude Code Documentation - Automatic Discovery from Nested Directories](https://code.claude.com/docs/en/skills#automatic-discovery-from-nested-directories)
+- Claude Code on subscription plans (Pro, Max 5x, Max 20x) has usage limits that reset on a rolling window. Three built-in slash commands help you monitor and manage usage:
+- | Command | Description | Available To |
+- |---------|-------------|--------------|
+- | `/usage` | Check plan limits and rate limit status | Pro, Max 5x, Max 20x |
+- | `/extra-usage` | Configure pay-as-you-go overflow when limits are hit | Pro, Max 5x, Max 20x |
+- | `/cost` | Show token usage and spending for the current session | API key users |
+- Shows your current plan's usage limits and rate limit status. Useful for checking how much capacity you have left before hitting a limit.
+- The `/extra-usage` command configures **pay-as-you-go overflow billing** so Claude Code continues working seamlessly when you hit your plan's rate limits, instead of blocking you.
+- 1. You hit your plan's rate limit (limits reset every 5 hours)
+- 2. If extra usage is enabled with available funds, Claude Code continues without interruption
+- 3. Overflow tokens are billed at **standard API rates**, separate from your subscription fee
+- The `/extra-usage` command in the CLI will guide you through configuration. You can also configure it on the web at **Settings > Usage** on claude.ai:
+- 1. Enable extra usage
+- 2. Add a payment method
+- 3. Set a **monthly spending cap** (or choose unlimited)
+- 4. Optionally add **prepaid funds** with auto-reload when balance drops below a threshold
+- | Billing | Separate from subscription, at standard API rates |
+- | Limit reset window | Every 5 hours |
+- As of February 2026, the `/extra-usage` CLI command is [undocumented](https://github.com/anthropics/claude-code/issues/12396) and may open a sign-in window without clear configuration options. Configuring through the **claude.ai web interface** is the more reliable path for now.
+- For users authenticating with an API key (not a subscription plan), `/cost` shows:
+- - Total cost for the current session
+- - API duration and wall time
+- - Token usage breakdown
+- This command is not relevant for Pro/Max subscription users.
+- Fast mode (`/fast`) uses Claude Opus 4.6 with faster output. It has a special billing relationship with extra usage:
+- - Fast mode usage is **always billed to extra usage** from the first token
+- - Fast mode does not consume your plan's included rate limits
+- This means you need extra usage enabled and funded to use `/fast`.
+- Two startup flags relate to usage budgets (API key users only, print mode):
+- | Flag | Description |
+- |------|-------------|
+- | `--max-budget-usd <AMOUNT>` | Maximum dollar amount for API calls before stopping |
+- | `--max-turns <NUMBER>` | Limit number of agentic turns |
+- See [CLI Startup Flags Reference](claude-cli-startup-flags.md) for the full list.
+- - [Extra usage for paid Claude plans — Claude Help Center](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)
+- - [Using Claude Code with your Pro or Max plan — Claude Help Center](https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
+- - [/extra-usage slash command is undocumented — GitHub Issue #12396](https://github.com/anthropics/claude-code/issues/12396)
+- - [Claude Code CLI Reference](https://code.claude.com/docs/en/cli-reference)
+- A comparison of the three extension mechanisms in Claude Code: subagents, commands, and skills.
+- | | Agent | Command | Skill |
+- | **Location** | `.claude/agents/<name>.md` | `.claude/commands/<name>.md` | `.claude/skills/<name>/SKILL.md` |
+- | **Context** | Separate subagent process | Inline (main conversation) | Inline (main conversation) |
+- | **User-invocable** | No `/` menu — invoked by Claude or via Agent tool | Yes — `/command-name` | Yes — `/skill-name` (unless `user-invocable: false`) |
+- | **Auto-invoked by Claude** | Yes — via `description` field | No | Yes — via `description` field (unless `disable-model-invocation: true`) |
+- | **Accepts arguments** | Via `prompt` parameter | `$ARGUMENTS`, `$0`, `$1` | `$ARGUMENTS`, `$0`, `$1` |
+- | **Dynamic context injection** | No | Yes — `` !`command` `` | Yes — `` !`command` `` |
+- | **Own context window** | Yes — isolated | No — shares main | No — shares main (unless `context: fork`) |
+- | **Model override** | `model:` frontmatter | `model:` frontmatter | `model:` frontmatter |
+- | **Tool restrictions** | `tools:` / `disallowedTools:` | `allowed-tools:` | `allowed-tools:` |
+- | **Hooks** | `hooks:` frontmatter | — | `hooks:` frontmatter |
+- | **Can preload skills** | Yes — `skills:` frontmatter | — | — |
+- | **MCP servers** | `mcpServers:` frontmatter | — | — |
+- - The task is **autonomous and multi-step** — the agent needs to explore, decide, and act without constant guidance
+- - You need **context isolation** — the work shouldn't pollute the main conversation window
+- - You want to **preload domain knowledge** via skills without cluttering the main context
+- - The task benefits from **running in the background** or in a **git worktree**
+- - You need **tool restrictions** or a **different permission mode** (e.g., `acceptEdits`, `plan`)
+- **Example**: `weather-agent` — autonomously fetches weather data using its preloaded `weather-fetcher` skill, runs in a separate context with restricted tools.
+- - You need a **user-initiated entry point** — a workflow the user explicitly triggers
+- - The workflow involves **orchestrating** other agents or skills
+- - You want to **keep context lean** — command content is not injected into the session context until the user triggers it
+- **Example**: `weather-orchestrator` — the user triggers it, it asks for C/F preference, invokes the agent, then invokes the SVG skill.
+- - The task is a **reusable procedure** that can be invoked from multiple places (commands, agents, or Claude itself)
+- - You need **agent preloading** — baking domain knowledge into a specific agent at startup
+- **Example**: `weather-svg-creator` — Claude auto-invokes it when the user asks for a weather card; also callable from commands.
+- User triggers /command
+- Command orchestrates the workflow
+- Command invokes Agent (separate context, autonomous)
+- Agent uses preloaded Skill (domain knowledge)
+- Command invokes Skill (inline, for output generation)
+- ├── weather-fetcher (agent skill — preloaded API instructions)
+- weather-svg-creator (skill — creates SVG inline)
+- description: Use this agent PROACTIVELY when...
+- permissionMode: acceptEdits
+- description: Do something useful
+- argument-hint: [issue-number]
+- allowed-tools: Read, Edit, Bash(gh *)
+- description: Do something when the user asks for...
+- argument-hint: [file-path]
+- disable-model-invocation: false
+- allowed-tools: Read, Grep, Glob
+- agent: general-purpose
+- | Mechanism | Can Claude auto-invoke? | How to prevent |
+- |-----------|------------------------|----------------|
+- | Command | No — always user-initiated via `/` | N/A |
+- | Skill | Yes — via `description` | Set `disable-model-invocation: true` |
+- | Mechanism | Appears in `/` menu? | How to hide |
+- |-----------|---------------------|-------------|
+- | Command | Yes — always | Cannot be hidden |
+- | Skill | Yes — by default | Set `user-invocable: false` |
+- | Mechanism | Runs in own context? | How to configure |
+- |-----------|---------------------|-----------------|
+- | Agent | Always | Built-in behavior |
+- | Command | Never | N/A |
+- | Skill | Optional | Set `context: fork` |
+- This repository has all three mechanisms defined for the same task — displaying the current time in PKT. Here's what happens when a user types **"What is the current time?"** without explicitly invoking any `/` command:
+- | Mechanism | Will it fire? | Why / Why not |
+- |-----------|--------------|---------------|
+- | `time-command` | No | Commands are **never auto-invoked**. The user would need to explicitly type `/time-command` for it to run. Commands have no auto-discovery pathway — they are strictly user-initiated. |
+- | `time-skill` | **Yes** (most likely) | The skill's `description` says *"Display the current time in Pakistan Standard Time (PKT, UTC+5). Use when the user asks for the current time, Pakistan time, or PKT."* Claude matches this and invokes it via the Skill tool. Since it runs **inline** with no context overhead, it's the most efficient match. |
+- When multiple mechanisms match the same intent, Claude prefers the **lightest-weight option** that satisfies the request:
+- 1. Skill (inline, no context overhead) ← preferred
+- 2. Agent (separate context, autonomous) ← used if skill is unavailable or task is complex
+- 3. Command (never — requires explicit /) ← only if user types /time-command
+- Then Claude **cannot** auto-invoke the skill. The agent becomes the only auto-invocable option, so Claude would spawn `time-agent` instead — at the cost of a separate context window for a one-liner bash command.
+- Then **nothing fires automatically**. Claude would fall back to its own general knowledge and likely just run `TZ='Asia/Karachi' date` directly — no extension mechanism involved. The user would need to explicitly type `/time-command` or `/time-skill` to use one.
+- - [Claude Code Skills — Docs](https://code.claude.com/docs/en/skills)
+- - [Claude Code Sub-agents — Docs](https://code.claude.com/docs/en/sub-agents)
+- - [Claude Code Slash Commands — Docs](https://code.claude.com/docs/en/slash-commands)
+- - [Skills Best Practice](../best-practice/claude-skills.md)
+- - [Commands Best Practice](../best-practice/claude-commands.md)
+- - [Sub-agents Best Practice](../best-practice/claude-subagents.md)
+- - **Source:** Official Google Chrome team
+- - **Architecture:** Built on Chrome DevTools Protocol (CDP) + Puppeteer
+- - **Token Usage:** ~19.0k tokens (9.5% of context)
+- - **Tools:** 26 specialized tools across 6 categories
+- - **Source:** Official Anthropic extension
+- - **Released:** Beta, rolling out to all paid plans (Pro, Max, Team, Enterprise)
+- - **Architecture:** Browser extension with computer-use capabilities
+- - **Token Usage:** ~15.4k tokens (7.7% of context)
+- - **Tools:** 16 tools including computer use capabilities
+- - **Architecture:** Accessibility tree-based automation
+- - **Token Usage:** ~13.7k tokens (6.8% of context)
+- - **Tools:** 21 tools
+- | Feature | Chrome DevTools MCP | Claude in Chrome | Playwright MCP |
+- |---------|---------------------|------------------|----------------|
+- | **Primary Purpose** | Debugging & Performance | General browser automation | UI Testing & E2E |
+- | **Browser Support** | Chrome only | Chrome only | Chromium, Firefox, WebKit |
+- | **Token Efficiency** | 19.0k (9.5%) | 15.4k (7.7%) | 13.7k (6.8%) |
+- | **Performance Traces** | ✅ Excellent | ❌ No | ⚠️ Limited |
+- | **Network Inspection** | ✅ Deep analysis | ⚠️ Basic | ⚠️ Basic |
+- | **Console Logs** | ✅ Full access | ✅ Full access | ⚠️ Limited |
+- | **Cross-browser** | ❌ No | ❌ No | ✅ Yes |
+- | **CI/CD Integration** | ✅ Excellent | ❌ Poor (requires login) | ✅ Excellent |
+- | **Headless Mode** | ✅ Yes | ❌ No | ✅ Yes |
+- | **Authentication** | Requires setup | Uses your session | Requires setup |
+- | **Scheduled Tasks** | ❌ No | ✅ Yes | ❌ No |
+- | **Cost** | Free | Requires paid plan | Free |
+- | **Local Setup** | Node.js required | Browser extension | Node.js required |
+- INPUT AUTOMATION (8): click, drag, fill, fill_form, handle_dialog,
+- hover, press_key, upload_file
+- NAVIGATION (6): close_page, list_pages, navigate_page,
+- new_page, select_page, wait_for
+- PERFORMANCE (3): performance_analyze_insight,
+- performance_start_trace, performance_stop_trace
+- NETWORK (2): get_network_request, list_network_requests
+- DEBUGGING (5): evaluate_script, get_console_message,
+- list_console_messages, take_screenshot,
+- BROWSER CONTROL: navigate, read_page, find, computer
+- (click, type, scroll)
+- FORM INTERACTION: form_input, javascript_tool
+- MEDIA: upload_image, get_page_text, gif_creator
+- TAB MANAGEMENT: tabs_context_mcp, tabs_create_mcp
+- DEVELOPMENT: read_console_messages, read_network_requests
+- UTILITIES: shortcuts_list, shortcuts_execute,
+- resize_window, update_plan
+- NAVIGATION: navigate, goBack, goForward, reload
+- INTERACTION: click, fill, select, hover, press,
+- ASSERTIONS: assertVisible, assertText, assertTitle
+- PAGE STATE: screenshot, getAccessibilityTree,
+- BROWSER MGMT: newPage, closePage
+- ✅ **Performance Testing**
+- - Recording performance traces with Core Web Vitals
+- - Identifying render bottlenecks and layout shifts
+- - Network request inspection (headers, payloads, timing)
+- - Console error analysis and stack traces
+- - Real-time DOM inspection
+- - Headless execution support
+- - Stable, script-based automation
+- - No authentication state dependencies
+- **Ideal workflow:** "Find why this page is slow" or "Debug this API call"
+- ✅ **Manual Testing Assistance**
+- - Testing while logged into your accounts
+- - Exploratory testing with visual context
+- - Recording workflows you can replay
+- ✅ **Quick Verification**
+- - Design verification (comparing Figma to output)
+- - Spot-checking new features
+- - Reading console errors during development
+- ✅ **Recurring Browser Tasks**
+- - Scheduled automated checks
+- - Learning from your recorded actions
+- ✅ **E2E Test Automation**
+- - Cross-browser testing (Chrome, Firefox, Safari)
+- - Generating reusable test scripts
+- - Page Object Model generation
+- ✅ **Reliable UI Testing**
+- - Accessibility tree = no flaky selectors
+- - Deterministic interactions
+- - Less prone to breaking from UI changes
+- - Headless mode for pipelines
+- - Generate Playwright test files from natural language
+- **Ideal workflow:** "Write E2E tests for this user flow" or "Test this across browsers"
+- | Tool | Token Usage | % of Context | Efficiency Rating |
+- |------|-------------|--------------|-------------------|
+- | Playwright MCP | ~13.7k | 6.8% | ⭐⭐⭐⭐⭐ Best |
+- | Claude in Chrome | ~15.4k | 7.7% | ⭐⭐⭐⭐ Good |
+- | Chrome DevTools MCP | ~19.0k | 9.5% | ⭐⭐⭐ Acceptable |
+- **Impact:** With 200k token context:
+- - Playwright leaves 186.3k tokens for your work
+- - Claude in Chrome leaves 184.6k tokens
+- - Chrome DevTools leaves 181k tokens
+- The ~5.3k token difference between Playwright and Chrome DevTools could matter for complex sessions with lots of code context.
+- - ✅ Isolated browser profile by default
+- - ✅ No cloud dependencies
+- - ✅ Full local control
+- - ⚠️ **23.6% attack success rate** without mitigations (reduced to 11.2% with defenses)
+- - ⚠️ Uses your actual browser session (cookie exposure risk)
+- - ⚠️ Blocked from financial/adult/pirated sites
+- - ⚠️ Still in beta with known vulnerabilities
+- - ✅ Isolated browser contexts
+- - ✅ Mature security model (Microsoft backing)
+- - ✅ Can handle authentication safely
+- Install from Chrome Web Store (requires Pro/Max/Team/Enterprise plan)
+- **Use for:** Day-to-day E2E testing, cross-browser verification, generating test scripts
+- - Lowest token usage (more context for your code)
+- - Cross-browser support (Chrome, Firefox, Safari)
+- - Accessibility tree approach = more reliable selectors
+- - Excellent CI/CD integration
+- - Can generate actual Playwright test files
+- - Free, no subscription required
+- **Use for:** Performance debugging, network analysis, Core Web Vitals
+- - Unmatched for performance traces and debugging
+- - Deep network request inspection
+- - Official Google tooling with long-term support
+- - Essential when you need to answer "why is this slow?"
+- **Use for:** Quick manual verification while logged in, exploratory testing, design verification
+- - Good for quick visual checks during development
+- - Can read your logged-in state
+- - Useful for "does this look right?" verification
+- - Skip for CI/CD or serious test automation
+- 1. DEVELOP → Claude Code (terminal)
+- 2. TEST → Playwright MCP (E2E, cross-browser)
+- 3. DEBUG → Chrome DevTools MCP (performance, network)
+- 4. VERIFY → Claude in Chrome (quick visual checks)
+- 5. CI/CD → Playwright MCP (headless, automated)
+- | If You Need... | Use This |
+- |----------------|----------|
+- | Cross-browser E2E tests | **Playwright MCP** |
+- | Performance analysis | **Chrome DevTools MCP** |
+- | Network debugging | **Chrome DevTools MCP** |
+- | Quick visual verification | **Claude in Chrome** |
+- | CI/CD automation | **Playwright MCP** |
+- | Test script generation | **Playwright MCP** |
+- | Lowest token usage | **Playwright MCP** |
+- | Logged-in session testing | **Claude in Chrome** |
+- | Console log debugging | **Chrome DevTools MCP** |
+- **Install both Playwright MCP and Chrome DevTools MCP.** Use Playwright as your primary testing tool (it's more token-efficient, cross-browser, and better for E2E). Use Chrome DevTools when you need deep performance analysis or network debugging. Use Claude in Chrome only for quick manual verifications where you need your logged-in session.
+- - [Chrome DevTools MCP - GitHub](https://github.com/ChromeDevTools/chrome-devtools-mcp)
+- - [Anthropic - Piloting Claude in Chrome](https://claude.com/blog/claude-for-chrome)
+- - [Claude in Chrome Help Center](https://support.claude.com/en/articles/12012173-getting-started-with-claude-in-chrome)
+- - [Playwright MCP - GitHub](https://github.com/microsoft/playwright-mcp)
+- - [Simon Willison - Using Playwright MCP with Claude Code](https://til.simonwillison.net/claude-code/playwright-mcp-claude-code)
+- - [Testomat.io - Playwright MCP Claude Code](https://testomat.io/blog/playwright-mcp-claude-code/)
+- - [MCP Integration Guide - Scrapeless](https://www.scrapeless.com/en/blog/mcp-integration-guide)
+- - [Chrome DevTools MCP Guide - Vladimir Siedykh](https://vladimirsiedykh.com/blog/chrome-devtools-mcp-ai-browser-debugging-complete-guide-2025)
+- - [Addy Osmani - Give your AI eyes](https://addyosmani.com/blog/devtools-mcp/)
+
+---
+
+## Section: rpi
+
+### 📝 General Body Copy / Page Text
+- <td><a href="../../">← Back to Claude Code Best Practice</a></td>
+- <td align="right"><img src="../../!/claude-jumping.svg" alt="Claude" width="60" /></td>
+- Copy the `.claude` folder (containing `agents/` and `commands/rpi/`) to your repository root, then create the `rpi/plans` directory.
+- User: "Add OAuth2 authentication with Google and GitHub providers"
+- 1. Claude generates plan
+- → Output: rpi/plans/oauth2-authentication.md
+- 2. Create feature folder: rpi/oauth2-authentication/
+- 3. Copy the plan into the feature folder
+- 4. Rename the plan to REQUEST.md
+- → Final: rpi/oauth2-authentication/REQUEST.md
+- - `research/RESEARCH.md` with analysis
+- - Verdict: **GO** (feasible, aligned with strategy)
+- - `plan/pm.md` - User stories and acceptance criteria
+- - `plan/ux.md` - Login UI flows
+- - `plan/eng.md` - Technical architecture
+- - `plan/PLAN.md` - 3 phases, 15 tasks
+- - Phase 1: Backend Foundation → PASS
+- - Phase 2: Frontend Integration → PASS
+- - Phase 3: Testing & Polish → PASS
+- Result: Feature complete, ready for PR.
+- ├── REQUEST.md # Step 1: Initial feature description
+- │ └── RESEARCH.md # Step 2: GO/NO-GO analysis
+- │ ├── ux.md # UX design
+- │ └── eng.md # Technical specification
+- | Command | Agents Used |
+- |---------|-------------|
+- | `/rpi:plan` | senior-software-engineer, product-manager, ux-designer, documentation-analyst-writer |
+
+---
+
+## Section: thumbnail
+
+### 📝 General Body Copy / Page Text
+- claude-code-best-practice
+- practice makes claude perfect - from vibe coding to agentic engineering
+- Explained using live project
+- Claude Code Best Practice
+- As of Claude Code v2.1.91 | April 04, 2026
+
+---
+
+## Section: tips
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> a. **Challenge Claude.** Say "Grill me on these changes and don't make a PR until I pass your test." Make Claude be your reviewer. Or, say "Prove to me this works" and have Claude diff behavior between main and your feature branch.
+
+### 📝 General Body Copy / Page Text
+- A summary of insights shared by Boris Cherny ([@bcherny](https://x.com/bcherny)), creator of Claude Code, on March 25, 2026.
+- <td><a href="../">← Back to Claude Code Best Practice</a></td>
+- <td align="right"><img src="../!/claude-jumping.svg" alt="Claude" width="60" /></td>
+- Boris shared his GitHub contribution graph showing **266 contributions on March 24th** — from **141 PRs, always squashed** with a median of **118 lines** per PR.
+- - Squash merging combines all branch commits into a single commit on the target branch — keeping history clean and linear
+- - Each PR = one commit makes it easy to revert entire features and simplifies `git bisect`
+- - At high-velocity AI-assisted workflows (141 PRs/day), squash is the pragmatic choice — individual "fix lint", "try this" commits within a branch are noise
+- <a href="https://x.com/bcherny/status/2038552880018538749"><img src="assets/boris-25-mar-26/1.png" alt="Boris Cherny — 266 contributions, always squashed" width="50%" /></a>
+- Boris shared the size distribution across those 141 PRs, totaling **45,032 lines changed** (additions + deletions):
+- | Metric | Lines (add+del) | Meaning |
+- |--------|---------------:|---------|
+- | **p50** | **118** | Median PR size — half of all PRs were 118 lines or fewer |
+- | p90 | 498 | 90% of PRs were under 500 lines |
+- | **p99** | **2,978** | Only ~1 PR exceeded ~3K lines |
+- | min | 2 | Smallest PR — a quick 2-line fix |
+- | max | 10,459 | Largest single PR — likely a migration or generated code |
+- - A **median of 118 lines** means most PRs are focused and reviewable, even at 141 PRs/day
+- - The distribution is heavily right-skewed — the occasional large PR is inevitable (bulk renames, migrations), but the norm is tight
+- - Small PRs reduce merge conflict risk, are easier to review, and pair perfectly with squash merging for clean reverts
+- <a href="https://x.com/bcherny/status/2038552880018538749"><img src="assets/boris-25-mar-26/2.png" alt="Boris Cherny — PR size distribution table" width="50%" /></a>
+- - [Boris Cherny (@bcherny) on X — March 25, 2026](https://x.com/bcherny)
+- A summary of tips shared by Boris Cherny ([@bcherny](https://x.com/bcherny)), creator of Claude Code, on March 30, 2026.
+- Boris shared a bunch of his favorite hidden and under-utilized features in Claude Code, focusing on the ones he uses the most.
+- <a href="https://x.com/bcherny/status/2038454336355999749"><img src="assets/boris-30-mar-26/0.png" alt="Boris Cherny intro tweet" width="50%" /></a>
+- Did you know Claude Code has a mobile app? Boris writes a lot of his code from the iOS app — it's a convenient way to make changes without opening a laptop.
+- - Download the Claude app for iOS/Android
+- - Navigate to the **Code** tab on the left
+- - You can review changes, approve PRs, and write code directly from your phone
+- <a href="https://x.com/bcherny/status/2038454337811386436"><img src="assets/boris-30-mar-26/1.png" alt="Claude Code mobile app" width="50%" /></a>
+- - **Teleport**: pulls a cloud session down to your local terminal
+- Use these to schedule Claude to run automatically at a set interval, for up to a week at a time. Boris has a bunch of loops running locally:
+- - `/loop 5m /babysit` — auto-address code review, auto-rebase, and shepherd PRs to production
+- - `/loop 30m /slack-feedback` — automatically put up PRs for Slack feedback every 30 mins
+- - `/loop /post-merge-sweeper` — put up PRs to address code review comments he missed
+- - `/loop 1h /pr-pruner` — close out stale and no longer necessary PRs
+- Experiment with turning workflows into skills + loops. It's powerful.
+- <a href="https://x.com/bcherny/status/2038454341884154269"><img src="assets/boris-30-mar-26/3.png" alt="/loop and /schedule" width="50%" /></a>
+- Use hooks to run logic as part of the agent lifecycle. For example:
+- - **Dynamically load** in context each time you start Claude (`SessionStart`)
+- - **Log every bash command** the model runs (`PreToolUse`)
+- - **Route permission prompts** to WhatsApp for you to approve/deny (`PermissionRequest`)
+- - **Poke Claude** to keep going whenever it stops (`Stop`)
+- <a href="https://x.com/bcherny/status/2038454343519932844"><img src="assets/boris-30-mar-26/4.png" alt="Use hooks" width="50%" /></a>
+- - It can use your MCPs, browser, and computer, with your permission
+- - Think of it as a way to delegate non-coding tasks to Claude from anywhere
+- <a href="https://x.com/bcherny/status/2038454345419936040"><img src="assets/boris-30-mar-26/5.png" alt="Cowork Dispatch" width="50%" /></a>
+- The most important tip for using Claude Code: **give Claude a way to verify its output.** Once you do that, Claude will iterate until the result is great.
+- - Think of it like asking someone to build a website but they aren't allowed to use a browser — the result probably won't look good
+- - Give Claude a browser and it will write code and iterate until it looks good
+- - Boris uses the Chrome extension every time he works on web code — it tends to work more reliably than other similar MCPs
+- <a href="https://x.com/bcherny/status/2038454347156398333"><img src="assets/boris-30-mar-26/6.png" alt="Chrome extension for frontend" width="50%" /></a>
+- Along the same vein, the Desktop app bundles in the ability for Claude to **automatically run your web server and even test it in a built-in browser.**
+- - You can set up something similar in CLI or VSCode using the Chrome extension
+- - Or just use the Desktop app for the integrated experience
+- <a href="https://x.com/bcherny/status/2038454348804714642"><img src="assets/boris-30-mar-26/7.png" alt="Desktop app web server testing" width="50%" /></a>
+- People often ask how to fork an existing session. Two ways:
+- 1. Run `/branch` from your session
+- 2. From the CLI, run `claude --resume <session-id> --fork-session`
+- `/branch` creates a branched conversation — you are now in the branch. To resume the original, use `claude -r <original-session-id>`.
+- <a href="https://x.com/bcherny/status/2038454350214041740"><img src="assets/boris-30-mar-26/8.png" alt="Fork your session" width="50%" /></a>
+- Boris uses this all the time to answer quick questions while the agent works. `/btw` lets you ask a side question without interrupting the agent's current task.
+- > dachshund — German for "badger dog" (dachs + badger, hund + dog).
+- ↑/↓ to scroll · Space, Enter, or Escape to dismiss
+- <a href="https://x.com/bcherny/status/2038454351849787485"><img src="assets/boris-30-mar-26/9.png" alt="/btw for side queries" width="50%" /></a>
+- Claude Code ships with deep support for git worktrees. Worktrees are essential for doing lots of parallel work in the same repository. Boris has **dozens of Claudes running at all times**, and this is how he does it.
+- - Use `claude -w` to start a new session in a worktree
+- - Or hit the **"worktree" checkbox** in the Claude Desktop app
+- - For non-git VCS users, use the `WorktreeCreate` hook to add your own logic for worktree creation
+- <a href="https://x.com/bcherny/status/2038454353787519164"><img src="assets/boris-30-mar-26/10.png" alt="Git worktrees" width="50%" /></a>
+- `/batch` interviews you, then has Claude fan out the work to as many **worktree agents** as it takes (dozens, hundreds, even thousands) to get it done.
+- - Use it for large code migrations and other kinds of parallelizable work
+- - Each worktree agent works independently on its own copy of the codebase
+- <a href="https://x.com/bcherny/status/2038454355469484142"><img src="assets/boris-30-mar-26/11.png" alt="/batch for massive changesets" width="50%" /></a>
+- - This was a design oversight when the SDK was first built
+- - In a future version, they will flip the default to `--bare`
+- - For now, opt in with the flag to get up to **10x faster startup**
+- claude -p "summarize this codebase" \
+- --output-format=stream-json \
+- <a href="https://x.com/bcherny/status/2038454357088457168"><img src="assets/boris-30-mar-26/12.png" alt="--bare flag for SDK startup" width="50%" /></a>
+- When working across multiple repositories, Boris usually starts Claude in one repo and uses `--add-dir` (or `/add-dir`) to let Claude see the other repo.
+- - This not only tells Claude about the repo, but also **gives it permissions** to work in the repo
+- - Or, add `"additionalDirectories"` to your team's `settings.json` to always load in additional folders when starting Claude Code
+- <a href="https://x.com/bcherny/status/2038454359047156203"><img src="assets/boris-30-mar-26/13.png" alt="--add-dir for multiple repos" width="50%" /></a>
+- Custom agents are a powerful primitive that often gets overlooked. To use it, just define a new agent in `.claude/agents/`, then run:
+- claude --agent=<your agent's name>
+- - Agents can have restricted tools, custom descriptions, and specific models
+- - They're great for creating read-only agents, specialized review agents, or domain-specific tools
+- Fun fact: Boris does most of his coding by speaking to Claude, rather than typing.
+- - Run `/voice` in CLI then hold the space bar to speak
+- - Press the voice button on Desktop
+- - Or enable dictation in your iOS settings
+- <a href="https://x.com/bcherny/status/2038454362226467112"><img src="assets/boris-30-mar-26/15.png" alt="/voice for voice input" width="50%" /></a>
+- - [Boris Cherny (@bcherny) on X — March 30, 2026](https://x.com/bcherny/status/2038454336355999749)
+- A summary of insights shared by Boris Cherny ([@bcherny](https://x.com/bcherny)), creator of Claude Code, on March 10, 2026.
+- New in Claude Code: **Code Review**. A team of agents runs a deep review on every PR.
+- - Built for Anthropic's own team first — code output per engineer is up **200% this year**, and reviews were the bottleneck
+- - Boris has been using it for a few weeks and found it catches many real bugs he would not have noticed otherwise
+- - When a PR opens, Claude dispatches a team of agents to hunt for bugs
+- <a href="https://x.com/bcherny/status/2031089411820228645"><img src="assets/boris-10-mar-26/0.png" alt="Boris Cherny announcing Code Review" width="50%" /></a>
+- - Similar to engineering teams: if Boris causes a bug, his coworker reviewing the code might find it more reliably than he can
+- - In the limit, agents will probably write perfect bug-free code — until then, **multiple uncorrelated context windows** tends to be a good approach
+- <a href="https://x.com/bcherny/status/2031151689219321886"><img src="assets/boris-10-mar-26/1.png" alt="Boris Cherny on test time compute" width="50%" /></a>
+- - [Boris Cherny (@bcherny) on X — March 10, 2026](https://x.com/bcherny)
+- A comprehensive guide on how Anthropic uses skills internally, shared by Thariq ([@trq212](https://x.com/trq212)) on March 17, 2026.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/1.png" alt="Thariq intro tweet" width="50%" /></a>
+- A common misconception is that skills are "just markdown files", but the most interesting part is that they're **folders** that can include scripts, assets, data, etc. — things the agent can discover, explore, and manipulate. Skills also have a wide variety of configuration options including registering dynamic hooks.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/2.png" alt="What are Skills?" width="50%" /></a>
+- After cataloging all of their skills, the team noticed they cluster into 9 recurring categories. The best skills fit cleanly into one; the more confusing ones straddle several.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/3.png" alt="Types of Skills grid" width="50%" /></a>
+- Skills that explain how to correctly use a library, CLI, or SDKs. These could be for internal libraries or common libraries that Claude Code sometimes has trouble with. They often include a folder of reference code snippets and a list of gotchas to avoid when writing a script.
+- **Examples:** billing-lib, internal-platform-cli, frontend-design
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/4.png" alt="Library & API Reference" width="50%" /></a>
+- **Examples:** signup-flow-driver, checkout-verifier, tmux-cli-driver
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/5.png" alt="Product Verification" width="50%" /></a>
+- Skills that connect to your data and monitoring stacks. These might include libraries to fetch your data with credentials, specific dashboard IDs, etc., as well as instructions on common workflows or ways to get data.
+- **Examples:** funnel-query, cohort-compare, grafana
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/6.png" alt="Data Fetching & Analysis" width="50%" /></a>
+- Skills that automate repetitive workflows into one command. These are usually fairly simple instructions but might have more complicated dependencies on other skills or MCPs. Saving previous results in log files can help the model stay consistent and reflect on previous executions of the workflow.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/7.png" alt="Business Process & Team Automation" width="50%" /></a>
+- **Examples:** new-\<framework\>-workflow, new-migration, create-app
+- Skills that enforce code quality inside of your org and help review code. These can include deterministic scripts or tools for maximum robustness. You may want to run these skills automatically as part of hooks or inside of a GitHub Action.
+- **Examples:** adversarial-review, code-style, testing-practices
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/10.png" alt="Code Quality & Review" width="50%" /></a>
+- Skills that help you fetch, push, and deploy code inside of your codebase. These skills may reference other skills to collect data.
+- **Examples:** babysit-pr, deploy-\<service\>, cherry-pick-prod
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/11.png" alt="CI/CD & Deployment" width="50%" /></a>
+- Skills that take a symptom (such as a Slack thread, alert, or error signature), walk through a multi-tool investigation, and produce a structured report.
+- **Examples:** \<service\>-debugging, oncall-runner, log-correlator
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/12.png" alt="Runbooks" width="50%" /></a>
+- Skills that perform routine maintenance and operational procedures — some of which involve destructive actions that benefit from guardrails. These make it easier for engineers to follow best practices in critical operations.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/13.png" alt="Infrastructure Operations" width="50%" /></a>
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/14.png" alt="Tips for Making Skills grid" width="50%" /></a>
+- Claude Code knows a lot about your codebase, and Claude knows a lot about coding, including many default opinions. If you're publishing a skill that is primarily about knowledge, try to focus on information that pushes Claude out of its normal way of thinking. The frontend design skill is a great example — it was built by iterating with customers on improving Claude's design taste, avoiding classic patterns like the Inter font and purple gradients.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/15.png" alt="Don't State the Obvious" width="50%" /></a>
+- The highest-signal content in any skill is the Gotchas section. These sections should be built up from common failure points that Claude runs into when using your skill. Ideally, you will update your skill over time to capture these gotchas.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/16.png" alt="Build a Gotchas Section" width="50%" /></a>
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/17.png" alt="Progressive Disclosure" width="50%" /></a>
+- Claude will generally try to stick to your instructions, and because skills are so reusable you'll want to be careful of being too specific. Give Claude the information it needs, but give it the flexibility to adapt to the situation. Instead of prescriptive step-by-step instructions, give the goal and constraints.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/18.png" alt="Avoid Railroading Claude" width="50%" /></a>
+- Some skills may need to be set up with context from the user. A good pattern is to store this setup information in a `config.json` file in the skill directory. If the config is not set up, the agent can then ask the user for information. You can instruct Claude to use the AskUserQuestion tool for structured, multiple choice questions.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/19.png" alt="Think through the Setup" width="50%" /></a>
+- When Claude Code starts a session, it builds a listing of every available skill with its description. This listing is what Claude scans to decide "is there a skill for this request?" Which means the description field is not a summary — it's a description of **when to trigger** this skill. Write it for the model.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/20.png" alt="Description = Trigger" width="50%" /></a>
+- One of the most powerful tools you can give Claude is code. Giving Claude scripts and libraries lets Claude spend its turns on composition, deciding what to do next rather than reconstructing boilerplate. Claude can then generate scripts on the fly to compose this functionality for more advanced analysis.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/22.png" alt="Store Scripts & Generate Code" width="50%" /></a>
+- - `/careful` — blocks rm -rf, DROP TABLE, force-push, kubectl delete via PreToolUse matcher on Bash
+- - `/freeze` — blocks any Edit/Write that's not in a specific directory
+- Two ways to share skills with your team:
+- - **Check into your repo** (under `.claude/skills`) — best for smaller teams working across relatively few repos
+- - **Make a plugin** and have a Claude Code Plugin marketplace where users can upload and install plugins
+- Every skill that is checked in also adds a little bit to the context of the model. As you scale, an internal plugin marketplace allows you to distribute skills and let your team decide which ones to install.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/24.png" alt="Distributing Skills" width="50%" /></a>
+- There isn't a centralized team that decides which skills go into a marketplace. Instead, try and find the most useful skills organically. Upload to a sandbox folder in GitHub and point people to it in Slack or other forums. Once a skill has gotten traction (which is up to the skill owner to decide), they can put in a PR to move it into the marketplace. Curation before release is important to avoid redundant skills.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/25.png" alt="Managing a Marketplace" width="50%" /></a>
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/26.png" alt="Composing Skills" width="50%" /></a>
+- To understand how a skill is doing, use a PreToolUse hook that lets you log skill usage within the company. This means you can find skills that are popular or are undertriggering compared to expectations.
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/27.png" alt="Measuring Skills" width="50%" /></a>
+- <a href="https://x.com/trq212/status/2033949937936085378"><img src="assets/thariq-17-mar-26/28.png" alt="Conclusion" width="50%" /></a>
+- - [Thariq (@trq212) on X — March 17, 2026](https://x.com/trq212/status/2033949937936085378)
+- - [Skilljar — Agent Skills course](https://code.claude.com/docs/en/skills)
+- - [Skill Creator](https://code.claude.com/docs/en/skills)
+- A summary of customization tips shared by Boris Cherny ([@bcherny](https://x.com/bcherny)), creator of Claude Code, on February 12, 2026.
+- Boris Cherny highlighted that customizability is one of the things engineers love most about Claude Code — hooks, plugins, LSPs, MCPs, skills, effort, custom agents, status lines, output styles, and more. He shared 12 practical ways developers and teams are customizing their setups.
+- <a href="https://x.com/bcherny/status/2021699851499798911"><img src="assets/boris-12-feb-26/0.webp" alt="Boris Cherny intro tweet" width="50%" /></a>
+- Set up your terminal for the best Claude Code experience:
+- - **Notifications**: Enable notifications for iTerm2, or use a custom notification hook
+- - **Newlines**: If using Claude Code in an IDE terminal, Apple Terminal, Warp, or Alacritty, run `/terminal-setup` to enable shift+enter for newlines (so you don't need to type `\`)
+- - **Vim mode**: Run `/vim`
+- <a href="https://x.com/bcherny/status/2021699859359883608"><img src="assets/boris-12-feb-26/1.webp" alt="Configure your terminal" width="50%" /></a>
+- Run `/model` to pick your preferred effort level:
+- - **Low** — fewer tokens, faster responses
+- - **Medium** — balanced behavior
+- - **High** — more tokens, more intelligence
+- Boris's preference: High for everything.
+- <a href="https://x.com/bcherny/status/2021699860869902424"><img src="assets/boris-12-feb-26/2.webp" alt="Adjust effort level" width="50%" /></a>
+- Plugins let you install LSPs (available for every major language), MCPs, skills, agents, and custom hooks.
+- Install from the official Anthropic plugin marketplace, or create your own marketplace for your company. Check the `settings.json` into your codebase to auto-add the marketplaces for your team.
+- Run `/plugin` to get started.
+- <a href="https://x.com/bcherny/status/2021699862522364149"><img src="assets/boris-12-feb-26/3.webp" alt="Install Plugins, MCPs, and Skills" width="50%" /></a>
+- Drop `.md` files in `.claude/agents` to create custom agents. Each agent can have a custom name, color, tool set, pre-allowed and pre-disallowed tools, permission mode, and model.
+- You can also set the default agent for the main conversation using the `"agent"` field in `settings.json` or the `--agent` flag.
+- Run `/agents` to get started.
+- <a href="https://x.com/bcherny/status/2021700144039903699"><img src="assets/boris-12-feb-26/4.webp" alt="Create custom agents" width="50%" /></a>
+- Out of the box, a small set of safe commands are pre-approved. To pre-approve more, run `/permissions` and add to the allow and block lists. Check these into your team's `settings.json`.
+- Full wildcard syntax is supported — e.g., `Bash(bun run *)` or `Edit(/docs/**)`.
+- <a href="https://x.com/bcherny/status/2021700332292911228"><img src="assets/boris-12-feb-26/5.webp" alt="Pre-approve common permissions" width="50%" /></a>
+- Opt into Claude Code's open source sandbox runtime to improve safety while reducing permission prompts.
+- Run `/sandbox` to enable it. Sandboxing runs on your machine and supports both file and network isolation.
+- <a href="https://x.com/bcherny/status/2021700506465579443"><img src="assets/boris-12-feb-26/6.webp" alt="Enable sandboxing" width="50%" /></a>
+- <a href="https://x.com/bcherny/status/2021700784019452195"><img src="assets/boris-12-feb-26/7.webp" alt="Add a status line" width="50%" /></a>
+- Every key binding in Claude Code is customizable. Run `/keybindings` to re-map any key. Settings live reload so you can see how it feels immediately.
+- <a href="https://x.com/bcherny/status/2021700883873165435"><img src="assets/boris-12-feb-26/8.webp" alt="Customize your keybindings" width="50%" /></a>
+- Hooks let you deterministically hook into Claude's lifecycle:
+- - Automatically route permission requests to Slack or Opus
+- - Nudge Claude to keep going when it reaches the end of a turn (you can even kick off an agent or use a prompt to decide whether Claude should keep going)
+- - Pre-process or post-process tool calls, e.g., to add your own logging
+- Ask Claude to add a hook to get started.
+- <a href="https://x.com/bcherny/status/2021701059253874861"><img src="assets/boris-12-feb-26/9.webp" alt="Set up hooks" width="50%" /></a>
+- Customize your spinner verbs to add or replace the default list with your own verbs. Check the `settings.json` into source control to share verbs with your team.
+- <a href="https://x.com/bcherny/status/2021701145023197516"><img src="assets/boris-12-feb-26/10.webp" alt="Customize your spinner verbs" width="50%" /></a>
+- Run `/config` and set an output style to have Claude respond using a different tone or format.
+- - **Explanatory** — recommended when getting familiar with a new codebase, to have Claude explain frameworks and code patterns as it works
+- - **Learning** — to have Claude coach you through making code changes
+- - **Custom** — create custom output styles to adjust Claude's voice
+- <a href="https://x.com/bcherny/status/2021701379409273093"><img src="assets/boris-12-feb-26/11.webp" alt="Use output styles" width="50%" /></a>
+- Claude Code works great out of the box, but when you do customize, check your `settings.json` into git so your team can benefit too. Configuration is supported at multiple levels:
+- - Via enterprise-wide policies
+- With 37 settings and 84 environment variables (use the `"env"` field in your `settings.json` to avoid wrapper scripts), there's a good chance any behavior you want is configurable.
+- <a href="https://x.com/bcherny/status/2021701636075458648"><img src="assets/boris-12-feb-26/12.webp" alt="Customize all the things" width="50%" /></a>
+- - [Boris Cherny (@bcherny) on X — February 12, 2026](https://x.com/bcherny)
+- - [Claude Code Terminal Setup Docs](https://code.claude.com/docs/en/terminal)
+- - [Claude Code Plugins & Discovery Docs](https://code.claude.com/docs/en/discover-plugins)
+- - [Claude Code Sub-agents Docs](https://code.claude.com/docs/en/sub-agents)
+- - [Claude Code Permissions Docs](https://code.claude.com/docs/en/permissions)
+- - [Claude Code Sandbox Docs](https://code.claude.com/docs/en/sandbox)
+- - [Claude Code Status Line Docs](https://code.claude.com/docs/en/statusline)
+- - [Claude Code Keyboard Shortcuts Docs](https://code.claude.com/docs/en/keybindings)
+- - [Claude Code Hooks Reference](https://code.claude.com/docs/en/hooks)
+- - [Claude Code Output Styles Docs](https://code.claude.com/docs/en/output-styles)
+- - [Claude Code Settings Docs](https://code.claude.com/docs/en/settings)
+- A summary of setup tips shared by Boris Cherny ([@bcherny](https://x.com/bcherny)), creator of Claude Code, on January 3, 2026.
+- Boris shared his personal Claude Code setup, noting it's "surprisingly vanilla" — Claude Code works great out of the box, so he doesn't customize it much. There's no one correct way to use it: the team intentionally builds it so you can use, customize, and hack it however you like. Each person on the Claude Code team uses it very differently.
+- <a href="https://x.com/bcherny/status/2007179832300581177"><img src="assets/boris-3-jan-26/0.png" alt="Boris Cherny intro tweet" width="50%" /></a>
+- See: [Terminal Setup Docs](https://code.claude.com/docs/en/terminal)
+- <a href="https://x.com/bcherny/status/2007179833990885678"><img src="assets/boris-3-jan-26/1.png" alt="Run 5 Claudes in parallel" width="50%" /></a>
+- Run 5–10 Claudes on claude.ai/code in parallel with your local Claudes. Hand off local sessions to web sessions using `claude.ai/code`, manually kick off sessions in Chrome, and teleport back and forth.
+- <a href="https://x.com/bcherny/status/2007179836704600237"><img src="assets/boris-3-jan-26/2.png" alt="claude.ai/code parallelism" width="50%" /></a>
+- Use Opus 4.5 with thinking for everything. It's the best coding model Boris has ever used — even though it's bigger and slower than Sonnet, since you have to steer it less and it's better at tool use, it is almost always faster than using a smaller model in the end.
+- <a href="https://x.com/bcherny/status/2007179838864666847"><img src="assets/boris-3-jan-26/3.png" alt="Opus with thinking" width="50%" /></a>
+- Share a single `CLAUDE.md` for the repo. Check it into git, and have the whole team contribute multiple times a week. Anytime Claude does something incorrectly, add it to the `CLAUDE.md` so Claude knows not to do it next time.
+- <a href="https://x.com/bcherny/status/2007179840848597422"><img src="assets/boris-3-jan-26/4.png" alt="Shared CLAUDE.md" width="50%" /></a>
+- During code review, tag `@claude` on your coworkers' PRs to add something to the `CLAUDE.md` as part of the PR. Use the Claude Code GitHub action ([install-@hub-action](https://github.com/apps/claude)) for this — it's Boris's version of Compounding Engineering.
+- <a href="https://x.com/bcherny/status/2007179842928947333"><img src="assets/boris-3-jan-26/5.png" alt="Tag @claude on PRs" width="50%" /></a>
+- Start most sessions in Plan mode (shift+tab twice). If the goal is to write a Pull Request, use Plan mode and go back and forth with Claude until you like its plan. From there, switch into auto-accept edits mode and Claude can usually 1-shot it. A good plan is really important.
+- <a href="https://x.com/bcherny/status/2007179845336527000"><img src="assets/boris-3-jan-26/6.png" alt="Plan mode" width="50%" /></a>
+- Use slash commands for every "inner loop" workflow that you do many times a day. This saves you from repeated prompting, and makes it so Claude can use these workflows too. Commands are checked into git and live in `.claude/commands/`.
+- Example: `/commit-push-pr` — Commit, push, and open a PR.
+- <a href="https://x.com/bcherny/status/2007179847949500714"><img src="assets/boris-3-jan-26/7.png" alt="Slash commands" width="50%" /></a>
+- Use a few subagents regularly: `code-simplifier` simplifies the code after Claude is done working, `verify-app` has detailed instructions for testing Claude Code end to end, and so on. Think of subagents as automating the most common workflows — similar to slash commands.
+- Subagents live in `.claude/agents/`.
+- <a href="https://x.com/bcherny/status/2007179850139000872"><img src="assets/boris-3-jan-26/8.png" alt="Subagents" width="50%" /></a>
+- Use a `PostToolUse` hook to format Claude's code. Claude usually generates well-formatted code out of the box, and the hook handles the last 10% to avoid formatting errors in CI later.
+- "matcher": "Write|Edit",
+- "command": "bun run format || true"
+- <a href="https://x.com/bcherny/status/2007179852047335529"><img src="assets/boris-3-jan-26/9.png" alt="PostToolUse hook for formatting" width="50%" /></a>
+- Don't use `--dangerously-skip-permissions`. Instead, use `/permissions` to pre-allow common bash commands that you know are safe in your environment, to avoid unnecessary permission prompts. Most of these are checked into `.claude/settings.json` and shared with the team.
+- <a href="https://x.com/bcherny/status/2007179854077407667"><img src="assets/boris-3-jan-26/10.png" alt="Pre-allow permissions" width="50%" /></a>
+- Claude Code uses all your tools. It often searches and posts to Slack (via the MCP server), runs BigQuery queries to answer analytics questions (using `bq` CLI), grabs error logs from Sentry, etc. The Slack MCP configuration is checked into `.mcp.json` and shared with the team.
+- <a href="https://x.com/bcherny/status/2007179856266789204"><img src="assets/boris-3-jan-26/11.png" alt="MCP tools" width="50%" /></a>
+- For very long-running tasks, either (a) prompt Claude to verify its work with a background agent when it's done, (b) use an agent Stop hook to do that more deterministically, or (c) use the ralph-wiggum plugin (originally dreamt up by @GeoffreyHuntley).
+- <a href="https://x.com/bcherny/status/2007179858435281082"><img src="assets/boris-3-jan-26/12.png" alt="Long-running tasks verification" width="50%" /></a>
+- Probably the most important thing to get great results out of Claude Code — give Claude a way to verify its work. If Claude has that feedback loop, it will 2–3x the quality of the final result.
+- Claude tests every single change Boris lands.
+- <a href="https://x.com/bcherny/status/2007179861115511237"><img src="assets/boris-3-jan-26/13.png" alt="Give Claude a way to verify" width="50%" /></a>
+- - [Boris Cherny (@bcherny) on X — January 3, 2026](https://x.com/bcherny/status/2007179832300581177)
+- A summary of team tips shared by Boris Cherny ([@bcherny](https://x.com/bcherny)), creator of Claude Code, on February 1, 2026.
+- <a href="https://x.com/bcherny/status/2017742741636321619"><img src="assets/boris-1-feb-26/0.png" alt="Boris Cherny intro tweet" width="50%" /></a>
+- See: [Worktrees Docs](https://code.claude.com/docs/en/common...)
+- <a href="https://x.com/bcherny/status/2017742743125299476"><img src="assets/boris-1-feb-26/1.png" alt="Do more in parallel" width="50%" /></a>
+- One person has one Claude write the plan, then they spin up a second Claude to review it as a staff engineer.
+- Another says the moment something goes sideways, they switch back to plan mode and re-plan. Don't keep pushing. They also explicitly tell Claude to enter plan mode for verification steps, not just for the build.
+- <a href="https://x.com/bcherny/status/2017742745365057733"><img src="assets/boris-1-feb-26/2.png" alt="Start every complex task in plan mode" width="50%" /></a>
+- After every correction, end with: "Update your CLAUDE.md so you don't make that mistake again." Claude is eerily good at writing rules for itself.
+- Ruthlessly edit your `CLAUDE.md` over time. Keep iterating until Claude's mistake rate measurably drops.
+- One engineer tells Claude to maintain a notes directory for every task/project, updated after every PR. They then point `CLAUDE.md` at it.
+- <a href="https://x.com/bcherny/status/2017742747067945390"><img src="assets/boris-1-feb-26/3.png" alt="Invest in your CLAUDE.md" width="50%" /></a>
+- Reuse across every project. Tips from the team:
+- - If you do something more than once a day, turn it into a skill or command
+- - Build a `/techdebt` slash command and run it at the end of every session to find and kill duplicated code
+- - Set up a slash command that syncs 7 days of Slack, GDrive, Asana, and GitHub into one context dump
+- - Build analytics-engineer-style agents that write dbt models, review code, and test changes in dev
+- See: [Extend Claude with Skills — Claude Code Docs](https://code.claude.com/docs/en/skills)
+- <a href="https://x.com/bcherny/status/2017742748984742078"><img src="assets/boris-1-feb-26/4.png" alt="Create your own skills" width="50%" /></a>
+- Here's how the team does it:
+- Enable the Slack MCP, then paste a Slack bug thread into Claude and just say "fix." Zero context switching required.
+- Or, just say "Go fix the failing CI tests." Don't micromanage how.
+- <a href="https://x.com/bcherny/status/2017742750473720121"><img src="assets/boris-1-feb-26/5.png" alt="Claude fixes most bugs by itself" width="50%" /></a>
+- c. **Write detailed specs** and reduce ambiguity before handing work off. The more specific you are, the better the output.
+- <a href="https://x.com/bcherny/status/2017742752566632544"><img src="assets/boris-1-feb-26/6.png" alt="Level up your prompting" width="50%" /></a>
+- The team loves Ghostty! Multiple people like its synchronized rendering, 24-bit color, and proper unicode support.
+- For easier Claude-juggling, use `/statusline` to customize your status bar to always show context usage and current git branch. Many also color-code and name their terminal tabs, sometimes using tmux — one tab per task/worktree.
+- Use voice dictation. You speak 3x faster than you type, and your prompts get way more detailed as a result. (hit fn x2 on macOS)
+- See: [Terminal Setup Docs](https://code.claude.com/docs/en/termin...)
+- <a href="https://x.com/bcherny/status/2017742753971769626"><img src="assets/boris-1-feb-26/7.png" alt="Terminal and environment setup" width="50%" /></a>
+- b. Offload individual tasks to subagents to keep your main agent's context window clean and focused.
+- c. Route permission requests to Opus 4.5 via a hook — let it scan for attacks and auto-approve the safe ones. See: [Hooks Docs](https://code.claude.com/docs/en/hooks#...)
+- <a href="https://x.com/bcherny/status/2017742755737555434"><img src="assets/boris-1-feb-26/8.png" alt="Use subagents" width="50%" /></a>
+- Ask Claude Code to use the "bq" CLI to pull and analyze metrics on the fly. The team has a BigQuery skill checked into the codebase, and everyone uses it for analytics queries directly in Claude Code. Personally, Boris hasn't written a line of SQL in 6+ months.
+- This works for any database that has a CLI, MCP, or API.
+- <a href="https://x.com/bcherny/status/2017742757666902374"><img src="assets/boris-1-feb-26/9.png" alt="Use Claude for data and analytics" width="50%" /></a>
+- A few tips from the team to use Claude Code for learning:
+- a. Enable the "Explanatory" or "Learning" output style in `/config` to have Claude explain the "why" behind its changes.
+- b. Have Claude generate a visual HTML presentation explaining unfamiliar code. It makes surprisingly good slides!
+- d. Build a spaced-repetition learning skill: you explain your understanding, Claude asks follow-ups to fill gaps, stores the result.
+- <a href="https://x.com/bcherny/status/2017742759218794768"><img src="assets/boris-1-feb-26/10.png" alt="Learning with Claude" width="50%" /></a>
+- - [Boris Cherny (@bcherny) on X — February 1, 2026](https://x.com/bcherny/status/2017742741636321619)
+
+---
+
+## Section: video-presentation-transcript
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> from this repo as our running example throughout the video.
+
+> - "In this first video, I'm covering the foundation: **Commands, Agents, and Skills** — and how they chain together into repeatable workflows."
+
+> - "Now let me show you the same task, but as a workflow."
+
+> - "Our `weather-orchestrator` is the conductor. It asks the user a question, calls an agent, then calls a skill."
+
+> - "This repo has more patterns — hooks, multi-agent teams, CLAUDE.md configuration — we'll cover those in upcoming videos."
+
+### 📝 General Body Copy / Page Text
+- Claude Code Workflows - Best Practice
+- From Vibe Coding to Agentic Engineering
+- You're doing vibe coding — and only using a fraction of what Claude Code can do.
+- Vibe Coding vs Agentic Engineering
+- Type prompts, get results, repeat.
+- It works — but Claude is just
+- No structure. No repeatability. No workflow.
+- You're always in the loop. Claude never runs on its own.
+- Define a workflow once.
+- — every time, the same way.
+- Commands, Agents, and Skills chain together.
+- You kick it off and walk away. Claude handles the rest.
+- Covers the foundation:
+- Commands, Agents, and Skills
+- — and how they chain together into repeatable workflows.
+- The Ad-Hoc Way (0:45)
+- The Workflow Way (2:00)
+- Why This Matters (4:30)
+- Vibe coding the weather task — it works once, but is it a workflow you can trust?
+- Type into a fresh Claude Code terminal:
+- What is the weather in Dubai? Write it to an output file and create an SVG card for it.
+- Blue gradient background
+- Large serif font, centered layout
+- Looks fine... until you run it again.
+- Orange card-style background
+- Small sans-serif, left-aligned layout
+- Different design. Different file path. Every time.
+- It works once. But it's not repeatable. It's not a workflow you can trust. You had to sit and watch it work — and you'll get a completely different result tomorrow.
+- The same task — but as a repeatable, autonomous workflow.
+- Instead of a freeform prompt, type a slash command:
+- What Happens on Screen
+- It asks you: Celsius or Fahrenheit?
+- Structured user interaction — not freeform guessing
+- It spawns a weather-agent
+- You see the green agent indicator in the terminal — a dedicated worker
+- It invokes the SVG skill
+- weather-svg-creator creates a consistent card layout
+- Output: same files, same layout, every time
+- orchestration-workflow/weather.svg
+- orchestration-workflow/output.md
+- Run it again tomorrow
+- Same SVG layout. Same file structure. Same clean result. You can kick this off and walk away — it runs autonomously.
+- Command → Agent → Skill — the three building blocks.
+- Command → Agent → Skill
+- The weather workflow chains three building blocks together:
+- # The full orchestration flow
+- (Agent + weather-fetcher skill)
+- Output: weather.svg + output.md
+- The entry point — the conductor. Asks the user a question, calls an agent, then calls a skill.
+- Agent Skill (preloaded)
+- is baked into the agent at startup — domain knowledge about which API to call.
+- is called independently via the Skill tool — creates a consistent SVG card.
+- Building Block 1: Commands
+- A command is the entry point — like a script. It's a markdown file that tells Claude
+- . Think of it as the conductor.
+- # .claude/commands/weather-orchestrator.md
+- Fetch weather and create an SVG card
+- # Weather Orchestrator
+- 1. Ask the user: Celsius or Fahrenheit? (AskUserQuestion)
+- - Task(subagent_type=
+- 3. Invoke weather-svg-creator skill with the result
+- "weather-svg-creator"
+- 4. Confirm output files are written
+- Building Block 2: Agents
+- An agent is a specialized worker. Our
+- # .claude/agents/weather-agent.md
+- Fetches weather data using Open-Meteo
+- You are a weather data fetcher.
+- Use the weather-fetcher skill for API details.
+- Runs independently, returns a result, context is discarded
+- is injected at startup — it already knows the API
+- Building Block 3: Skills
+- A skill is a reusable set of instructions. Think of it as a recipe. Skills can be background knowledge
+- Agent Skill (Preloaded)
+- It's domain knowledge — which API endpoint to call, how to parse the JSON response.
+- Invoked Skill (Standalone)
+- is called via the Skill tool.
+- .claude/skills/<name>/SKILL.md
+- The difference between vibe coding and agentic engineering is structure.
+- Structure Is the Difference
+- Inconsistent. You're always in the loop. Doesn't scale.
+- You define a workflow once.
+- It runs the same way every time.
+- You kick it off and walk away.
+- Consistent. Autonomous. Repeatable. Trustworthy.
+- Commands, Agents, and Skills are the three building blocks. Once you understand these, you can build any workflow.
+- Custom scripts at lifecycle events — PreToolUse, PostToolUse, Stop, and more
+- Commands that orchestrate multiple specialized agents working in parallel
+- CLAUDE.md Configuration
+- Connect Claude to databases, browsers, and external APIs
+- Link in the description. Star it, clone it, and start building your own workflows.
+- Entry point, orchestration,
+- Specialized worker with own tools & model
+- Reusable instructions (preloaded or invoked)
+- — baked into agent via
+- + preloaded skill → executes
+- github.com/shanraisshan/claude-code-best-practice
+- **Total duration: ~5 minutes**
+- - "If you've just started with Claude Code, chances are you're doing vibe coding — typing prompts, getting results, repeating. That works, but you're only using a fraction of what Claude Code can do."
+- - "This repo is a curated collection of best practices that takes you from vibe coding to agentic engineering — where Claude doesn't just respond to you, it runs workflows for you."
+- - Open a fresh Claude Code terminal
+- - Type: *"What is the weather in Dubai? Write it to an output file and create an SVG card for it."*
+- - Show the result — it works, but point out:
+- - The SVG design is different every time (random colors, layout, fonts)
+- - You had to sit and watch it work
+- - If you run it again tomorrow, you'll get a completely different looking card
+- - **Open a second terminal, run the same prompt again**
+- - Show the SVG side-by-side — they look different
+- - Type: `/weather-orchestrator`
+- - Walk through what happens on screen:
+- 1. It **asks you** Celsius or Fahrenheit (structured user interaction)
+- 3. It **invokes a skill** to create the SVG card
+- 4. Output: `orchestration-workflow/weather.svg` + `orchestration-workflow/output.md`
+- - "Run it again — same SVG layout, same file structure, same clean result. Every time."
+- - "You can kick this off and walk away. It runs autonomously."
+- **Explain the three building blocks**
+- - "A command is the entry point — like a script. It's a markdown file that tells Claude *what steps to follow*."
+- - Commands live in `.claude/commands/` and show up as `/slash-commands`
+- - "It has a **preloaded skill** called `weather-fetcher` — that skill is injected into the agent's context at startup, so it knows exactly which API to call and how to parse the response."
+- - Agents have their own tools, models, and permissions. They're isolated workers.
+- - "A skill is a reusable set of instructions. Think of it as a recipe."
+- - "We have two skill patterns here:"
+- - **Agent skill** (preloaded): `weather-fetcher` is baked into the agent — it's domain knowledge
+- - **Invoked skill**: `weather-svg-creator` is called independently via the Skill tool — it creates the SVG card
+- - Skills can be background knowledge OR standalone actions
+- → weather-agent (Agent + weather-fetcher skill)
+- → weather-svg-creator (Skill)
+- → Output: weather.svg + output.md
+- - "The difference between vibe coding and agentic engineering is **structure**."
+- - Vibe coding: you type, you hope, you get something.
+- - Agentic engineering: you define a workflow once, and it runs the same way every time.
+- - "Commands, Agents, and Skills are the three building blocks. Once you understand these, you can build any workflow."
+- - "Link to the repo is in the description. Star it, clone it, and start building your own workflows."
+- | Concept | Location | Purpose |
+- |---------|----------|---------|
+- | Command | `.claude/commands/` | Entry point, orchestration, `/slash-command` |
+- | Agent | `.claude/agents/` | Specialized worker with own tools & model |
+- | Skill | `.claude/skills/` | Reusable instructions (preloaded or invoked) |
+
+---
+
+## Section: videos
+
+### 📝 General Body Copy / Page Text
+- Transcript of the talk by Dexter Horthy ([@daborhey](https://x.com/daborhey)), co-founder of HumanLayer, at MLOps Community, published March 24, 2026.
+- <td><a href="../">← Back to Claude Code Best Practice</a></td>
+- <td align="right"><img src="../!/claude-jumping.svg" alt="Claude" width="60" /></td>
+- - **Speaker:** Dexter Horthy (Co-founder, HumanLayer)
+- - **Published:** March 24, 2026
+- - **YouTube:** [Watch on YouTube](https://youtu.be/YwZR6tc7qYg)
+- - **Guest:** Boris Cherny (Creator of Claude Code)
+- - **Host:** Ryan Peterman
+- - **YouTube:** [Watch on YouTube](https://youtu.be/AmdLVWMdjOk)
+- - [Boris Cherny (Creator of Claude Code) On What Grew His Career — Ryan Peterman — YouTube](https://youtu.be/AmdLVWMdjOk)
+- - [Ryan Peterman on YouTube](https://www.youtube.com/@RyanPetermanPlus)
+- Transcript of the interview with Cat & Boris (Claude Code engineers) on the Every podcast, published October 29, 2025.
+- - **Guest:** Cat & Boris (Claude Code Engineers, Anthropic)
+- - **Published:** October 29, 2025
+- - **YouTube:** [Watch on YouTube](https://youtu.be/IDSAMqip6ms)
+- - [The Secrets of Claude Code From the Engineers Who Built It — Every — YouTube](https://youtu.be/IDSAMqip6ms)
+- Transcript of the interview with Boris Cherny ([@bcherny](https://x.com/bcherny)), creator of Claude Code, on the Y Combinator Light Cone podcast, published February 17, 2026.
+- - **Host:** Y Combinator (The Light Cone)
+- - **Published:** February 17, 2026
+- - **YouTube:** [Watch on YouTube](https://youtu.be/PQU9o_5rHC4)
+- - [Inside Claude Code With Its Creator Boris Cherny — Y Combinator — YouTube](https://youtu.be/PQU9o_5rHC4)
+- - [Y Combinator](https://www.ycombinator.com/)
+- Transcript of the interview with Boris Cherny ([@bcherny](https://x.com/bcherny)), creator of Claude Code, on Lenny's Podcast, published February 19, 2026.
+- - **Host:** Lenny Rachitsky (Lenny's Podcast)
+- - **Published:** February 19, 2026
+- - **YouTube:** [Watch on YouTube](https://youtu.be/We7BZVKbCVw)
+- - [Head of Claude Code: What Happens After Coding Is Solved — Lenny's Podcast — YouTube](https://youtu.be/We7BZVKbCVw)
+- - [Lenny's Podcast](https://www.lennyspodcast.com/)
+- Transcript of the interview with Boris Cherny ([@bcherny](https://x.com/bcherny)), creator of Claude Code, on The Pragmatic Engineer podcast, published March 4, 2026.
+- - **Host:** Gergely Orosz (The Pragmatic Engineer)
+- - **Published:** March 4, 2026
+- - **YouTube:** [Watch on YouTube](https://youtu.be/julbw1JuAz0)
+- - [Building Claude Code with Boris Cherny — The Pragmatic Engineer — YouTube](https://youtu.be/julbw1JuAz0)
+- - [The Pragmatic Engineer](https://newsletter.pragmaticengineer.com/)
+
+---

@@ -1,0 +1,27 @@
+ROUTE /
+tel:3234331350
+----
+ROUTE /about
+tel:3234331350
+----
+ROUTE /services
+tel:3234331350
+----
+ROUTE /services/home-organization
+tel:3234331350
+----
+ROUTE /services/house-calls
+tel:3234331350
+----
+ROUTE /services/legacy
+tel:3234331350
+----
+ROUTE /services/resale
+tel:3234331350
+----
+ROUTE /pricing
+tel:3234331350
+----
+ROUTE /contact
+tel:3234331350
+----

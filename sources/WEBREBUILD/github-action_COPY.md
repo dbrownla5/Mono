@@ -1,0 +1,300 @@
+# Copy Extraction for github-action
+
+## Section: README_CI
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> CI tests run against the pineapplefish-tailnet.org.github tailnet. Check our usual credential store for credentials.
+
+### 📝 General Body Copy / Page Text
+- `tag:ci` must have access to the `lax-pve` server.
+
+---
+
+## Section: logout
+
+### 📝 General Body Copy / Page Text
+- const runnerWindows = "Windows";
+- const runnerMacOS = "macOS";
+- async function logout(): Promise
+- const runnerOS = process.env.RUNNER_OS || "";
+- if (runnerOS === runnerMacOS) {
+- core.info("Resetting DNS settings on macOS");
+- await exec.exec("networksetup", ["-setdnsservers", "Ethernet", "Empty"]);
+- await exec.exec("networksetup", [
+- core.info("🔄 Logging out of Tailscale...");
+- let execArgs: string[];
+- if (runnerOS === runnerWindows) {
+- execArgs = ["tailscale", "logout"];
+- execArgs = ["sudo", "-E", "tailscale", "logout"];
+- await exec.exec(execArgs[0], execArgs.slice(1));
+- core.info("✅ Successfully logged out of Tailscale");
+- core.info("Tailscale not found or not accessible, skipping logout");
+- core.info("Stopping tailscale");
+- await exec.exec("net", ["stop", "Tailscale"]);
+- await exec.exec("taskkill", ["/F", "/IM", "tailscale-ipn.exe"]);
+- const xdgRuntimeDir =
+- process.env.XDG_RUNTIME_DIR ||
+- process.env.XDG_CACHE_HOME ||
+- path.join(os.homedir(), ".cache");
+- .readFileSync(path.join(xdgRuntimeDir, "tailscaled.pid"))
+- await exec.exec("sudo", ["pkill", "-P", pid]);
+- await exec.exec("sudo", ["tailscaled", "--cleanup"]);
+- core.info("✅ Stopped tailscale");
+
+---
+
+## Section: main
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> let waitTime = Math.min(Math.pow(1.3, i), 5000);
+
+### 📝 General Body Copy / Page Text
+- const cmdTailscale = "tailscale";
+- const cmdTailscaleFullPath = "/usr/local/bin/tailscale";
+- const cmdTailscaled = "tailscaled";
+- const cmdTailscaledFullPath = "/usr/local/bin/tailscaled";
+- const runnerLinux = "Linux";
+- const runnerWindows = "Windows";
+- const runnerMacOS = "macOS";
+- function xdgCacheDir(): string {
+- return process.env.XDG_CACHE_HOME || path.join(os.homedir(), ".cache");
+- function xdgRuntimeDir(): string {
+- return process.env.XDG_RUNTIME_DIR || xdgCacheDir();
+- const versionLatest = "latest";
+- const versionUnstable = "unstable";
+- interface TailscaleConfig {
+- resolvedVersion: string;
+- oauthClientId: string;
+- tailscaledArgs: string;
+- MagicDNSSuffix: string;
+- MagicDNSEnabled: boolean;
+- type tailscaleStatus = {
+- BackendState: string;
+- CurrentTailnet: tailnetInfo;
+- async function getTailscaleStatus(): Promise
+- return JSON.parse(stdout);
+- async function run(): Promise
+- const runnerOS = process.env.RUNNER_OS || "";
+- if (![runnerLinux, runnerWindows, runnerMacOS].includes(runnerOS)) {
+- throw new Error("Support Linux, Windows, and macOS Only");
+- const config = await getInputs();
+- runnerOS === runnerMacOS &&
+- config.version === versionUnstable &&
+- "Caching of unstable releases is not supported on macOS runners",
+- validateAuth(config);
+- config.resolvedVersion = await resolveVersion(config.version, runnerOS);
+- config.arch = getTailscaleArch(runnerOS);
+- await installTailscale(config, runnerOS);
+- if (runnerOS !== runnerWindows) {
+- await connectToTailscale(config, runnerOS);
+- const status = await getTailscaleStatus();
+- if (status.BackendState === "Running") {
+- core.info("✅ Tailscale is running and connected!");
+- if (runnerOS === runnerMacOS) {
+- await configureDNSOnMacOS(status);
+- await pingHostsIfNecessary(config);
+- `❌ Tailscale status is required in order to configure macOS`,
+- core.setFailed(error instanceof Error ? error.message : String(error));
+- async function pingHostsIfNecessary(config: TailscaleConfig): Promise
+- if (config.pingHosts.length == 0) {
+- `Will ping hosts ${config.pingHosts.join(
+- )} up to 3 minutes each (in parallel) in order to check connectivity`,
+- for (const ping of pings) {
+- async function pingHost(host: string): Promise
+- let start = new Date().getTime();
+- await wait(waitTime);
+- let result = await execSilent("ping host", cmdTailscale, [
+- err instanceof execError &&
+- err.stderr.includes("direct connection not established")
+- async function getInputs(): Promise
+- let ping = core.getInput("ping");
+- let pingHosts = ping?.length > 0 ? ping.split(",") : [];
+- const authKey = core.getInput("authkey") || "";
+- const oauthSecret = core.getInput("oauth-secret") || "";
+- core.setSecret(authKey);
+- core.setSecret(oauthSecret);
+- version: core.getInput("version") || "1.94.2",
+- oauthClientId: core.getInput("oauth-client-id") || "",
+- audience: core.getInput("audience") || "",
+- oauthSecret: oauthSecret,
+- tags: core.getInput("tags") || "",
+- hostname: core.getInput("hostname") || "",
+- args: core.getInput("args") || "",
+- tailscaledArgs: core.getInput("tailscaled-args") || "",
+- stateDir: core.getInput("statedir") || "",
+- timeout: core.getInput("timeout") || "60s", // Reduced from 2m to 60s
+- retry: parseInt(core.getInput("retry") || "5"),
+- useCache: core.getBooleanInput("use-cache"),
+- sha256Sum: core.getInput("sha256sum") || "",
+- pingHosts: pingHosts,
+- if (config.oauthSecret && !config.tags) {
+- "the tags parameter is required when using an OAuth client",
+- function validateAuth(config: TailscaleConfig): void {
+- (!config.oauthSecret || !config.tags) &&
+- (!config.audience || !config.oauthClientId || !config.tags)
+- "Please provide either an auth key, OAuth secret and tags, or federated identity client ID and audience with tags.",
+- "Workload identity federation requires using tailscale version 1.90.0 or later.",
+- async function resolveVersion(
+- if (runnerOS === runnerMacOS && version === versionUnstable) {
+- if (version === versionLatest || version === versionUnstable) {
+- let path = version === versionUnstable ? versionUnstable : "stable";
+- "user-agent:action-setup-tailscale",
+- const response = JSON.parse(stdout);
+- return response.TarballsVersion;
+- return response.Version;
+- return response.MSIsVersion;
+- function getTailscaleArch(runnerOS: string): string {
+- const runnerArch = process.env.RUNNER_ARCH || "";
+- if (runnerOS === runnerLinux) {
+- switch (runnerArch) {
+- } else if (runnerOS === runnerWindows) {
+- } else if (runnerOS === runnerMacOS) {
+- async function installTailscale(
+- config: TailscaleConfig,
+- const cacheKey = generateCacheKey(config, runnerOS);
+- const toolPath = getToolPath(config, runnerOS);
+- if (config.useCache && cacheKey) {
+- const cacheHit = await cache.restoreCache([toolPath], cacheKey);
+- if (runnerOS === runnerWindows) {
+- await installTailscaleWindows(config, toolPath, true);
+- await installCachedBinaries(toolPath, runnerOS);
+- await installTailscaleLinux(config, toolPath);
+- await installTailscaleWindows(config, toolPath);
+- await installTailscaleMacOS(config, toolPath);
+- await cache.saveCache([toolPath], cacheKey);
+- const typedError = error as Error;
+- if (typedError.name === cache.ValidationError.name) {
+- } else if (typedError.name === cache.ReserveCacheError.name) {
+- core.info(typedError.message);
+- async function calculateFileSha256(filePath: string): Promise
+- const hash = crypto.createHash("sha256");
+- const stream = fs.createReadStream(filePath);
+- async function installTailscaleLinux(
+- const minor = parseInt(config.resolvedVersion.split(".")[1]);
+- const isStable = minor % 2 === 0;
+- const baseUrl = isStable
+- ? "https://pkgs.tailscale.com/stable"
+- : "https://pkgs.tailscale.com/unstable";
+- if (!config.sha256Sum) {
+- config.sha256Sum = stdout.trim();
+- const tarDest = path.join(xdgCacheDir(), "tailscale.tgz");
+- const tarPath = await tc.downloadTool(downloadUrl, tarDest);
+- const actualSha = await calculateFileSha256(tarPath);
+- const expectedSha = config.sha256Sum.trim().toLowerCase();
+- if (actualSha !== expectedSha) {
+- throw new Error("SHA256 checksum mismatch");
+- const extractedPath = await tc.extractTar(tarPath, undefined, "xz");
+- const extractedDir = path.join(
+- path.join(extractedDir, cmdTailscale),
+- path.join(toolPath, cmdTailscale),
+- path.join(extractedDir, cmdTailscaled),
+- path.join(toolPath, cmdTailscaled),
+- await execSilent("copy tailscale binaries to /usr/local/bin", "sudo", [
+- await execSilent("chmod tailscale binary", "sudo", [
+- cmdTailscaleFullPath,
+- await execSilent("chmod tailscaled binary", "sudo", [
+- cmdTailscaledFullPath,
+- async function installTailscaleWindows(
+- fromCache: boolean = false,
+- const msiPath = path.join(toolPath, "tailscale.msi");
+- if (!fs.existsSync(msiPath)) {
+- let needsDownload = true;
+- if (fs.existsSync(msiPath)) {
+- const existingSha = await calculateFileSha256(msiPath);
+- if (existingSha === expectedSha) {
+- needsDownload = false;
+- core.info(`Existing MSI checksum mismatch, re-downloading`);
+- fs.unlinkSync(msiPath);
+- const downloadedMsiPath = await tc.downloadTool(downloadUrl, msiPath);
+- const actualSha = await calculateFileSha256(downloadedMsiPath);
+- if (downloadedMsiPath !== msiPath) {
+- fs.copyFileSync(downloadedMsiPath, msiPath);
+- await execSilent("install msi", "msiexec.exe", [
+- path.join(process.env.RUNNER_TEMP || "", "tailscale.log"),
+- core.addPath("C:\\Program Files\\Tailscale\\");
+- async function installTailscaleMacOS(
+- core.info("Building tailscale from src on macOS...");
+- "glone tailscale repo",
+- "git clone https://github.com/tailscale/tailscale.git tailscale",
+- "checkout resolved version",
+- for (const binary of [cmdTailscale, cmdTailscaled]) {
+- TS_USE_TOOLCHAIN: "1",
+- await execSilent("copy binaries to /usr/local/bin", "sudo", [
+- await execSilent("chmod tailscale", "sudo", [
+- await execSilent("chmod tailscaled", "sudo", [
+- core.info("✅ Tailscale installed successfully on macOS from source");
+- const stateArgs = config.stateDir
+- if (config.stateDir) {
+- ...config.tailscaledArgs.split(" ").filter(Boolean),
+- fs.openSync(path.join(os.homedir(), "tailscaled.log"), "w"),
+- const pidFile = path.join(xdgRuntimeDir(), "tailscaled.pid");
+- const maxWaitMs = 15000; // 15 seconds
+- const pollIntervalMs = 500;
+- while (waited < maxWaitMs) {
+- await sleep(pollIntervalMs);
+- waited += pollIntervalMs;
+- async function connectToTailscale(
+- let hostname = config.hostname;
+- hostname = hostname.substring(0, 63);
+- let authArgs: string[];
+- if (config.audience || config.oauthSecret) {
+- if (config.audience) {
+- const token = await core.getIDToken(config.audience);
+- } else if (config.oauthSecret) {
+- const platformArgs: string[] = [];
+- platformArgs.push("--unattended");
+- ...config.args.split(" ").filter(Boolean),
+- let execArgs: string[];
+- execArgs = [cmdTailscale, ...upArgs];
+- execArgs = ["sudo", "-E", cmdTailscale, ...upArgs];
+- const timeoutMs = parseTimeout(config.timeout);
+- execSilent("tailscale up", execArgs[0], execArgs.slice(1)),
+- await sleep(sleepTime * 1000);
+- function parseTimeout(timeout: string): number {
+- if (!match) return 120000; // default 2 minutes
+- const value = parseInt(match[1]);
+- const unit = match[2] || "s";
+- return value * 60 * 1000;
+- return value * 60 * 60 * 1000;
+- function sleep(ms: number): Promise
+- function generateCacheKey(
+- ): string | undefined {
+- if (!config.useCache) {
+- function getToolPath(config: TailscaleConfig, runnerOS: string): string {
+- const cacheDirectory = process.env.RUNNER_TOOL_CACHE || "";
+- core.warning("Expected RUNNER_TOOL_CACHE to be defined");
+- config.resolvedVersion,
+- async function installCachedBinaries(
+- if (runnerOS === runnerLinux || runnerOS === runnerMacOS) {
+- const tailscaleBin = path.join(toolPath, cmdTailscale);
+- const tailscaledBin = path.join(toolPath, cmdTailscaled);
+- if (fs.existsSync(tailscaleBin) && fs.existsSync(tailscaledBin)) {
+- await execSilent("copy tailscale from cache", "sudo", [
+- await execSilent("copy tailscaled from cache", "sudo", [
+- async function configureDNSOnMacOS(status: tailscaleStatus): Promise
+- if (!status.CurrentTailnet.MagicDNSEnabled) {
+- core.info("MagicDNS is disabled, not configuring DNS");
+- await execSilent("set dns servers", "networksetup", [
+- await execSilent("set search domains", "networksetup", [
+- status.CurrentTailnet.MagicDNSSuffix,
+- * Executes the given command, logging the given label as info, but suppressing
+- * all other output including the command line itself (unless debug logging is enabled,
+- * see https://docs.github.com/en/actions/how-tos/monitor-workflows/enable-debug-logging).
+- * If the command fails, stderr is written to the console.
+- * @param label a label to use for info logging what's happening
+- * @param cmd the command to run
+- * @param args arguments to the command
+- * @returns stdout (if command was successful)
+- * @throws execError if exec returned a non-zero status code
+- async function execSilent(
+- const out = await exec.getExecOutput(cmd, args, {
+- silent: !core.isDebug(),
+- ignoreReturnCode: true,
+- if (out.exitCode !== 0) {
+- process.stderr.write(out.stderr);
+- public constructor(msg: string, exitCode: number, stderr: string) {
+- this.exitCode = exitCode;
+- this.stderr = stderr;
+- public toString(): string {
+
+---

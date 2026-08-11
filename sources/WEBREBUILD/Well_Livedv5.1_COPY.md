@@ -1,0 +1,4930 @@
+# Copy Extraction for Well_Livedv5.1
+
+## Section: About
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> I have always been drawn to the life that lives inside people's most treasured possessions — the objects around which identity is formed, whether subtly or boldly.
+
+> That instinct has followed me my entire life.
+
+> Years later, standing in Seattle and looking through museum glass at Steven Tyler's scarves, I felt that same truth again: the profound human residue objects can hold.
+
+> I do not believe people simply need help getting rid of things. I believe they need help understanding what those things mean, what they are worth, what they still have left to do, and where the next chapter of those belongings belongs.
+
+> What surprised me most was not only the grief of the loss itself, but the disorientation of living without the things that quietly reflect you back to yourself each day.
+
+> When it was my life, my loss, my dog beside me in a storage unit, and no clear sense yet of what the next version of home would be, I came face to face with something essential.
+
+> During that season, I was introduced to someone who, on paper, might have simply been called a home organizer. But what she offered was something far deeper. She stepped into the moments I could not hold alone. The decisions I was too depleted to make. The logistics I normally would have solved in seconds.
+
+> At the core, I believe the most meaningful work is helping people feel truly taken care of. That is what this business was built to do.
+
+> Invented and patented an outdoor retail solution prototype during my time at evo.
+
+> Keynote Speaker, 2023. The largest apparel and fashion trade show in the US.
+
+### 📝 General Body Copy / Page Text
+- export default function About() {
+- title: "About Dayna Brown",
+- description: "Fifteen years of large-scale operations leadership, now applied to your home and the practical layer of life. Los Angeles, CA.",
+- competence does not eliminate the need to be cared for.
+- A record is never just vinyl when it still holds the rebellion, risk, and moment that brought it into the world — an era in which music helped bring authority to its knees.
+- A closed closet door is never just storage when it still tells the story of a marriage, a career, a season of confidence, or the person someone once was.
+- That is the heart of this work.
+- Sometimes that means preserving. Sometimes it means cataloging, resale, or making sure a family story does not disappear into a donation pile.
+- The work is never really about the object. It is about protecting the life it represents.
+- She was not organizing. She was relief.
+- Founder, The Well Lived Citizen
+- That same philosophy now lives inside The Well Lived Citizen.
+- Regional Retail Director, West & Central · 2023–2025
+- Singer, Husqvarna Viking, PFAFF
+- Senior Regional Director, Pacific Northwest · 2020–2023
+- Regional Brand Director, Southern California · 2016–2020
+- Joie, Equipment, Current/Elliott
+- District Manager, Los Angeles · 2016–2018
+- Retail Division Manager, Los Angeles · 2011–2014
+- Well Dressed Citizen LLC
+- Founder & Principal, 2020–present. Parent LLC of The Well Lived Citizen.
+- Featured Guest on Retail in America with Ron Thurston — NRF speaker and bestselling author of
+
+---
+
+## Section: App
+
+### 📝 General Body Copy / Page Text
+- type ModuleMap = Record
+- function _resolveComponent(
+- ): ComponentType | undefined {
+- const fns = Object.values(mod).filter(
+- ) as ComponentType[];
+- (mod.default as ComponentType) ||
+- (mod.Preview as ComponentType) ||
+- (mod[name] as ComponentType) ||
+- function PreviewRenderer({
+- componentPath: string;
+- const [Component, setComponent] = useState
+- const [error, setError] = useState
+- let cancelled = false;
+- async function loadComponent(): Promise
+- const loader = modules[key];
+- const mod = await loader();
+- const name = componentPath.split("/").pop()!;
+- const comp = _resolveComponent(mod, name);
+- const message = e instanceof Error ? e.message : String(e);
+- void loadComponent();
+- }, [componentPath, modules]);
+- if (!Component) return null;
+- function getBasePath(): string {
+- return import.meta.env.BASE_URL.replace(/\/$/, "");
+- function getPreviewExamplePath(): string {
+- const basePath = getBasePath();
+- Component Preview Server
+- This server renders individual components for the workspace canvas.
+- function getPreviewPath(): string | null {
+- basePath && pathname.startsWith(basePath)
+- ? pathname.slice(basePath.length) || "/"
+- return match ? match[1] : null;
+- const previewPath = getPreviewPath();
+- const queryClient = new QueryClient();
+- function NotFound() {
+- Did you forget to add the page to the router?
+- const clerkPubKey = publishableKeyFromHost(
+- window.location.hostname,
+- import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
+- const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
+- const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+- function stripBase(path: string): string {
+- return basePath && path.startsWith(basePath)
+- ? path.slice(basePath.length) || "/"
+- throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY");
+- const clerkAppearance = {
+- cssLayerName: "clerk",
+- logoLinkUrl: basePath || "/",
+- colorPrimary: "#6a4a36",
+- colorForeground: "#231e1a",
+- colorMutedForeground: "#6e5e57",
+- colorDanger: "#a33333",
+- colorBackground: "#f8f6f2",
+- colorInput: "#cec7bd",
+- colorInputForeground: "#231e1a",
+- colorNeutral: "#d0c9c1",
+- rootBox: "w-full flex justify-center",
+- card: "!shadow-none !border-0 !bg-transparent !rounded-none",
+- footer: "!shadow-none !border-0 !bg-transparent !rounded-none",
+- headerTitle: "text-[#231e1a] font-serif",
+- headerSubtitle: "text-[#6e5e57]",
+- socialButtonsBlockButtonText: "text-[#231e1a]",
+- formFieldLabel: "text-[#231e1a]",
+- footerActionLink: "text-[#6a4a36]",
+- footerActionText: "text-[#6e5e57]",
+- dividerText: "text-[#6e5e57]",
+- identityPreviewEditButton: "text-[#6a4a36]",
+- formFieldSuccessText: "text-[#6a4a36]",
+- alertText: "text-[#231e1a]",
+- logoBox: "flex justify-center",
+- logoImage: "w-10 h-10",
+- socialButtonsBlockButton: "border border-[#d0c9c1] bg-white hover:bg-[#f0ede8]",
+- formButtonPrimary: "bg-[#6a4a36] hover:bg-[#5c3d2e]",
+- formFieldInput: "border-[#d0c9c1] bg-white text-[#231e1a]",
+- footerAction: "bg-transparent",
+- dividerLine: "bg-[#d0c9c1]",
+- alert: "bg-[#f0ede8]",
+- otpCodeFieldInput: "border-[#d0c9c1] bg-white text-[#231e1a]",
+- const queryClient = new QueryClient({
+- refetchOnWindowFocus: false,
+- function ClerkQueryClientCacheInvalidator() {
+- const qc = useQueryClient();
+- const prevUserIdRef = useRef
+- const userId = user?.id ?? null;
+- prevUserIdRef.current !== undefined &&
+- prevUserIdRef.current !== userId
+- prevUserIdRef.current = userId;
+- function ClerkAuthTokenSetup() {
+- setAuthTokenGetter(null);
+- function StudioLanding() {
+- Back-of-house operations
+- Sign in to the studio
+- function SignInPage() {
+- function HomeRedirect() {
+- function ClerkProviderWithRoutes() {
+- const [, setLocation] = useLocation();
+- setLocation(stripBase(to))}
+
+---
+
+## Section: Contact
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> "Been sitting for a while and I need it to finally be done",
+
+> "Still packing — I need help with the close-out",
+
+> "I've already moved — there's stuff left at the old place",
+
+> "I need to leave before it's done — pack and close it out for me",
+
+> description: "Tell me what you need. The first conversation is always just that — a conversation. Concierge home services in Los Angeles.",
+
+> Tell me what you need. You do not need to have it figured out. Start with what is true right now and I'll take it from there.
+
+> ? "I'll reach out to schedule a call — usually within a few hours."
+
+> : "I'll be in touch within 24 hours. Text for anything urgent: "}
+
+> <span className="intake-intent-label">We've worked together</span>
+
+> <span className="intake-intent-desc">I'm a returning client.</span>
+
+> Leave your info and I'll reach out to find a time. No prep needed — just a quick call to figure out what makes sense.
+
+### 📝 General Body Copy / Page Text
+- type ClientType = "new" | "returning";
+- type QuestionType = {
+- type: "checkbox" | "radio" | "textarea";
+- placeholder?: string;
+- const QUESTIONS: Partial
+- label: "Which space are we working on?",
+- options: ["Closet", "Bedroom", "Kitchen", "Living room", "Garage or storage unit", "Move landing", "Whole home"],
+- label: "Where are things right now?",
+- "Just moved — boxes are in but nothing's settled",
+- "About to move — I need help preparing",
+- label: "Where are you in the move?",
+- "Boxes are in — it technically happened but never landed",
+- options: ["Studio or 1-bedroom", "2-bedroom", "3-bedroom or larger", "Storage unit or offload only"],
+- label: "What needs to happen?",
+- "Donation drop-off or routing",
+- "Tech setup or troubleshooting",
+- "Vendor or contractor access",
+- "Returns or errands",
+- "Personal shopping or sourcing",
+- "I'll explain in notes",
+- label: "What are we working with?",
+- options: ["Clothing & accessories", "Designer pieces", "Jewelry", "Furniture", "Home décor or art", "Vintage", "Mixed or not sure"],
+- label: "What's the situation?",
+- "General home accumulation over the years",
+- "A life transition — move, divorce, loss",
+- "Estate or inheritance related",
+- function getInitialIntent(search: string): IntentType | null {
+- const p = new URLSearchParams(search);
+- const offer = p.get("offer");
+- const service = p.get("service");
+- if (offer === "4hour") return "four-x-five";
+- if (offer === "pickup") return "resale";
+- if (offer === "closeout") return "move";
+- if (offer === "housecall") return "house-call";
+- if (service === "home-org") return "homeorg";
+- if (service === "legacy") return "legacy";
+- if (service === "house-calls") return "housecalls";
+- if (service === "resale") return "resale";
+- function QuestionCard({
+- question, answer, onCheck, onRadio, onText,
+- question: QuestionType;
+- answer: string | string[] | undefined;
+- const radioVal = (answer as string | undefined) ?? "";
+- {question.optional &&
+- {question.type === "checkbox" && question.options && (
+- onCheck(opt, e.target.checked)} />
+- {question.type === "radio" && question.options && (
+- {question.type === "textarea" && (
+- onText(e.target.value)}
+- export default function Contact() {
+- title: "Get in Touch",
+- const search = useSearch();
+- const preIntent = getInitialIntent(search);
+- const [clientType, setClientType] = useState<ClientType | null>(null);
+- const [returningEmail, setReturningEmail] = useState("");
+- const [returningLookup, setReturningLookup] = useState<"idle" | "checking" | "found" | "not-found">("idle");
+- const [returningName, setReturningName] = useState("");
+- const [step, setStep] = useState<0 | 1 | 2 | 3>(preIntent ? 1 : 0);
+- const [intent, setIntent] = useState<IntentType | null>(preIntent);
+- const [subStep, setSubStep] = useState(0);
+- const [name, setName] = useState("");
+- const [phone, setPhone] = useState("");
+- const [realLife, setRealLife] = useState("");
+- const [bestTime, setBestTime] = useState("");
+- const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+- function chooseClientType(type: ClientType) {
+- async function handleReturningEmail() {
+- if (!returningEmail) return;
+- setReturningLookup("checking");
+- const data = await res.json();
+- setReturningName(data.name ?? "");
+- setReturningLookup("found");
+- setEmail(returningEmail);
+- if (data.name) setName(data.name);
+- setReturningLookup("not-found");
+- function selectIntent(id: IntentType) {
+- const qs = QUESTIONS[id];
+- if (qs && qs.length > 0) {
+- const questions = intent ? (QUESTIONS[intent] ?? []) : [];
+- const currentQuestion = questions[subStep] ?? null;
+- const totalSubSteps = questions.length;
+- const isLastSubStep = subStep === totalSubSteps - 1;
+- function onCheck(val: string, checked: boolean) {
+- if (!currentQuestion) return;
+- const key = currentQuestion.key;
+- const arr = (prev[key] as string[] | undefined) ?? [];
+- function handleContinue() {
+- if (isLastSubStep) setStep(3);
+- function handleBack() {
+- if (intent === "call" || !QUESTIONS[intent!]?.length) setStep(1);
+- if (!currentQuestion) return true;
+- const ans = answers[currentQuestion.key];
+- if (currentQuestion.optional) return true;
+- if (currentQuestion.type === "checkbox") return (ans as string[] | undefined)?.length ?? 0 > 0;
+- if (currentQuestion.type === "radio") return typeof ans === "string" && ans.length > 0;
+- if (currentQuestion.type === "textarea") return typeof ans === "string" && ans.trim().length > 0;
+- async function handleSubmit(e: React.FormEvent) {
+- setStatus("sending");
+- const fd = new FormData();
+- fd.append("name", name);
+- fd.append("clientType", clientType ?? "new");
+- if (phone) fd.append("phone", phone);
+- fd.append("service", intent ?? "general");
+- fd.append("answers", JSON.stringify(answers));
+- if (realLife) fd.append("realLife", realLife);
+- if (bestTime) fd.append("bestTime", bestTime);
+- const [formspreeRes] = await Promise.allSettled([
+- fetch("/api/intake", {
+- const ok = formspreeRes.status === "fulfilled" && (formspreeRes.value as Response).ok;
+- setStatus(ok ? "success" : "error");
+- const isCallPath = intent === "call";
+- <div className="page">
+- <div className="label">The Well Lived Citizen</div>
+- The first conversation is always just that — a conversation.
+- {status === "success" ? (
+- Have we worked together before?
+- className="intake-intent-card"
+- <span className="intake-intent-label">New here</span>
+- <span className="intake-intent-desc">First time reaching out.</span>
+- {clientType === "returning" && returningLookup === "idle" && (
+- <div className="form-field">
+- className="form-input"
+- className="btn btn-dark"
+- {clientType === "returning" && returningLookup === "checking" && (
+- {clientType === "returning" && (returningLookup === "found" || returningLookup === "not-found") && (
+- {returningLookup === "found" && returningName ? (
+- Good to have you back. What brings you in?
+- <div className="intake-intent-grid">
+- {step === 2 && intent && currentQuestion && (
+- <label className="form-label" htmlFor="fullName">Your name</label>
+- <label className="form-label" htmlFor="phone">
+- <label className="form-label" htmlFor="realLife">
+- <label className="form-label" htmlFor="bestTime">
+- <div className="contact-social">
+- <a href="https://instagram.com/thewelllivedcitizen" target="_blank" rel="noopener" aria-label="Instagram">
+- <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+- <rect x="2" y="2" width="20" height="20" rx="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+- <a href="https://facebook.com/thewelllivedcitizen" target="_blank" rel="noopener" aria-label="Facebook">
+- <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+- Zelle accepted at dayna@thewelllivedcitizen.com. Payment discussed after scope is confirmed.
+
+---
+
+## Section: Home
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> I move fast where things are solvable, and when life gets stuck, I know how to move it through.
+
+> The room that keeps collecting piles. The task list that keeps moving to tomorrow. The move landing that technically happened but never settled. Four hours. I come in, find the friction, and make it move.
+
+> You go to the new city, the family home, the furnished rental, or the next place first. I stay behind to pack and close out the space — moving what should be stored, routing what should be sold, and shipping what you still need in labeled boxes. Start with a scoped project fee built from hourly work blocks. The move continues in flexible chunks without you carrying the urgency from the other end.
+
+> For the room that keeps collecting piles. The move that technically happened but never settled. The closet that no longer fits your life. I come in, find the friction, and make the space work around how you naturally move through your day.
+
+> The operational layer of what quietly adds up inside a home. You may already have the estate planner, the will, and the paperwork. My work lives in the operational middle — the things inside the walls that deserve a plan while you're still the one making decisions.
+
+> That's the thing friends used to do. The thing neighbors don't always exist for anymore. The thing adult children need when they're in another city. Once I know how your home works, it becomes easy for me to help keep it working — home check-ins, tech setup, donation drop-offs, and the practical loose ends that make everyday life easier when someone trusted is paying attention.
+
+### 📝 General Body Copy / Page Text
+- export default function Home() {
+- title: "The Well Lived Citizen — Concierge Home Services in Los Angeles",
+- description: "Concierge home and life services in Los Angeles — home organization, legacy planning, house calls, and curated resale. Run by Dayna Brown.",
+- const heroRef = useRef
+- const overlayRef = useRef
+- if (!heroRef.current || !overlayRef.current) return;
+- const heroH = heroRef.current.offsetHeight;
+- const scroll = Math.min(window.scrollY / (heroH * 0.6), 1 - base);
+- const progress = base + scroll;
+- overlayRef.current.style.opacity = String(progress);
+- "there has to be an easier way"
+- Welcome to the concierge for the things you don't want to handle.
+- I'm built for your chaos.
+- Need to leave before everything is packed?
+- 01 — Home Organization & Modern Move
+- Your home, made to work for how you actually live.
+- $150/hr · 3 hr minimum
+- Flex pricing and project quotes on the
+- 02 — Legacy Planning & Inventory Catalog
+- Clarity without fear.
+- $175/hr · 2 hr minimum
+- Project quotes on the
+- For the things life leaves unfinished.
+- Continuity retainer available. Details on the
+- 04 — Curated Resale & Consignment
+- Is it cool? Is it sellable? Will they even take it?
+- Commission structure and full terms on the
+- Not sure where to start?
+- No pressure. The whole point is to make your life easier to navigate from here.
+
+---
+
+## Section: ObjectUploader
+
+### 📝 General Body Copy / Page Text
+- import "@uppy/core/css/style.min.css";
+- import "@uppy/dashboard/css/style.min.css";
+- interface ObjectUploaderProps {
+- maxNumberOfFiles?: number;
+- maxFileSize?: number;
+- * Function to get upload parameters for each file.
+- * IMPORTANT: This receives the file object - use file.name, file.size, file.type
+- * to request per-file presigned URLs from your backend.
+- onGetUploadParameters: (
+- buttonClassName?: string;
+- * A file upload component that renders as a button and provides a modal interface for
+- * - Renders as a customizable button that opens a file upload modal
+- * - Provides a modal interface for:
+- * - Upload progress tracking
+- * - Upload status display
+- * The component uses Uppy v5 under the hood to handle all file upload functionality.
+- * @param props - Component props
+- * @param props.maxNumberOfFiles - Maximum number of files allowed to be uploaded
+- * @param props.maxFileSize - Maximum file size in bytes (default: 10MB)
+- * @param props.onGetUploadParameters - Function to get upload parameters for each file.
+- * Receives the UppyFile object with file.name, file.size, file.type properties.
+- * Use these to request per-file presigned URLs from your backend. Returns method,
+- * url, and optional headers for the upload request.
+- * @param props.onComplete - Callback function called when upload is complete. Typically
+- * used to make post-upload API calls to update server state and set object ACL
+- * @param props.buttonClassName - Optional CSS class name for the button
+- * @param props.children - Content to be rendered inside the button
+- export function ObjectUploader({
+- maxNumberOfFiles = 1,
+- maxFileSize = 10485760, // 10MB default
+- onGetUploadParameters,
+- }: ObjectUploaderProps) {
+- const onCompleteRef = useRef(onComplete);
+- const onGetUploadParametersRef = useRef(onGetUploadParameters);
+- const [showModal, setShowModal] = useState(false);
+- shouldUseMultipart: false,
+- onCompleteRef.current?.(result);
+
+---
+
+## Section: Pricing
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> Paid at booking. No estimate call. You point to what needs handling — I bring the momentum.
+
+> If you want fully printed labels applied the same day, I'll bring the label maker on-site — just mention it during intake so it's built into the time estimate.
+
+> Work that needs straight-through momentum, multi-room lift, deeper decision-making, or full move support doesn't fit cleanly into an hourly estimate. These scope as projects — quoted after a conversation where I understand the actual footprint.
+
+> How I work — visits, cancellations, resale
+
+> Life happens. If you need to move our visit, just
+
+> Inside 48 hours I ask that the booked time be paid for, because that slot was held for you and I usually can't refill it last-minute. Same for no-shows. I'd rather you tell me you're overwhelmed and we reschedule than ghost the appointment — I genuinely won't be weird about it.
+
+### 📝 General Body Copy / Page Text
+- export default function Pricing() {
+- description: "Flat-rate quick books, hourly, flex blocks, add-ons, commission, and how it all works. Full pricing for concierge home services in Los Angeles.",
+- Everything here, in one place. Rates, how the structures work, add-ons, commission, payment, and what happens if life interrupts.
+- Quick Booking — Flat Rate
+- $350 flat · fixed price, book directly
+- 4-Hour Practical Reset
+- $500 flat · no project scope, no hourly count
+- Book a flat-rate block
+- 01 — Home Organization & Modern Move
+- $150/hr · 3 hr minimum
+- Studio / 1BR Move Reset
+- $1,200 flat — up to 8 hours straight
+- Larger homes & multi-room projects
+- Flex blocks never expire. The $1,200 flat rate is for studio and 1-bedroom moves only — footprints that can realistically be packed, landed, or reset in a single uninterrupted day. Larger homes scope as projects.
+- Labels are always included — handwritten on-site by default, printed sets for larger project scopes.
+- First-Night & First-Week Supply Bundles
+- Optional product budgets that can be added to any session or day rate. So the home works before the first Target run.
+- price: "$150 — Essentials Landing",
+- body: "Toilet paper, paper towels, basic utensils, water glasses, a wine or whiskey tumbler, laundry and dish detergent, trash bags, trash bins, two bath towels, and two kitchen towels. The first-night basics so nothing has to be bought in a panic.",
+- price: "$250 — Start-Up Landing",
+- body: "Everything in Essentials, plus a starter dish set, dish soap, hamper, hangers, and entry-point setup — keys, mail, shoes, bag drop. Enough to make the kitchen functional and the front door feel like a real landing zone.",
+- price: "$500 — Full Landing Bundle",
+- price: "$150 — Starter Org Bundle",
+- body: "5 bins, 3 bin latches, and a rolling cart. Good for a single closet, pantry shelf, or one focused zone.",
+- price: "$250 — Mid Org Bundle",
+- body: "10 bins in mixed sizes, 6 bin latches, a rolling cart, 2 drawer divider sets, and a shelf riser or two. Covers a full closet, a small pantry, or a bathroom and linen combo.",
+- price: "$500 — Full Org Bundle",
+- body: "20 bins across multiple sizes, full latch set, rolling cart, 4 drawer divider sets, shelf risers, under-shelf baskets, hanger refresh, and a starter set of clear canisters or lazy susans for pantry or bath. Covers a full pantry, a primary closet and dresser, or a multi-zone reset in one session.",
+- 02 — Legacy Planning & Inventory Catalog
+- $175/hr · 2 hr minimum
+- From $3,500 / 20–30 hrs
+- Quoted after walkthrough
+- Larger estates and whole-home projects are quoted after walkthrough only — there's no fixed tier for that scope because every home is different. Flex blocks never expire.
+- Hourly (beyond a flat block)
+- 04 — Curated Resale & Consignment · The Well Lived Closet
+- Clothing & Accessories
+- 55% client / 45% Dayna
+- Furniture & Significant Home Pieces
+- You keep the larger share. Commission is calculated on net proceeds after platform fees — not on the original listing price.
+- Reserved time, without a deadline on using it.
+- Flex blocks exist because most clients need ongoing support — but not on a fixed schedule. Life doesn't organize itself in predictable weekly slots. A flex block is hours in the bank. You buy the time at a discount, and it's there when you need it: a vendor day that comes up, a donation run before a trip, a session you couldn't schedule three weeks ago but need this Thursday.
+- They work best for task lists that build between projects, seasonal resets, vendor coordination, post-travel home re-entry, guest prep, and the kind of ongoing relationship where you want someone available without having to explain the context from scratch every time.
+- Flex block hours never expire. The point is that your time is already there when life needs it.
+- Heavier work, scoped and priced after a call.
+- Projects are quoted by scope, timeline, and intensity of lift.
+- Start with a conversation.
+- All bookings are paid via Zelle. Card payment options are on the way.
+- dayna@thewelllivedcitizen.com
+- (e.g., "Smith — Home Org 3 hr block").
+- If we have a visit on the books
+- Resale, consignment & online buyers
+- All resale sales are final.
+- Authenticity & condition.
+- Consignment (seller side).
+- Chargebacks & disputes.
+- The first conversation is always free.
+- Reach me through the form.
+
+---
+
+## Section: Services
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> For when the issue isn't the room — it's the person you used to have to call. Possibly my favorite service, and the spirit of this company. Route-based quick asks often absorbed into existing travel days.
+
+### 📝 General Body Copy / Page Text
+- export default function Services() {
+- description: "Home Organization & Modern Move, Legacy Planning, House Calls, and Curated Resale — concierge services in Los Angeles.",
+- The Well Lived Citizen
+- Home Organization & Modern Move
+- The relief of the room.
+- Your home, made to work for how you actually live. For the room that keeps collecting piles, the move that technically happened but never settled, the closet that no longer fits your life, or the spaces where everyday friction quietly steals time.
+- $150/hr · 3 hr minimum
+- Flex pricing and project quotes covered on the
+- Legacy Planning & Inventory Catalog
+- Clarity without fear.
+- $175/hr · 2 hr minimum
+- For the things life leaves unfinished.
+- Curated Resale & Consignment
+- Piece-by-piece curation from someone who knows the platforms.
+- Commission structure and full terms covered on the
+- Not sure where to start? Start with what is most real right now.
+- Most clients naturally move between these four services over time, and the work is designed to follow real life instead of forcing you into a rigid category.
+
+---
+
+## Section: api-spec
+
+### 📝 General Body Copy / Page Text
+- const root = path.resolve(__dirname, "..", "..");
+- const apiClientReactSrc = path.resolve(root, "lib", "api-client-react", "src");
+- const apiZodSrc = path.resolve(root, "lib", "api-zod", "src");
+- config.info.title = "Api";
+- export default defineConfig({
+- "api-client-react": {
+- target: "./openapi.yaml",
+- transformer: titleTransformer,
+- workspace: apiClientReactSrc,
+- client: "react-query",
+- includeHttpResponseReturnType: false,
+- path: path.resolve(apiClientReactSrc, "custom-fetch.ts"),
+- workspace: apiZodSrc,
+- query: ['boolean', 'number', 'string'],
+- param: ['boolean', 'number', 'string'],
+- body: ['bigint', 'date'],
+- response: ['bigint', 'date'],
+
+---
+
+## Section: app
+
+### 📝 General Body Copy / Page Text
+- clerkProxyMiddleware,
+- } from "./middlewares/clerkProxyMiddleware";
+- const app: Express = express();
+- url: req.url?.split("?")[0],
+- statusCode: res.statusCode,
+- app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+- const allowedOrigins = new Set
+- "http://localhost:80",
+- if (!origin || allowedOrigins.has(origin)) {
+- callback(null, origin || true);
+- callback(new Error("Not allowed by CORS"));
+- publishableKey: publishableKeyFromHost(
+- getClerkProxyHost(req) ?? "",
+- process.env.CLERK_PUBLISHABLE_KEY,
+- app.use("/api", router);
+
+---
+
+## Section: attached_assets
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> You go to the new city, the family home, the furnished rental, or the next place first. I stay behind to pack and close out the space — move what should store, route what should sell, ship what you still need in labeled boxes. Start with a scoped project fee built from hourly work blocks. The move continues in flexible chunks without you carrying the urgency from the other end.
+
+> Flex pricing and project quotes covered on our Pricing page.
+
+> We cover the rooms and spaces. For the room that keeps collecting piles. The storage unit that keeps increasing rent and you only go every six months to ensure you weren't broken into or to take out that one outfit, or bike. The move where the boxes made it through the door, but nothing feels settled. The move where you had to leave before everything was fully packed, and someone still needs to close out what's left behind.
+
+> The professional landing in Los Angeles the same day as their boxes and the first day on the job — knowing you'll come home to a boxed mattress, no phone charger, and a suit that needs steaming. No energy, takeout food, or forks. It's the 'oh my gosh, someone save me' situation. But you're happy — life is starting a new chapter — you just have to move through the hurdles of that part.
+
+> The closet that no longer fits your life, body, season, or the way you actually get dressed (morning or afternoon — no judgment). I come in, find the friction, and make the space work around how you naturally move through your day. I don't preach putting things in perfect spaces for the Instagram shot — we can do that for one or two, sure — but I am here for the grit of life and getting you from chaos to relief.
+
+> That can be done with you by my side, being an anxious backseat driver, or you saying, 'I'm going to the beach, here's the key. I have cameras.' Essentially, with or without you. The goal is a home that lands well and WORKS and keeps working after I leave.
+
+> The lived-in layer of your home — the walls you spend your life within — needs clarity before it becomes a burden to you, your future self, your family, or the people you rely on. Most people are prepared for the things we're pressured to check off the list — good job, us. You may already have the estate planner, the will, and the paperwork.
+
+> Possibly my favorite service, and the spirit of this company.
+
+> Commission structure and full terms covered on our Pricing page.
+
+> I have always been drawn to the life that lives inside people's most treasured possessions — the objects around which identity is formed, whether subtly or boldly.
+
+> That instinct has followed me my entire life.
+
+> Creating the time, space, and experience for people to discover the belongings that will become part of their own story has always felt deeply important to me.
+
+> Years later, standing in Seattle and looking through museum glass at Steven Tyler's scarves, I felt that same truth again: the profound human residue objects can hold.
+
+> I best understand my own attachment through moments of live music.
+
+> I do not believe people simply need help getting rid of things. I believe they need help understanding what those things mean, what they are worth, what they still have left to do, and where the next chapter of those belongings belongs.
+
+> What surprised me most was not only the grief of the loss itself, but the disorientation of living without the things that quietly reflect you back to yourself each day.
+
+> When it was my life, my loss, my dog beside me in a storage unit, and no clear sense yet of what the next version of home would be, I came face to face with something essential.
+
+> Over the years, this understanding has been reinforced in quieter ways, too. A woman who once lived across the hall from me began as someone I simply greeted in passing at the call box or mailbox. Over time, she became a close friend. She is one of the most independent, self-sufficient, quietly powerful women I have ever known.
+
+> What stayed with me was not that she needed anyone. It was the realization that everyone deserves to have that person. The one who knows what to do. The one who can make life easier. The one who steps in before inconvenience becomes overwhelm, or before crisis turns into isolation.
+
+> Because not everyone has the network. Not everyone knows who to call. And sometimes disruption arrives suddenly, as it did for me.
+
+> At the core, I believe the most meaningful work is helping people feel truly taken care of. That is what this business was built to do.
+
+> intake call, prior coordination, and any pre-planning on my end if needed — depending on what information is required, or whether it's an on-site, task-focused immediate dive in
+
+> The point is simple: everyone helps celebrate the moment — I help make it livable afterward. That's House Calls.
+
+> The philosophy is simple: why spend time coordinating a bag when it can simply be in my hands by noon. The longer we have worked together, the easier this process becomes.
+
+> The reason this works is because I am not simply uploading things. I am making decisions around:
+
+> Normal client stretches run in 2, 3, 4, 5, or at longest a 6-hour straight block. No single client is my only client in a day — resale work and client follow-up happen 7 days a week, and the schedule is built to keep all of it moving.
+
+> Tell me what you need. You do not need to have it figured out. Start with what is true right now and I will take it from there.
+
+> I want to talk through what I need first.
+
+> I know what I need and I'm ready to lock it in.
+
+> Send me a message and Dayna will figure it out.
+
+> We are working on The Well Lived Citizen Co. (TheWellLivedCitizenCo.com). Before doing anything: 1. Read the welllivedcitizen-brand skill 2. Query twlc_get_decision_lock 3. Query twlc_get_build_rules Source of truth is the MCP server: welllivedcitizen-knowledge-base Full business name only — never AWLC, never abbreviate. No copy, no CTAs, no pricing without querying the server first.
+
+> for (let i = lines.length - 1; i >= 0; i--) {
+
+> — I want to talk through what I need first.
+
+> — I know what I need and I'm ready to lock it in.
+
+> — Send me a message and Dayna will figure it out.
+
+> I'll be in touch within 24 hours. Text (323) 433-1350 if you need something sooner.
+
+> During that season, I was introduced to someone who, on paper, might have simply been called a home organizer. But what she offered was something far deeper. She stepped into the moments I could not hold alone. The decisions I was too depleted to make. The logistics I normally would have solved in seconds.
+
+> This is where we start with what's actually frustrating you.
+
+> I come in, figure out where the friction is, and make the space work around how you naturally move through your day.
+
+> This service assumes boxes contain reasonably identifiable contents and that essential deliveries — bed-in-a-box, household basics — are already arriving or coordinated during intake. If essentials still need to be ordered, I can handle that ahead of time; noted on intake.
+
+> I walk the home, the closets, the drawers, the storage bins, the shelves people stop seeing after a while.
+
+> Those are the things that quietly create friction every single day. I catalog what matters, route what can generate income, and build a practical plan for the rest so the home works better now — not just someday.
+
+> Part of this work is building a living catalog of what matters in your home. We map what stays in daily use, what can be sold now, what deserves better storage, what you're ready to release slowly, and what you want documented because the story matters.
+
+> This is what happens after the first project, because once I know how your home works, it's easy for me to help keep it working.
+
+> I help clients figure out who to call, what kind of vendor the job actually needs, when it makes sense to book it, and how to avoid paying for the wrong appointment twice.
+
+> Is it wearable? Is it cool? Is it even sellable? Let me figure that out.
+
+> Your share / my share · net after platform fees
+
+> The first conversation is always free. No pressure to figure out which door before we talk — that's what the first call is for.
+
+> No TypeScript errors. The stale console error is from the previous server process — let me restart to clear it and verify everything works end-to-end.
+
+> 1. **Store intake form submissions in the database** — now that you have a backend, I can save every contact form submission to a `submissions` table instead of (or in addition to) Formspree, so you own your data directly.
+
+> We are working on The Well Lived Citizen Co. (TheWellLivedCitizenCo.com).
+
+> I move fast where things are solvable, and when life gets stuck, I know how to move it through.
+
+> You go to the new city, the family home, the furnished rental, or the next place first. I stay behind to pack and close out the space, move what should store, route what should sell, ship what you still need in labeled boxes. Start with a scoped project fee built from hourly work blocks. The move continues in flexible chunks without you carrying the urgency from the other end.
+
+> The closet that no longer fits your life, body, season, or the way you actually get dressed (morning or afternoon — no judgment). I come in, find the friction, and make the space work around how you naturally move through your day. The goal is a home that lands well and WORKS and keeps working after I leave.
+
+> My work is the home itself — identifying what's still in use, what still has value (often hidden in cabinets), and what needs a clear plan while you can still decide what matters. When story matters, I document that too — so meaning isn't lost when objects change hands.
+
+> Flex pricing and project quotes covered on our
+
+> For when the issue isn't the room — it's the person you used to have to call. Possibly my favorite service, and the spirit of this company. Route-based quick asks often absorbed into existing travel days.
+
+> Commission structure and full terms covered on our
+
+### 📝 General Body Copy / Page Text
+- index.html → Homepage (/)
+- about.html → About (/about)
+- services.html → Services overview (/services)
+- pricing.html → Pricing (/pricing)
+- contact.html → Contact (/contact)
+- home-organization.html → /services/home-organization
+- legacy.html → /services/legacy
+- house-calls.html → /services/house-calls
+- resale.html → /services/resale
+- style.css → Shared stylesheet (all pages link to this)
+- robots.txt → Allow crawling
+- images/ → PUT LOGO AND DAYNA PHOTO HERE
+- logo-black.png ← Required: logo on cream background
+- logo-white.png ← Required: logo on dark background
+- dayna.jpg ← Required: Dayna's photo for About page
+- 1. Add logo files to /images/ folder (provided by Dayna)
+- 2. Add Dayna's photo to /images/dayna.jpg (provided by Dayna)
+- 3. Update contact form action URL in contact.html:
+- - Find: `action="https://formspree.io/f/YOUR_FORM_ID"`
+- - Replace with actual Formspree endpoint
+- 1. Drag this entire folder to netlify.com/drop
+- 2. Site is live instantly
+- 3. Connect custom domain: thewelllivedcitizenco.com
+- 2. Verify Search Console ownership
+- 3. Confirm GA4 tag G-HN9C986JLW is receiving data
+- - Do not add any pages not in this list
+- - Do not rename any service pages
+- - Do not change any copy
+- - Do not add images that Dayna did not provide
+- full-copy-final.pdf — CHECKPOINT 5 (Apr 14 2026) + Legacy_Service_Detail.txt
+- This is the single source of truth for TheWellLivedCitizenCo.com. All AI tools must pull from this. No AI may rewrite, reframe, or add to this content without explicit approval from Dayna. Violations flagged in audit log below.
+- welllivedcitizen-knowledge-base
+- Do NOT use AWLC. The business is The Well Lived Citizen Co. Full name only.
+- The Well Lived Citizen Co.
+- Well Dressed Citizen LLC
+- Well Kept. Well Placed. Well Lived.
+- Los Angeles, CA
+- dayna@thewelllivedcitizenco.com
+- The Well Lived Citizen Co., a DBA of Well Dressed Citizen LLC
+- © 2026 The Well Lived Citizen Co · Los Angeles, CA
+- RETIRED — internal reference only. Do NOT use on cards, marketing materials, or any client-facing copy.
+- Services & Pricing
+- Dayna's approved pre-override copy — confirmed Apr 14 2026
+- When "there has to be an easier way" becomes a business.
+- Welcome to the concierge for the things you don't want to handle.
+- See All Services & Pricing
+- Ready to move on it?
+- Book the 4-Hour Practical Reset for the room, task list, move landing, or household overflow that needs to stop catching immediately.
+- Book 4-Hour Reset
+- Resale bag pickup.
+- Schedule Pickup
+- Need to leave before everything is packed?
+- Book the closeout
+- there has to be an easier way
+- Quote used in testimonial block — separate from hero headline usage above
+- Home Organization & Modern Move
+- The relief of the room.
+- Your home, made to work for how you actually live.
+- $150/hr · 3 hr minimum
+- Book a home org or move session
+- Legacy Planning & Inventory Catalog
+- Clarity without fear.
+- Not legal estate planning or estate sale services.
+- Single room or storage unit: $175/hr · 2hr min
+- Whole home: project pricing after walkthrough
+- See how inventory and legacy support works →
+- For the things life leaves unfinished.
+- $175/hr · 2hr min
+- Book practical help for your home →
+- Curated Resale & Consignment
+- Is it cool? Is it sellable? Will they even take it?
+- Schedule the handoff for resale →
+- Dayna's approved homepage copy — confirmed Apr 14 2026
+- Homepage overview only. Detail copy and extended context live on individual service pages.
+- blurb → hourly pricing → flex note (small print) → CTA button (subtle, outside block)
+- Not sure where to start? Start anywhere.
+- No pressure. The whole point is to make your life easier to navigate from here.
+- Gayle Williams, Seattle Client
+- Book your session
+- $175/hr · 2 hr minimum
+- That's the thing friends used to do. The thing neighbors don't always have time for anymore. The thing adult children need when they're in another city.
+- Extended context, gap/efficiency framing, and service examples live on the House Calls detail page.
+- A record is never just vinyl when it still holds the rebellion, risk, and moment that brought it into the world — an era in which music helped bring authority to its knees.
+- A closed closet door is never simply storage when it still tells the story of a marriage, a career, a season of confidence, or the person someone once was.
+- That is the heart of this work.
+- Sometimes that means preserving. Sometimes it means cataloging, resale, or making sure a family story does not disappear into a donation pile.
+- The work is never really about the object. It is about protecting the life it represents.
+- The art you are used to seeing on your walls. The clothes that belong in your closet. The objects that make a place feel like the life you built.
+- At 84, after hip surgery and countless chapters of life behind her, she kept moving forward — not because life had become easy, but because she met it with fullness, curiosity, and grace.
+- That same philosophy now lives inside The Well Lived Citizen Co.
+- That is what this business was built to do.
+- competence does not eliminate the need to be cared for.
+- She was relief.
+- Your home, made to work for how you actually live. For the room that keeps collecting piles, the move that technically happened but never settled, the closet that no longer fits your life, or the spaces where everyday friction quietly steals time.
+- How we can work together
+- Projects can be:
+- side-by-side guided sessions
+- hybrid decision blocks
+- full key handoff
+- solo resets while you're away
+- packing and move prep with or without you
+- The right style is the one that creates the easiest lasting outcome.
+- What's included
+- sourcing recommendations
+- setup and install
+- pre-order coordination
+- workflow tools and install basics
+- measuring tools
+- reusable sort bins
+- cord wraps, Velcro, adapters, and utility hardware
+- $1,200 flat day rate — reserved for studio and 1-bedroom get-it-done-fast moves, up to 8 hours straight. The flat rate exists because these smaller footprints can realistically be packed, landed, or reset in a single uninterrupted day. Larger homes scope as projects.
+- Project scopes are quoted separately.
+- $1,250 / 10 hrs ($125/hr)
+- $3,150 / 25 hrs
+- A Note on Labels
+- Add-Ons & Landing Support
+- First-Night & First-Week Supply Bundles
+- Optional product budgets added to any move session or day rate so the home works before the first Target run.
+- Pre-Buy Org Bundles
+- The operational side of a home, made visible again.
+- It is not estate planning. It is not asset planning. It is planning the actual pieces of a life. Not the will, not the paperwork, not the part a lawyer handles. The part that lives inside the walls.
+- Who this is for
+- The operational side of a home shows up for almost everyone, eventually. Sometimes it's a life change. Sometimes it's a move. Sometimes it's a quiet morning where the drawers, closets, and storage spaces stop matching the person living there.
+- the divorced mom who moved into a condo and suddenly had to see, for the first time, how much had actually been accumulated over a marriage — and had to agree to how it all gets split
+- the person who lived in the same apartment for ten years and had no idea how much had quietly gathered in the back of every closet
+- the career change that revealed a hundred film industry cords, gear, and references in the garage — from a life that isn't the current one anymore
+- the household where someone is ready to take control of their own story before it falls into someone else's hands
+- the family carrying years of meaningful, valuable, or hard-to-sort volume that deserves clarity without pressure
+- Most people will reach a point where the home outgrows who they are as a person. That doesn't mean calling someone to take it all to Goodwill. Goodwill doesn't always take it. You might not have a car. You might not have a friend you're comfortable asking for a favor. And the things inside the home may deserve more than a bin at the curb anyway. This work exists for that exact in-between.
+- What this work actually is
+- The operational side of a home is the layer that quietly adds up over time:
+- the backup bedding
+- the linen closets stacked with care
+- the vintage pieces with story
+- the everyday things with future value
+- the candles tucked away because the house was always tidy enough
+- the designer pieces in sizes the family doesn't share
+- the collection no one else in the house ever learned to see
+- the objects that deserve clarity before family stress builds
+- Sometimes the people who love you don't share your eye, your size, or the history behind what you chose. That is not a failure of family. It is just the reality of inherited space — people can only hold what they recognize.
+- This service is the person who can see what is actually there.
+- What Legacy Planning holds
+- Possible outputs include:
+- digital inventory
+- photo documentation
+- family distribution references
+- sentiment and story preservation
+- resale-ready routing notes
+- donation pathways
+- second-home and storage references
+- transition roadmap
+- printable copies
+- bound family binders
+- duplicate family copies
+- digital or web-based workflows
+- How project timelines work
+- Larger projects are completed across focused work sessions over a shared timeline, rather than continuous daily presence. A two-week catalog may look like three focused 11–4 sessions, with off-site documentation, resale routing, and continuity work completed between visits.
+- Single room or storage unit: $175/hr · 2 hr minimum
+- Whole home: project quote after walkthrough
+- Legacy Project 20–30 hrs — From $3,500
+- Larger estates are quoted after walkthrough ONLY. No fixed $8,500, $10,000, or $15,000 tier.
+- $1,500 / 10 hrs ($150/hr)
+- $3,650 / 25 hrs
+- Dayna's approved copy — confirmed Apr 14 2026
+- Between audience framing and anchor line 'This service is the person who can see what is actually there.'
+- For when the issue isn't the room — it's the person you used to have to call.
+- The world changed, the process got heavier, and no one can be expected to keep up with every new layer alone. House Calls fills the missing person role in real life: the partner who handled it, the nearby parent, the neighbor, the adult child in another city, the friend who always knew how to make the day still work.
+- Who House Calls Is For
+- The bill that used to auto-resolve because your partner handled it. The appliance install that feels different when you're home alone. The digital login that somehow became intimidating overnight. The package, pickup, repair, donation, or appointment that shouldn't be a big deal but suddenly feels heavier than it should.
+- House Calls exists for the private, practical things people don't always want to say out loud.
+- recently widowed
+- first time living alone
+- partner travels constantly
+- adult children supporting from another city
+- practical aftermath no one stays to help with
+- moments where the original plan stopped working and you still need the day to happen
+- Ways to use House Calls
+- one-time practical resets
+- monthly continuity
+- seasonal resets
+- post-project upkeep
+- donation and return routing
+- home re-entry after travel
+- guest and event resets
+- the 4-hour practical reset
+- Real-Life Example
+- The 8-month pregnant woman with a beautiful baby shower, hundreds of gifts, duplicate baby gear, no time, and no energy to turn a mountain of love into something functional.
+- unwrap and sort everything
+- organize by month / size / first-use timeline
+- separate immediate essentials
+- identify duplicates
+- create return and resale routes
+- donate what will never realistically be used
+- clear packaging and gift-wrap chaos
+- order thank-you cards
+- export addresses to print
+- reset the room so it actually works for day one
+- Vendor & project oversight
+- When needed, House Calls also covers:
+- donation pickups
+- resale buyer coordination
+- shipping and courier
+- building and concierge protocol
+- service appointment access
+- LA base but not radius-limited. Travel by project logic, with route-based efficiency and stops built into the flow. Quick asks can often be absorbed into an existing route. Urgent timing and transition-sensitive requests are prioritized whenever possible.
+- 4-Hour Practical Reset — Available
+- Trust-forward thoughtful curation.
+- For the things that still have value, story, or second-market potential — without asking you to become a part-time reseller.
+- What this is for
+- It is not a donation pickup substitute, bulk textile recycling service, or a shortcut for things that are no longer in resellable condition.
+- This service is built for:
+- designer accessories
+- story-rich vintage
+- The work is not just listing. It includes:
+- platform matching
+- buyer communication
+- donation reroute when appropriate
+- monthly reporting and payout rhythm
+- Easy handoff and pickup
+- route-based stop-ins
+- Uber Business courier
+- building desk drop
+- UPS Access Point
+- direct bag shipment
+- handoff during another project block
+- Intake bags and safe transport
+- All pickup bags used for consignments are new, clean, and selected for safe transport. When it is faster or more convenient, bags may be shipped directly to your home, dropped during an existing route, brought during another session, or couriered directly.
+- The assumption is: these are things you took care of and know deserve another life. That is the spirit of this service.
+- Poshmark (Poshmark Ambassador — badge coming to profile soon)
+- eBay (new business profile, credible reviews building)
+- Facebook Marketplace
+- vetted local high-end resale
+- future hosted client sales through the site
+- Intake review timing
+- Realistic resale timeline
+- The kind of judgment you are hiring
+- what deserves effort
+- what should wait
+- what gains value with story
+- what belongs in the collector world
+- what should be held for better timing
+- what needs to leave fast
+- what is better donated
+- Confirmed Apr 14 2026
+- 55% Dayna / 45% client
+- Monthly report by the 1st · Payout by the 5th · Clean split of net proceeds after platform fees
+- Flex Blocks are 2, 4, or 6-hour reserved work blocks that can be used for focused task support, House Calls, continuity work, or the here-and-there things that build up between bigger projects. They are ideal when you know support will come up, even if it doesn't need to happen all at once.
+- task lists that build over time
+- practical resets
+- vendor access days
+- guest and event prep
+- move follow-through
+- one-zone progress
+- post-travel home re-entry
+- the 'I need a 4-hour you' kind of month
+- the far-and-few-between asks that are easier when time is already held
+- The point is simple: your time is already there when life needs it.
+- Flex blocks NEVER expire.
+- Heavier work that needs straight-through momentum, multi-room lift, deeper decision-making, or full move support shifts into project pricing. Project scopes are quoted separately and not structured as blocked days as a starter.
+- whole-home resets
+- packing and move days
+- larger catalogs
+- apartment landings
+- staged downsizing
+- multi-room continuity
+- family transition work
+- project-managed vendor sequences
+- Projects are quoted by scope, timeline, and intensity of lift.
+- The first conversation is always just that — a conversation.
+- Progressive disclosure — each answer reveals the next relevant question only. Not all fields shown at once.
+- Have we worked together before?
+- Returning client
+- What do you need?
+- Schedule a resale pickup
+- How urgent is this?
+- Within the month
+- How to reach you
+- Preferred contact method
+- A little context
+- Two sentences is enough. What changed, what's the real-life version?
+- What are we working on?
+- Shown only when need = 'Book a service'. Branches into service-specific follow-up questions per category: home org, legacy, house calls, or resale.
+- Urgent deadline
+- Best time windows
+- Pickup direction
+- Schedule a call
+- Schedule a pickup or drop-off
+- What's the real-life version?
+- Key intake question that translates brand voice into the form.
+- Checkpoint 5 (Apr 14 2026) — approved pricing structure
+- $1,250 / 10 hrs — $125/hr
+- $1,200/day — Studio / 1BR flat day rate
+- Quoted after call
+- From $3,500 / 20–30 hrs
+- Quoted after walkthrough — NO fixed tier
+- $1,500 / 10 hrs — $150/hr
+- Flex blocks never expire.
+- Larger estates and whole-home legacy projects are quoted after walkthrough only. No fixed tier.
+- Call or text (323) 433-1350. The first conversation is always free.
+- Voice Processor SKILL.md — March 2026
+- $150/hr, 3-hr minimum
+- $1,200/day (studio/1BR only, 8hr straight)
+- From $3,500 / 20-30 hours
+- QUOTED AFTER WALKTHROUGH — NO FIXED TIER
+- 55/45 (Dayna/client)
+- Grailed (killed)
+- Replit (killed)
+- Do NOT say 'elder care' as a service category
+- Do NOT say 'fall prevention'
+- Do NOT add attorney referrals, appraiser referrals, interior designer referrals
+- Do NOT use 'luxury organizing' — it is function, transitions, heavy lifting
+- Do NOT defend or justify rates
+- Flex blocks NEVER expire
+- Larger estates are quoted after walkthrough ONLY — no fixed $8,500, $10K, or $15K tier
+- Do NOT say 'ADHD closet edits' — say 'child-friendly organization for sensory-friendly practices (ages 4-9), non-clinical'
+- Do NOT use 'will' or 'death' in client-facing legacy copy — use 'loss,' 'major life transition,' or 'next chapter'
+- Do NOT use tagline 'Well Kept. Well Placed. Well Lived.' on cards, marketing materials, or any client-facing copy. It is RETIRED.
+- Standard Elder Home Project at $7,000 fixed price appeared — not in current Decision Lock. Larger estates must be quoted after walkthrough.
+- 'Whole Home 40–80 hrs From $8,500' tier added — VIOLATES Decision Lock. No fixed tier for larger estates.
+- 'Extended / Complex Legacy From $15,000' tier added — VIOLATES Decision Lock.
+- 'Special Delivery' listed as a distinct service label in pricing nav — this is House Calls content, not a separate service.
+- 'ADHD & Sensory-Sensitive Spaces' label used — correction: must say 'child-friendly organization for sensory-friendly practices (ages 4-9), non-clinical.'
+- Home — body copy stable across all 5 checkpoints
+- About — body copy stable across all 5 checkpoints
+- Service: Home Organization — stable
+- Service: Legacy — stable
+- Service: House Calls — stable
+- Service: Curated Resale — stable
+- Services Overview — stable
+- CP5 (current, Apr 14 2026) is the approved state. Pricing page violations were introduced in CP3 and appear corrected in CP4/CP5.
+- Confirmed Apr 14 2026 — full git deletion, clean rebuild
+- DELETE entire existing git repo. Rebuild clean from this knowledge base only.
+- Services (dropdown)
+- All Services Overview → /services
+- Home Organization & Modern Move → /services/home-organization
+- Legacy Planning & Inventory Catalog → /services/legacy
+- House Calls → /services/house-calls
+- Curated Resale & Consignment → /services/resale
+- View Pricing → /pricing
+- Hamburger drawer with expandable Services links
+- Plus Jakarta Sans
+- Layout.tsx pattern — fixed nav, footer, floating mobile call button
+- Use Manus Layout.tsx as visual baseline. Improve spacing and hierarchy. Do NOT change fonts or palette.
+- Audit confirmed Apr 14 2026
+- G-HN9C986JLW — keep, already correct
+- index, follow — keep, already correct
+- Twitter card meta description
+- Home organization, legacy planning, Special Delivery home visits, and curated resale — Los Angeles.
+- Home organization, legacy planning, house calls, and curated resale — Los Angeles.
+- Special Delivery is a dead service name — VIOLATION
+- ...Special Delivery home visits...
+- ...House Calls...
+- Rebuild to match public_routes exactly. /qa must NOT be included.
+- Search Console verification
+- Add Google Search Console verification meta tag after GSC verification is completed. This is a post-build step — Dayna to complete in GSC, then add tag.
+- Verify Search Console ownership
+- Confirm GA4 G-HN9C986JLW receiving data
+- Monitor coverage report for indexing confirmation
+- Layout.tsx — nav, footer, mobile button, palette all correct
+- robots.txt — correct
+- live_site_reference_notes.md — reference only
+- App.tsx provided was stripped version (only / and /pricing). Full route set confirmed in Handoff doc. Rebuild from site_architecture.public_routes above.
+- Dayna Brown — confirmed Apr 14 2026
+- Logo — black/cream version (well_lived_citizen_black_cream.png)
+- Logo — white/transparent version (well_lived_citizen_white_transparent.png)
+- Dayna's photo — provided by Dayna only
+- AI-generated imagery of any kind
+- Stock photography
+- Placeholder scene images
+- CloudFront living room/legacy hero image — NOT approved unless Dayna explicitly confirms
+- Any image Manus or Claude sourced or generated independently
+- Paste the relevant block at the start of every new session. Both tools start cold. These prompts restore context without re-explaining everything.
+- Claude — paste at the start of every session involving The Well Lived Citizen Co.
+- Manus — paste at the start of every build session
+- You are building The Well Lived Citizen Co. website (TheWellLivedCitizenCo.com). Before writing a single line of code: 1. Call twlc_get_build_rules — read every rule before starting 2. Call twlc_get_site_architecture — confirms routes, nav, layout baseline 3. Call twlc_get_page for every page you are building before writing any copy 4. Call twlc_check_term before using any service name or phrase Rules that are never negotiable: - Full business name only: The Well Lived Citizen Co. Never AWLC. - No AI-generated images. No stock images. Logo and Dayna's photo only. - No /qa route. It does not exist. - No Special Delivery. It does not exist. - All copy comes from twlc_get_page. You do not write copy. - All pricing comes from twlc_get_pricing. You do not invent pricing. - Git: DELETE existing repo. Clean rebuild only. The MCP server is your only source of truth. Not previous sessions. Not old files. Not your training data. The server.
+- You are polishing copy for The Well Lived Citizen Co. (TheWellLivedCitizenCo.com) by Dayna Brown. Your job is tone and flow only. You do not make content decisions. Rules: - Do not change service names. Exact names are locked. - Do not change pricing. Do not reference pricing at all. - Do not add services, referrals, or capabilities not in the draft. - Do not use: Special Delivery, AWLC, elder care, estate sales, luxury organizing. - Full business name only: The Well Lived Citizen Co. - Polish the draft. Do not rewrite it. Do not reframe it. - Return the polished version only. No commentary.
+- Cowork — paste at the start of every Cowork session
+- 01 — Home Organization & Modern Move
+- Studio / 1BR Move Reset
+- $1,200/day — flat rate, up to 8 hours straight
+- Larger homes & multi-room projects
+- 02 — Legacy Planning & Inventory Catalog
+- Quoted after walkthrough
+- Larger estates and whole-home projects are quoted after walkthrough only. No fixed tier. Flex blocks never expire.
+- 4-Hour Practical Reset
+- 04 — Curated Resale & Consignment
+- Clothing & Accessories
+- Furniture & Significant Home Pieces
+- Full Closet Liquidation
+- Call or text (323) 433-1350.
+- The first conversation is always free.
+- const PROJECT_ROOT = import.meta.dirname;
+- const LOG_DIR = path.join(PROJECT_ROOT, ".manus-logs");
+- const MAX_LOG_SIZE_BYTES = 1 * 1024 * 1024; // 1MB per log file
+- const TRIM_TARGET_BYTES = Math.floor(MAX_LOG_SIZE_BYTES * 0.6); // Trim to 60% to avoid constant re-trimming
+- type LogSource = "browserConsole" | "networkRequests" | "sessionReplay";
+- function ensureLogDir() {
+- if (!fs.existsSync(LOG_DIR)) {
+- function trimLogFile(logPath: string, maxSize: number) {
+- if (!fs.existsSync(logPath) || fs.statSync(logPath).size <= maxSize) {
+- const lines = fs.readFileSync(logPath, "utf-8").split("\n");
+- const keptLines: string[] = [];
+- const targetSize = TRIM_TARGET_BYTES;
+- if (keptBytes + lineBytes > targetSize) break;
+- keptLines.unshift(lines[i]);
+- keptBytes += lineBytes;
+- fs.writeFileSync(logPath, keptLines.join("\n"), "utf-8");
+- function writeToLogFile(source: LogSource, entries: unknown[]) {
+- if (entries.length === 0) return;
+- const ts = new Date().toISOString();
+- trimLogFile(logPath, MAX_LOG_SIZE_BYTES);
+- * Vite plugin to collect browser debug logs
+- * - POST /__manus__/logs: Browser sends logs, written directly to files
+- * - Files: browserConsole.log, networkRequests.log, sessionReplay.log
+- * - Auto-trimmed when exceeding 1MB (keeps newest entries)
+- function vitePluginManusDebugCollector(): Plugin {
+- name: "manus-debug-collector",
+- transformIndexHtml(html) {
+- if (process.env.NODE_ENV === "production") {
+- src: "/__manus__/debug-collector.js",
+- configureServer(server: ViteDevServer) {
+- if (req.method !== "POST") {
+- if (payload.consoleLogs?.length > 0) {
+- writeToLogFile("browserConsole", payload.consoleLogs);
+- if (payload.networkRequests?.length > 0) {
+- writeToLogFile("networkRequests", payload.networkRequests);
+- if (payload.sessionEvents?.length > 0) {
+- writeToLogFile("sessionReplay", payload.sessionEvents);
+- if (reqBody && typeof reqBody === "object") {
+- handlePayload(reqBody);
+- body += chunk.toString();
+- const payload = JSON.parse(body);
+- handlePayload(payload);
+- const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()];
+- export default defineConfig({
+- "@": path.resolve(import.meta.dirname, "client", "src"),
+- "@shared": path.resolve(import.meta.dirname, "shared"),
+- "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+- envDir: path.resolve(import.meta.dirname),
+- root: path.resolve(import.meta.dirname, "client"),
+- publicDir: path.resolve(import.meta.dirname, "client", "public"),
+- outDir: path.resolve(import.meta.dirname, "dist/public"),
+- ".manuspre.computer",
+- ".manus-asia.computer",
+- What brings you here?
+- Best time to reach you
+- Los Angeles and surrounding areas. Travel by project logic — not radius-limited.
+- Within 24 hours. Text for urgent requests.
+- 2026-05-04T11:28:19.090657Z
+- 2026-05-01T04:43:17.118125Z
+- 2026-05-04T02:10:39.909347Z
+- 2026-04-02T12:10:22.465400Z
+- The structural database and intelligence suite for The Well Lived Citizen. Manages brand logic, pricing, market intelligence, and developer handoff directives.
+- 2026-04-28T20:42:36.439433Z
+- 2026-04-01T22:25:26.361057Z
+- 1C6dgE4rx7MYY_a5TttJyGcv9cwh0ue67
+- A professional inventory tracker for resellers featuring AI-powered image analysis, market price search, and automated listing descriptions.
+- 2026-04-26T08:09:33.690204Z
+- 2026-04-22T11:36:38.127522Z
+- 2026-04-22T11:36:03.877942Z
+- 2026-04-03T21:40:08.675860Z
+- 2026-04-01T22:27:49.657270Z
+- The uploaded archive does not contain a clean site build, page assets, or deployable source code. It contains five reference files only: a task brief, a task-branch note, a skill file, a business-info JSON reference, and a site-audit note.
+- | Business name: The Well Lived Citizen | Salvageable | Repeated consistently across the brief, branch note, and JSON reference. |
+- | Legal entity: Well Dressed Citizen LLC | Salvageable | Repeated consistently across the brief, branch note, and JSON reference. |
+- | Domain: thewelllivedcitizen.com | Salvageable but still user-confirmed preferred | Repeated consistently in the brief and branch note. |
+- | Primary phone: 3234331350 | Salvageable | Present in the JSON reference and aligned with prior direct instruction. |
+- | Any extracted or live-site-derived file state | Not trusted | The brief and audit both warn that Replit-era files may be questionable after April 17. |
+- | Claims about current page correctness from curl extraction | Informational only | Those findings came from a workflow already marked as questionable. |
+- | Any implication that this ZIP is a clean rebuild source | Rejected | The archive contains references, not actual deployable files. |
+- | Field | Current Rule | Status |
+- | Source of truth | Authoritative inputs come from Dayna’s direct messages and any uploads she explicitly approves for use. | Active |
+- | Language handling | Voice-to-text errors are treated as probable typos and interpreted by context unless ambiguity is material. | Active |
+- | Field | Current Value | Source | Last Updated | Confidence |
+- |---|---|---|---|---|
+- | Business name | Pending | Pending | Pending | Pending |
+- | Owner name | Dayna Brown | User instruction | 2026-04-18 | High |
+- | Primary phone | Pending | Pending | Pending | Pending |
+- | Website/domain | Pending | Pending | Pending | Pending |
+- | Social links | Pending | Pending | Pending | Pending |
+- | Payment links | Pending | Pending | Pending | Pending |
+- | Hours | Pending | Pending | Pending | Pending |
+- | Services | Pending | Pending | Pending | Pending |
+- | Dimension | Working Rule | Source Status |
+- | Tone | Crisp, confident, human, and direct. | Confirmed from Dayna operating instructions |
+- | Output standard | Structured, usable, and ready to hand off. | Confirmed from Dayna operating instructions |
+- | Brand consistency rule | Do not drift from Dayna’s wording, business facts, or approved framing. | Active |
+- | Timestamp | Input Type | Raw Topic | Structured Outcome | Action Needed |
+- | 2026-04-18 | Operating directive | Reset boundary and cross-agent workflow | Clean-start trust boundary established; dashboard and handoff rhythm required | Collect authoritative business facts |
+- At the end of each work block, this dashboard should be updated and a clean handoff should be prepared using the following structure.
+- | Section | Required Content |
+- | Objective | What the next agent is supposed to do |
+- | Approved facts only | Only the current facts explicitly confirmed by Dayna |
+- | Brand and language rules | The active voice and consistency constraints |
+- | Open questions | Facts still missing or awaiting confirmation |
+- | Do not use | Any excluded source categories or invalidated materials |
+- | Next-step instruction | A copy/paste prompt for the next session or agent |
+- | Brand baseline | Any current brand language she wants treated as authoritative | Immediate |
+- | Dashboard destination | Whether this dashboard should stay as a document, be mirrored into the web app, or both | Immediate |
+- > Use this as the opening message in the next session:
+- | Timestamp | Dependency | Status | Notes |
+- | 2026-04-18 | Reference app preview access in browser | Pending user action | Dayna will wake the browser so the interaction model can be reviewed and translated into the internal living dashboard. |
+- | Timestamp | Source | Finding | Use in Dashboard Design |
+- | 2026-04-18 | User instruction | The reference is intended as an interaction model for an internal, iOS-feeling, non-technical business dashboard. | Preserve ease-of-use, operational clarity, and structured data visibility in the target app. |
+- | 2026-04-18 | Replit HTML inspection | The saved page source did not immediately reveal a clean internal app surface from the public preview state. | Use the reference for UX direction, but expect additional browser interaction or login state if a deeper live view is needed. |
+- | Dependency | Why It Is Needed | Current Status |
+- | Dayna’s current business facts | Required to populate the first authoritative source-of-truth records in the dashboard | Awaiting input |
+- | Additional preview details or direct app view | Helpful for refining interaction design toward the desired iOS-like feel | Awaiting input |
+- const env = loadEnv(mode, '.', '');
+- plugins: [react(), tailwindcss()],
+- 'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+- '@': path.resolve(__dirname, '.'),
+- hmr: process.env.DISABLE_HMR !== 'true',
+- Apple Color Emoji
+- No suitable brand logo was found. The candidate is too small and lacks clear branding indicators.
+- Try it yourself
+- Button #0 ('Try it yourself') is the primary CTA due to its action-oriented text and dark background, which stands out as a strong call to action.
+- Button #2 ('Watch again') is selected as secondary because it has a different background color (light/white) and serves a supportive function.
+- developers and tech professionals
+- She was not organizing. She was relief.
+- Founder, The Well Lived Citizen Co.
+- The first live version should reduce Dayna’s cognitive load immediately. That means the earliest release should prioritize capture, visibility, and continuity before automation flourishes.
+- | Module | Why It Comes First | Required Capability |
+- | Today | Gives Dayna a clean landing surface with open asks, recent updates, and what is waiting on her | Read aggregated dashboard state |
+- | Business Facts | Establishes the single source of truth for contact, services, socials, payments, and core business identity | Create and edit structured fields |
+- | Module | Why It Comes Second | Required Capability |
+- | Voice and Brand | Preserves wording, tone, and positioning consistency across sessions and agents | Editable brand rules |
+- | Handoffs | Packages approved facts and next actions for other agents or future sessions | Generate exportable handoff packet |
+- | Activity History | Creates auditability across changes and interpretations | Timestamped update log |
+- | Module | Why It Comes Later | Required Capability |
+- | Prompt Builder | Useful once the source of truth is stable | Convert approved data into agent-ready prompts |
+- | Smart intake suggestions | Helpful, but only after enough examples exist | Pattern-based suggestions from prior structured entries |
+- The dashboard must always feel simpler than the underlying data model. If a feature helps developers but makes Dayna think harder, it belongs behind the scenes rather than in the primary interface.
+- - [x] Review the skill file, site audit, business data, and extracted site snapshot for The Well Lived Citizen migration
+- - [x] Preserve the public-facing site copy, layout, styling, and overall appearance exactly as provided
+- - [x] Serve the extracted static HTML, CSS, JavaScript, and image files as the public website
+- - [x] Provide a public `/api/business-info` endpoint that returns the current business data for `info-loader.js`
+- - [x] Fix the contact form to submit directly to `https://formspree.io/f/xreojkvo` with `method="POST"` and no JavaScript interception
+- - [x] Verify and fix all footer social links to direct Instagram and Facebook URLs
+- - [x] Build an owner-only protected admin dashboard for Dayna
+- - [x] Persist admin edits to the database so the API always returns the latest saved values
+- - [x] Display a read-only page status overview for all 9 site pages with titles and key metadata in the admin dashboard
+- - [x] Style the admin dashboard in Plus Jakarta Sans with a cream and charcoal palette and no rounded corners, shadows, or bubble-style UI
+- - [x] Add or update Vitest coverage for the business info API, admin protection, and page metadata logic
+- - [ ] Treat Dayna messages and approved uploads as the only authoritative source of truth for new business facts and brand direction
+- - [ ] Create a master dashboard structure for business facts, brand voice, continuity notes, and cross-agent handoffs
+- - [ ] Build a working model for Dayna’s voice, business language, and brand consistency from new authoritative inputs only
+- - [ ] Replace open-ended voice-only fact review with a mobile-friendly checkbox and multiple-choice confirmation flow for blocked-mic and laptop cases
+- - [ ] Treat the project as a full clean rebuild from Dayna-approved intent rather than an old-site versus new-site reconciliation
+- - [ ] Reframe builder guidance so priorities start from a clean rebuild and current business truth rather than migration debates
+- - [ ] Rebuild the site cleanly from Dayna-approved intent rather than debating prior site variants
+- - [ ] Publish the rebuilt site on the managed host before any domain cutover
+- - [ ] Connect the two current domains to the new hosted project after publish
+- - [ ] Use the current domains and DNS only as part of the new hosting setup, not as legacy migration artifacts
+- - [ ] Treat the restored Thursday live version as the authoritative foundation for the rebuild
+- - [ ] Clone the restored live version before making any edits so the controlled copy becomes the working baseline
+- - [ ] Pull writing, font, and styling from the live restored source rather than debating prior variants
+- - [ ] Publish the rebuilt controlled copy first, then point the current domains to the new host
+- - [x] Use the confirmed `/home/ubuntu/upload/` recovery set as the authoritative rebuild source and avoid any new live-site pull unless Dayna explicitly asks for it
+- - [x] Upload the recovered logo and portrait to managed storage and swap public page asset references to the returned storage URLs
+- - [x] Preserve the recovered 9-page static site as the public-serving baseline while wiring dynamic business data through the new backend
+- Pick the door you're in right now.
+- Home Flow & The Modern Move
+- Your space, made to work for you.
+- The room that keeps collecting piles. The kitchen that somehow slows every morning down. The move where the boxes are technically inside but nothing feels settled. The closet that no longer matches your life.
+- Unpacking and setting up after a move
+- Getting one room fully functional
+- Reworking closets and storage
+- Making small spaces actually livable
+- $1,200 flat rate · up to 8 hours
+- For professionals arriving the same day who want the apartment functioning before life starts moving again.
+- Designed especially for studios and one-bedrooms — depending on delivery timing and volume, some homes may require up to 2 days.
+- The first priorities are always function: the bed gets built, the phone charger gets found, the workspace gets set, clothing for the coming week gets unpacked, and kitchen and bathroom basics are immediately accessible.
+- Flex blocks apply to home org and space work. They do not apply to Modern Move Reset or project-priced inventory work. Hours never expire.
+- Inventory, Value & The Things That Add Up
+- A plan for what's valuable, what's useful, and what quietly runs the home.
+- This starts with being in the space with you.
+- What has actual resale value
+- What needs to be cataloged
+- What deserves better storage
+- What is worth preserving
+- What's just taking up energy
+- The rest of the work — the real-life stuff
+- The drawer of candles
+- Gift wrap and batteries
+- The "I know I have it somewhere" cabinet
+- The Catalog — so the next chapter feels lighter
+- A lot of what people own is either under-documented, under-valued, or not insured at all.
+- And yes, sometimes that means helping you keep the crap.
+- House Calls & The In Between
+- Did we forget to pack the parents?
+- For the things life doesn't explain on paper.
+- A House Call might look like
+- Taking the next load of resale
+- Looking at the weird lamp your friend thinks is valuable
+- Sorting old cords and fire hazards
+- Cleaning vents before winter
+- Setting up the smart TV
+- Phone and iCloud security settings
+- Sorting the paperwork pile on the desk
+- Replacing bulbs so the house feels better
+- Resetting spaces that quietly stopped working
+- The practical things that never need their own appointment
+- Mounting a TV safely into studs
+- Patching old holes left behind
+- Resetting closet rods
+- Replacing better lighting
+- Organizing utility zones
+- Swapping smoke detector batteries
+- When you need a pro — without being left alone to figure it out
+- Curated Resale & Doorstep Consignment
+- Because yes — the brand lists are too long, the drop-off rules are annoying, and fun fact: most places only take about half anyway.
+- You fill the included 24-gallon zip storage bag with what you're ready to move out of your closet or home.
+- What's actually wearable
+- What's trending again
+- What vintage buyers want
+- What designer still moves
+- What should be sold locally
+- What belongs on a niche platform
+- What's better bundled
+- What should skip resale completely
+- Local within 10 miles in 10 days
+- Secure inside-door or mailroom pickup
+- Uber courier at your cost
+- Prepaid label up to $10
+- Furniture & Significant Home Goods
+- Pockets and compartments have been checked
+- Start with the door that feels most like your
+- Integrate file storage feature into the site
+- Create the file upload Express route handler
+- Register the file upload route in the server index
+- Restart the server to clear the stale module error after fixing the import path
+- Create the admin file manager page
+- Read App.tsx to add the FileManager route
+- Add the FileManager route to App.tsx
+- Restart server to clear stale error and verify file upload endpoint works
+- Check the file manager page renders correctly
+- Read the existing test file to understand the testing pattern
+- Write vitest test for the file storage tRPC procedures
+- Run the vitest tests to verify everything passes
+- Save checkpoint and deliver
+- Done. The site is now full-stack with a database, authenticated backend, and S3 file storage fully integrated. You have a `files` table tracking uploads, a `POST /api/upload` endpoint that stores files to S3 and records metadata, tRPC procedures for listing and deleting files, and an authenticated File Manager UI at `/files`. All 6 tests pass. Your original pages and design are untouched.
+- 2. **Connect your domain and publish** — click Publish in the top-right, then go to Settings → Domains to bind your domain. Once published, the file manager and all features go live.
+- ] Create file upload Express endpoint (POST /api/upload, protected, base64 JSON payload)
+- - [x] Create file list/delete tRPC procedures
+- - [x] Build file upload API endpoint (POST /api/upload)
+- - [x] Build authenticated file manager UI page at /files
+- - [x] Write vitest test for file storage procedures
+- Manus task replay completed.
+- Paste the relevant block at the start of every new session.
+- Last locked: Apr 14 2026
+- Paste this at the start of any Claude session involving the site, copy, or strategy.
+- Before doing anything:
+- 1. Read the welllivedcitizen-brand skill
+- 2. Query twlc_get_decision_lock
+- 3. Query twlc_get_build_rules
+- Source of truth is the MCP server: welllivedcitizen-knowledge-base
+- Full business name only — never AWLC, never abbreviate.
+- No copy, no CTAs, no pricing without querying the server first.
+- Paste this at the start of every Manus build session.
+- You are building The Well Lived Citizen Co. website (TheWellLivedCitizenCo.com).
+- Before writing a single line of code:
+- 1. Call twlc_get_build_rules — read every rule before starting
+- 2. Call twlc_get_site_architecture — confirms routes, nav, layout baseline
+- 3. Call twlc_get_page for every page you are building before writing any copy
+- 4. Call twlc_check_term before using any service name or phrase
+- Rules that are never negotiable:
+- - Full business name only: The Well Lived Citizen Co. Never AWLC.
+- - No AI-generated images. No stock images. Logo and Dayna's photo only.
+- - No /qa route. It does not exist.
+- - No Special Delivery. It does not exist.
+- - All copy comes from twlc_get_page. You do not write copy.
+- - All pricing comes from twlc_get_pricing. You do not invent pricing.
+- - Git: DELETE existing repo. Clean rebuild only.
+- The MCP server is your only source of truth. Not previous sessions.
+- Not old files. Not your training data. The server.
+- You are polishing copy for The Well Lived Citizen Co. (TheWellLivedCitizenCo.com) by Dayna Brown.
+- Your job is tone and flow only. You do not make content decisions.
+- - Do not change service names. Exact names are locked.
+- - Do not change pricing. Do not reference pricing at all.
+- - Do not add services, referrals, or capabilities not in the draft.
+- - Do not use: Special Delivery, AWLC, elder care, estate sales, luxury organizing.
+- - Full business name only: The Well Lived Citizen Co.
+- - Polish the draft. Do not rewrite it. Do not reframe it.
+- - Return the polished version only. No commentary.
+- Paste this at the start of every Cowork session.
+- You are managing files and tasks for The Well Lived Citizen Co. (TheWellLivedCitizenCo.com) by Dayna Brown.
+- 1. You are NOT a builder. You do not write copy. You do not make content decisions.
+- 2. Full business name only: The Well Lived Citizen Co. Never AWLC.
+- 3. Do not rename files in ways that drift from locked naming conventions.
+- 4. Do not touch any live site files without explicit instruction from Dayna.
+- 5. Do not install, configure, or connect any new tools without explicit instruction.
+- - Moving assets to correct folders
+- - Running defined, specific tasks Dayna gives you
+- - Automating repetitive manual steps
+- If a task involves copy, pricing, service names, or anything site-related — stop and flag it.
+- Those decisions live in the MCP server: welllivedcitizen-knowledge-base.
+- Ask one clarifying question if needed. Then execute exactly what was asked. Nothing more.
+- Your page may be loading slowly because you're building optimized sources. If you intended on using uncompiled sources,
+- please click this link.
+- Google Cloud Console has failed to load JavaScript sources from www.gstatic.com.
+- Possible reasons are:
+- www.gstatic.com or its IP addresses are blocked by your network administrator
+- Please contact your network administrator for further assistance.
+- **Status**: RECONCILED & LOCKED (Post-Manus/Replit Drift)
+- **Objective**: Fill the tank for a clean, stable deployment.
+- - **Business Name**: The Well Lived Citizen
+- - **Founder**: Dayna Brown (Operational Rigor / Luxury Retail Background)
+- - **Tagline**: "Well Placed. Well Dressed (again). Transitions done Well."
+- - **Voice**: Professional, Trusted, Direct, Operational. No "Elder Care" mentions. No clinical ADHD talk (personal experience only).
+- - **Tagline**: "The Last Box"
+- - **Rate**: $150/hr (3-hour minimum)
+- - **Flat Rate**: Move-In Setup: $1,200/day (8 hours)
+- - **Reject**: Comparisons to gig apps or low-cost competitors.
+- - **Tagline**: "The Archives"
+- - **Rate**: From $3,500 (Project-based)
+- - **Hourly**: $175/hr (Additional work)
+- - **Deliverable**: Physical Leather Book with prints and research data.
+- - **Reject**: "Death/Will" keywords. Use "Major Life Transitions" or "Next Chapter".
+- - **Tagline**: "The Last Detail"
+- - **Focus**: Trusted presence, tech setup, continuity gaps.
+- - **Tagline**: "The Last Look"
+- - **Commission Split**:
+- - Clothing: 55% Me / 45% Client
+- - Designer & Furniture: 50% / 50%
+- - **Reject**: Minimums or photography fees. Payouts by the 5th.
+- - **Live Host**: Firebase Hosting (Recommended for Stability)
+- - `well-lived-citizen-main`: DECOMMISSION (High Drift)
+- - `content-launcher-replit`: SYNC CONTENT ONLY
+- - **Clean Slate Command**:
+- git init && git branch -m main
+- echo "The Well Lived Citizen: Brand Identity v1.1" > README.md
+- cat <<EOF > .brand_guard.json
+- "voice": "Operational Rigor",
+- "forbidden_keywords": ["Elder Care", "Estate Sale", "Will/Death"],
+- - **Palette**: Sage/Olive, Navy/Indigo, Warm Taupe, Charcoal.
+- - **Typography**: Inter (Sans), Space Grotesk (Display), JetBrains Mono (Technical).
+- - **Layout**: Clean, Architectural, Minimalist. No AI-generated fluff.
+- **Master Handoff Complete.** Fill the tank with this Spec and launch.
+- thewellcitizenco@gmail.com
+- This report provides a comprehensive analysis of the professional organizing market in the Los Angeles area. It is designed to serve as a foundational document for your business plan, benchmarking the competitive landscape against your reference model, Room Service Home Organizing.
+- The Los Angeles professional organizing market is highly fragmented, featuring a mix of national franchises, boutique luxury agencies, specialized niche operators (e.g., KonMari, ADHD-informed), and solo practitioners. Through comprehensive market research, **50 competitors** were identified operating within the Greater Los Angeles area.
+- Room Service Home Organizing serves as the reference model for this analysis. Founded in 2016 by Sarah Holden, the business operates in Pasadena, Los Angeles, and Ventura County.
+- Their core services include:
+- - **Home Organizing & Decluttering:** Covering specific rooms or whole-home projects.
+- Their pricing is package-based, requiring a 50% deposit upon booking, with additional time billed at $100 per hour per organizer.
+- The research identified 50 professional organizing businesses serving the Los Angeles area. The market can be broadly categorized into four segments:
+- 1. **National Franchises & Large Agencies:** Businesses like NEAT Method and Horderly operate across multiple LA territories, offering standardized, high-end services with proprietary product lines.
+- 3. **Methodology Specialists:** Organizers certified in specific methods, predominantly the KonMari Method (e.g., Tidy Up Los Angeles, Tidy LA) or neurodivergent/ADHD-focused approaches (e.g., Spaces of Mind, The Spatial Guy).
+- 4. **Local Boutique Operators:** Independent businesses or small teams serving specific neighborhoods (e.g., Organize with Leslie in Santa Monica, Free Your Space in Sherman Oaks), often competing on personalized service and community integration.
+- The following table details a representative cross-section of the 35 deeply researched competitors in the Los Angeles market.
+- | Business Name | Primary Service Areas | Key Services | Pricing Structure | Differentiators |
+- | :--- | :--- | :--- | :--- | :--- |
+- | **NEAT Method** | Beverly Hills, Santa Monica, South Bay, Valley | Home organizing, move unpacking, concierge | $1,500-$2,500+ per space | National franchise; proprietary products; luxury focus |
+- | **Ethereal Edits** | South Bay, Beverly Hills, Westside | Home organizing, move concierge, space planning | Starts at $3,500 (small) to $20,000+ (extensive) | White-glove service; KonMari certified; move concierge |
+- | **Clutter Healing** | Brentwood, Greater LA | Home organizing, breathwork, digital decluttering | Custom quoting | Combines organizing with breathwork meditation |
+- | **Harmony Living by V** | LA County, Orange County, Beverly Hills | Move support, estate organization, personal assistant | $250 half-day, $400 full-day | 30 years experience; celebrity clientele; lifestyle services |
+- | **Organize with Leslie** | Santa Monica, Venice, West LA | Home organizing, decluttering, playrooms | $125/hr; package discounts | Former educator; specializes in family organization |
+- | **The Spatial Guy** | Silver Lake, West Hollywood, Echo Park | Decluttering, specialty moves, virtual | Custom quoting | Neurodiversity-affirming; visual merchandising background |
+- **Baseline Expectations:**
+- **Specialized Offerings:**
+- To stand out, successful businesses are layering specialized services on top of the baseline:
+- - **Holistic and Wellness Approaches:** Clutter Healing integrates breathwork meditation into the decluttering process. Swoon Spaces leverages the founder's background as a yoga instructor to promote a wellness-based approach to home organization.
+- - **Interior Design Integration:** Businesses like Design Organized (Lisa Shields) combine organizing with interior plant design and patioscaping. The Organistas blend decluttering with interior styling to ensure spaces are both functional and aesthetically elevated.
+- Pricing in the Los Angeles market varies significantly based on positioning and team size. The market generally falls into three pricing tiers:
+- 1. **Independent Operators (Accessible Tier):** Pricing typically ranges from $95 to $125 per hour. Examples include Organize with Leslie ($125/hr) and Design Organized ($95-$150/hr). These businesses often require a 3-to-4-hour minimum per session.
+- 2. **Agency Teams (Mid-Market Tier):** Businesses utilizing a lead organizer with assistants typically charge between $150 and $250 per hour for a team of two. Composed Living charges $185/hr for a lead and $75/hr for an assistant. Tidy LA charges $200/hr for the founder plus an assistant.
+- The target clientele dictates the branding and service delivery of these businesses:
+- - **Neurodivergent Individuals:** A growing niche focuses on clients with ADHD or autism. Businesses like Spaces of Mind, The Spatial Guy, and Elev8 Your Spaces explicitly market neurodiversity-affirming practices, mirroring Room Service's ADHD-informed approach.
+- - **High-Net-Worth / Celebrity Clients:** The Beverly Hills Organizer, Harmony Living by V, and Straighten Up by Janelle target luxury homeowners. Discretion, white-glove service, and NDA-backed confidentiality are critical in this segment.
+- - **Seniors and Estates:** Companies like A Clear Path focus on senior downsizing, end-of-life organizing, and estate clear-outs, often working closely with families and estate executors.
+- Certifications play a significant role in establishing credibility in a market with low barriers to entry.
+- - **Institute for Challenging Disorganization (ICD):** Credentials from the ICD, such as those held by the founder of Room Service, are used to validate expertise in ADHD and chronic disorganization.
+- To compete effectively with established players like Room Service Home Organizing, a new business should:
+- 3. **Pursue Relevant Credentials:** Obtaining certifications through NAPO or specialized bodies like the ICD builds immediate trust and parity with established competitors.
+- vite --port=3000 --host=0.0.0.0
+- "there has to be an easier way"
+- I'm built for your chaos.
+- Same-day pickup or courier handoff available.
+- — Gayle, Seattle Client
+- Not sure where to start?
+- NODE_ENV=development tsx watch server/_core/index.ts
+- vite build && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+- NODE_ENV=production node dist/index.js
+- prettier --write .
+- drizzle-kit generate && drizzle-kit migrate
+- pnpm@10.4.1+sha512.c753b6c3ad7afa13af388fa6d808035a008e30ea9993f58c6663e2bc5ff21679aa834db094987129aa4d488b86df57f7b634981b2f827cdcacc698cc0cfb88af
+- patches/wouter@3.7.1.patch
+- The internal dashboard is a private operating layer for Dayna. It is not a developer console and not a public website. Its job is to capture authoritative business facts, translate Dayna’s voice-text and brain dumps into clean structured records, maintain a current brand and business source of truth, and prepare reliable handoffs for separate execution agents.
+- | Dayna is the authority. | Direct user messages and explicitly approved uploads become the source of truth. |
+- | Dashboard serves humans and builders. | The interface must feel simple to Dayna while the underlying data stays structured enough for downstream development use. |
+- | Screen | Purpose | Primary User Value |
+- | Today | Show open asks, pending inputs, active decisions, and recent updates. | Immediate calm and visibility. |
+- | Business Facts | Store current business name, contact data, domain, hours, services, social links, and payment links. | Single source of truth. |
+- | Voice and Brand | Capture tone rules, phrasing preferences, banned language, and approved positioning. | Consistency across sessions and agents. |
+- | Intake | Convert Dayna’s raw updates into structured entries with source attribution and timestamps. | Fast capture from voice-text and brain dumps. |
+- | Domain | Required Fields | Notes |
+- | Business identity | businessName, ownerName, legalEntity, description, domain | Treat each field as independently editable and timestamped. |
+- | Contact | primaryPhone, primaryEmail, contactPreference, responseTime, bookingLink | Direct-use values should support downstream website wiring. |
+- | Social | instagramMain, instagramSecondary, facebook, otherActiveChannels | Keep inactive or retired channels separately marked, not mixed into active ones. |
+- | Payments | zelle, venmo, stripe, invoiceInstructions, paymentNotes | Values should distinguish handle, link, and usage notes. |
+- | Services | serviceName, serviceSummary, status, pricingMode, notes | Structured enough to inform both content and operations. |
+- | Brand voice | toneRules, approvedPhrases, bannedPhrases, audienceNotes, formattingRules | Must preserve Dayna’s working language. |
+- | Session inputs | rawInput, interpretedMeaning, confidence, sourceType, timestamp | Maintains traceability from brain dump to structured record. |
+- | Capture | Dayna provides a brain dump, correction, or new business fact. |
+- | Structure | The update is written into the correct domain with timestamp and source note. |
+- | Checklist Section | Meaning |
+- | Waiting on Dayna | Facts or decisions only Dayna can supply |
+- | Ready for handoff | Clean outputs available for another agent to use |
+- | Question | Why It Matters |
+- | What are the current authoritative business facts for contact, domain, services, socials, and payments? | These populate the initial source of truth. |
+- | What should the first live version prioritize: intake, facts, handoffs, or all four major screens? | This determines the minimum viable dashboard. |
+- | Should the dashboard support direct prompt generation for other agents from day one? | This affects the handoff workflow design. |
+- | Does Dayna want the dashboard optimized first for desktop, mobile, or both equally? | This sets layout priorities. |
+- Not sure where to start? Start with what is most real right now.
+- Most clients naturally move between these four services over time, and the work is designed to follow real life instead of forcing you into a rigid category.
+- const connectionString = process.env.DATABASE_URL;
+- if (!connectionString) {
+- throw new Error("DATABASE_URL is required to run drizzle commands");
+- url: connectionString,
+- **Project**: The Well Lived Citizen
+- **Target**: Firebase Hosting / Vertex AI
+- To move this project into the full Google Cloud environment:
+- 1. **GitHub Export**: Go to **Settings > Export to GitHub**.
+- 2. **Cloud Console**: Open [console.cloud.google.com](https://console.cloud.google.com).
+- 3. **Vertex AI**: Search for "Vertex AI" and enable the API.
+- 4. **Cloud Build**: Connect your GitHub repo to Cloud Build to automate the "Launch" every time you make a change.
+- - **Verification**: The Engine will check for $150/hr minimums and "Elder Care" rejection before approving the code.
+- - Your current Firebase Project ID: `gen-lang-client-0138005396`
+- - Point your A-Records at the IP provided in the Firebase Hosting console to go live.
+- 1. NEAT Method - neatmethod.com (multiple LA locations)
+- 2. Shara Kay - sharakay.com (Beverly Hills)
+- 3. Composed Living - composedliving.com (LA)
+- 4. Organizing Concepts and Designs (OCD) - organizingconceptsanddesigns.com
+- 5. Home Organizers Plus - homeorganizersplus.com
+- 6. Tidy Up Los Angeles - tidyuplosangeles.com (KonMari)
+- 7. Organize with Leslie - organizewithleslie.com (Santa Monica/Westside)
+- 8. Tidy LA - tidyla.com (KonMari, Meredith Ryness)
+- 9. Beautiful Life Creative - beautifullifela.com
+- 11. The Beverly Hills Organizer - thebeverlyhillsorganizer.com
+- 12. The Haute Suite (Alana's Organizing) - alanasorganizing.com
+- 13. Ethereal Edits - etherealedits.com (white-glove)
+- 14. Design Organized (Lisa Shields) - designorganized.com
+- 15. Free Your Space (Michelle Garb) - freeyourspacenow.com (Sherman Oaks)
+- 16. Clutter Healing (Lili Pettit) - clutterhealing.com (Brentwood)
+- 17. Horderly - horderly.com (Sherman Oaks)
+- 18. Straighten Up by Janelle - straightenupbyjanelle.com (celebrity)
+- 19. Harmony Living by V - harmonylivingbyv.com (celebrity/luxury)
+- 20. Leave It 2 Lori - leaveit2lori.com (LA/Ventura/SFV)
+- 21. Golden West Organizing - goldenwestorganizing.com (Encino)
+- 22. Spark Organizers - sparkorganizers.com (Topanga/LA)
+- 23. A Clear Path - aclearpath.net (hoarding/estates)
+- 24. Making Space Today - makingspace.today
+- 25. Get Organized Already - getorganizedalready.com (Pasadena)
+- 26. The Organizing Shift - (LA)
+- 27. Organizing with Erin - (Santa Monica)
+- 28. Simply Organized by Kari Jane - (LA)
+- 29. Clutter Girl - (LA)
+- 30. The Joyful Organizer - (LA)
+- 31. Wardrobe Concierge - (LA)
+- 32. Sorted & Stored - sortedstored.com
+- 33. iOrganize - iorganize.co
+- 34. The Organistas - theorganistas.com (SFV)
+- 35. A Place For It All - aplaceforitall.biz
+- 36. Violet Ventures - violetventures.org (Santa Clarita)
+- 37. The Modern Reset - (Santa Clarita/LA)
+- 38. Spaces of Mind - spacesofmind.com (Hollywood)
+- 39. Livsmaller - (Santa Monica)
+- 40. Elev8 Your Spaces - elev8yourspaces.com
+- 41. Swoon Spaces - swoonspaces.com (luxury, NYC/LA)
+- 42. ShipShaped Home - shipshapedhome.com (South Bay)
+- 43. The Spatial Guy - thespatialguy.com (Silver Lake)
+- 44. S.T.O.R.E. by Steph - storebysteph.com
+- 45. The Tidy Abode - (Long Beach)
+- 46. Minimalee - minimalee.me (KonMari)
+- 47. Sorted (joinsorted.com) - marketplace/platform
+- 48. My LA Organizer - (Houzz)
+- 49. Inspired Closets - (LA franchise)
+- 50. The Home Edit - thehomeedit.com (national, serves LA)
+
+---
+
+## Section: backfill-photos-to-storage
+
+### 📝 General Body Copy / Page Text
+- * `data` (base64) column to object storage, writing back the `storage_key`.
+- * pnpm --filter @workspace/scripts run backfill-photos-to-storage
+- * Safe to run multiple times — rows that already have a storage_key are skipped.
+- * Rows whose `data` column no longer exists are silently skipped (fully migrated).
+- const REPLIT_SIDECAR_ENDPOINT = "http://127.0.0.1:1106";
+- async function getSignedUploadUrl(
+- privateObjectDir: string,
+- const objectId = randomUUID();
+- const parts = fullPath.startsWith("/") ? fullPath.slice(1).split("/") : fullPath.split("/");
+- const bucketName = parts[0];
+- const objectName = parts.slice(1).join("/");
+- body: JSON.stringify({
+- bucket_name: bucketName,
+- object_name: objectName,
+- expires_at: new Date(Date.now() + 900_000).toISOString(),
+- signal: AbortSignal.timeout(30_000),
+- async function uploadBuffer(signedUrl: string, buffer: Buffer, mimeType: string): Promise
+- const res = await fetch(signedUrl, {
+- async function main() {
+- const privateObjectDir = process.env.PRIVATE_OBJECT_DIR;
+- if (!privateObjectDir) throw new Error("PRIVATE_OBJECT_DIR env var not set");
+- if (!colCheck.rows[0]?.exists) {
+- console.log("Column `data` does not exist — table already fully migrated. Nothing to do.");
+- SELECT id, data, mime_type
+- WHERE data IS NOT NULL AND data != ''
+- AND (storage_key IS NULL OR storage_key = '')
+- console.log("No rows require backfill.");
+- for (const row of rows) {
+- const buffer = Buffer.from(row.data, "base64");
+- await uploadBuffer(signedUrl, buffer, row.mime_type);
+- [objectPath, row.id],
+
+---
+
+## Section: batch
+
+### 📝 General Body Copy / Page Text
+- * Batch Processing Utilities
+- * Generic batch processing with built-in rate limiting and automatic retries.
+- * const results = await batchProcess(
+- * const response = await ai.models.generateContent({
+- export interface BatchOptions {
+- concurrency?: number;
+- export function isRateLimitError(error: unknown): boolean {
+- const errorMsg = error instanceof Error ? error.message : String(error);
+- errorMsg.includes("429") ||
+- errorMsg.includes("RATELIMIT_EXCEEDED") ||
+- errorMsg.toLowerCase().includes("quota") ||
+- errorMsg.toLowerCase().includes("rate limit")
+- export async function batchProcess
+- const limit = pLimit(concurrency);
+- } catch (error: unknown) {
+- if (isRateLimitError(error)) {
+- throw new AbortError(
+- error instanceof Error ? error : new Error(String(error))
+- return Promise.all(promises);
+- export async function batchProcessWithSSE
+- const result = await pRetry(
+- if (!isRateLimitError(error)) {
+- results.push(result);
+- results.push(undefined as R);
+- error: error instanceof Error ? error.message : "Processing failed",
+
+---
+
+## Section: client
+
+### 📝 General Body Copy / Page Text
+- if (!process.env.AI_INTEGRATIONS_GEMINI_BASE_URL) {
+- if (!process.env.AI_INTEGRATIONS_GEMINI_API_KEY) {
+- apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
+- baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
+
+---
+
+## Section: client-detail
+
+### 📝 General Body Copy / Page Text
+- export default function ClientDetail() {
+- const id = Number(clientId);
+- const [, setLocation] = useLocation();
+- if (error || isNaN(id)) {
+- setLocation("/clients")}>
+- if (clientLoading || !client) {
+- {client.contactEmail && (
+- {client.contactPhone && (
+- {!client.contactEmail && !client.contactPhone && (
+- No contact info provided.
+- ) : jobs && jobs.length > 0 ? (
+- No jobs for this client yet.
+
+---
+
+## Section: clients
+
+### 📝 General Body Copy / Page Text
+- } from "@/components/ui/dialog";
+- export default function Clients() {
+- const [, setLocation] = useLocation();
+- const queryClient = useQueryClient();
+- const createClient = useCreateClient();
+- const [open, setOpen] = useState(false);
+- const [formData, setFormData] = useState({
+- if (!formData.name.trim()) return;
+- name: formData.name.trim(),
+- household: formData.household.trim() || null,
+- contactEmail: formData.contactEmail.trim() || null,
+- contactPhone: formData.contactPhone.trim() || null,
+- notes: formData.notes.trim() || null,
+- Manage the households and individuals you work with.
+- Add a new client to track their jobs and inventory.
+- placeholder="e.g. Jane Doe"
+- Household/Estate Name
+- placeholder="e.g. The Doe Estate"
+- placeholder="Access instructions, preferences..."
+- <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+- <TableRow className="bg-muted/50 hover:bg-muted/50">
+- <TableHead>Name</TableHead>
+- <TableHead>Household</TableHead>
+- <TableHead>Contact</TableHead>
+- <TableHead>Added</TableHead>
+- <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+- <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+- <TableCell><Skeleton className="h-4 w-48" /></TableCell>
+- <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+- ) : clients && clients.length > 0 ? (
+- className="cursor-pointer hover:bg-muted/50 transition-colors"
+- <TableCell className="font-medium text-foreground">
+- <Users className="w-4 h-4 text-primary" />
+- <div className="space-y-1">
+- {client.contactEmail && (
+- {client.contactPhone && (
+- <TableCell className="text-sm text-muted-foreground">
+- No clients yet. Create one to get started.
+
+---
+
+## Section: custom-fetch
+
+### 📝 General Body Copy / Page Text
+- export type CustomFetchOptions = RequestInit & {
+- responseType?: "json" | "text" | "blob" | "auto";
+- export type ErrorType
+- const NO_BODY_STATUS = new Set([204, 205, 304]);
+- let _baseUrl: string | null = null;
+- let _authTokenGetter: AuthTokenGetter | null = null;
+- * Set a base URL that is prepended to every relative request URL
+- * (i.e. paths that start with `/`).
+- * Pass `null` to clear the base URL.
+- export function setBaseUrl(url: string | null): void {
+- _baseUrl = url ? url.replace(/\/+$/, "") : null;
+- * Register a getter that supplies a bearer auth token. Before every fetch
+- * the getter is invoked; when it returns a non-null string, an
+- * `Authorization: Bearer
+- ` header is attached to the request.
+- * Useful for Expo bundles making token-gated API calls.
+- * Pass `null` to clear the getter.
+- * NOTE: This function should never be used in web applications where session
+- * token cookies are automatically associated with API calls by the browser.
+- export function setAuthTokenGetter(getter: AuthTokenGetter | null): void {
+- _authTokenGetter = getter;
+- function isRequest(input: RequestInfo | URL): input is Request {
+- return typeof Request !== "undefined" && input instanceof Request;
+- function resolveMethod(input: RequestInfo | URL, explicitMethod?: string): string {
+- if (explicitMethod) return explicitMethod.toUpperCase();
+- if (isRequest(input)) return input.method.toUpperCase();
+- function isUrl(input: RequestInfo | URL): input is URL {
+- return typeof URL !== "undefined" && input instanceof URL;
+- function applyBaseUrl(input: RequestInfo | URL): RequestInfo | URL {
+- if (!_baseUrl) return input;
+- const url = resolveUrl(input);
+- if (!url.startsWith("/")) return input;
+- if (typeof input === "string") return absolute;
+- if (isUrl(input)) return new URL(absolute);
+- return new Request(absolute, input as Request);
+- function resolveUrl(input: RequestInfo | URL): string {
+- if (typeof input === "string") return input;
+- if (isUrl(input)) return input.toString();
+- function mergeHeaders(...sources: Array
+- const headers = new Headers();
+- for (const source of sources) {
+- if (!source) continue;
+- headers.set(key, value);
+- function getMediaType(headers: Headers): string | null {
+- const value = headers.get("content-type");
+- return value ? value.split(";", 1)[0].trim().toLowerCase() : null;
+- function isJsonMediaType(mediaType: string | null): boolean {
+- return mediaType === "application/json" || Boolean(mediaType?.endsWith("+json"));
+- function isTextMediaType(mediaType: string | null): boolean {
+- (mediaType.startsWith("text/") ||
+- mediaType === "application/xml" ||
+- mediaType === "text/xml" ||
+- mediaType.endsWith("+xml") ||
+- mediaType === "application/x-www-form-urlencoded"),
+- function hasNoBody(response: Response, method: string): boolean {
+- if (method === "HEAD") return true;
+- if (NO_BODY_STATUS.has(response.status)) return true;
+- if (response.headers.get("content-length") === "0") return true;
+- if (response.body === null) return true;
+- function stripBom(text: string): string {
+- return text.charCodeAt(0) === 0xfeff ? text.slice(1) : text;
+- function looksLikeJson(text: string): boolean {
+- const trimmed = text.trimStart();
+- return trimmed.startsWith("{") || trimmed.startsWith("[");
+- function getStringField(value: unknown, key: string): string | undefined {
+- if (!value || typeof value !== "object") return undefined;
+- const candidate = (value as Record
+- if (typeof candidate !== "string") return undefined;
+- const trimmed = candidate.trim();
+- return trimmed === "" ? undefined : trimmed;
+- function truncate(text: string, maxLength = 300): string {
+- function buildErrorMessage(response: Response, data: unknown): string {
+- if (typeof data === "string") {
+- const text = data.trim();
+- const title = getStringField(data, "title");
+- const detail = getStringField(data, "detail");
+- getStringField(data, "message") ??
+- getStringField(data, "error_description") ??
+- getStringField(data, "error");
+- export class ApiError
+- readonly name = "ApiError";
+- readonly status: number;
+- readonly statusText: string;
+- readonly data: T | null;
+- readonly headers: Headers;
+- readonly response: Response;
+- readonly method: string;
+- readonly url: string;
+- super(buildErrorMessage(response, data));
+- Object.setPrototypeOf(this, new.target.prototype);
+- this.status = response.status;
+- this.statusText = response.statusText;
+- this.headers = response.headers;
+- this.response = response;
+- this.method = requestInfo.method;
+- this.url = response.url || requestInfo.url;
+- export class ResponseParseError extends Error {
+- readonly name = "ResponseParseError";
+- readonly rawBody: string;
+- readonly cause: unknown;
+- this.rawBody = rawBody;
+- async function parseJsonBody(
+- const raw = await response.text();
+- const normalized = stripBom(raw);
+- return JSON.parse(normalized);
+- throw new ResponseParseError(response, raw, cause, requestInfo);
+- async function parseErrorBody(response: Response, method: string): Promise
+- if (hasNoBody(response, method)) {
+- const mediaType = getMediaType(response.headers);
+- if (mediaType && !isJsonMediaType(mediaType) && !isTextMediaType(mediaType)) {
+- return typeof response.blob === "function" ? response.blob() : response.text();
+- const trimmed = normalized.trim();
+- if (isJsonMediaType(mediaType) || looksLikeJson(normalized)) {
+- function inferResponseType(response: Response): "json" | "text" | "blob" {
+- if (isJsonMediaType(mediaType)) return "json";
+- if (isTextMediaType(mediaType) || mediaType == null) return "text";
+- async function parseSuccessBody(
+- responseType: "json" | "text" | "blob" | "auto",
+- if (hasNoBody(response, requestInfo.method)) {
+- const effectiveType =
+- responseType === "auto" ? inferResponseType(response) : responseType;
+- switch (effectiveType) {
+- return parseJsonBody(response, requestInfo);
+- const text = await response.text();
+- return text === "" ? null : text;
+- if (typeof response.blob !== "function") {
+- "Blob responses are not supported in this runtime. " +
+- "Use responseType \"json\" or \"text\" instead.",
+- return response.blob();
+- export async function customFetch
+- input: RequestInfo | URL,
+- input = applyBaseUrl(input);
+- const method = resolveMethod(input, init.method);
+- if (init.body != null && (method === "GET" || method === "HEAD")) {
+- const headers = mergeHeaders(isRequest(input) ? input.headers : undefined, headersInit);
+- typeof init.body === "string" &&
+- !headers.has("content-type") &&
+- looksLikeJson(init.body)
+- headers.set("content-type", "application/json");
+- if (responseType === "json" && !headers.has("accept")) {
+- headers.set("accept", DEFAULT_JSON_ACCEPT);
+- if (_authTokenGetter && !headers.has("authorization")) {
+- const token = await _authTokenGetter();
+- const errorData = await parseErrorBody(response, method);
+- throw new ApiError(response, errorData, requestInfo);
+- return (await parseSuccessBody(response, responseType, requestInfo)) as T;
+
+---
+
+## Section: dashboard
+
+### 📝 General Body Copy / Page Text
+- } from "lucide-react";
+- export default function Dashboard() {
+- Error loading dashboard. Please try again.
+- Today's snapshot of your back-of-house operations.
+
+---
+
+## Section: db
+
+### 📝 General Body Copy / Page Text
+- if (!process.env.DATABASE_URL) {
+- throw new Error("DATABASE_URL, ensure the database is provisioned");
+- export default defineConfig({
+- dialect: "postgresql",
+- url: process.env.DATABASE_URL,
+
+---
+
+## Section: generated
+
+### 📝 General Body Copy / Page Text
+- * Generated by orval v8.5.3 🍺
+- * Do not edit manually.
+- * OpenAPI spec version: 0.1.0
+- * @summary Health check
+- status: zod.string(),
+- * @summary List clients
+- createdAt: zod.coerce.date(),
+- household: zod.string().nullish(),
+- contactEmail: zod.string().nullish(),
+- contactPhone: zod.string().nullish(),
+- notes: zod.string().nullish(),
+- * @summary Create a client
+- name: zod.string().min(1),
+- * @summary Get a client
+- clientId: zod.coerce.number(),
+- clientId: zod.coerce.number().optional(),
+- clientId: zod.number(),
+- jobType: zod.string(),
+- clientName: zod.string().nullish(),
+- * @summary Create a job
+- title: zod.string().min(1),
+- jobType: zod.string().default(createJobBodyJobTypeDefault),
+- status: zod.string().default(createJobBodyStatusDefault),
+- jobId: zod.coerce.number(),
+- jobId: zod.coerce.number().optional(),
+- platform: zod.coerce.string().optional(),
+- status: zod.coerce.string().optional(),
+- updatedAt: zod.coerce.date(),
+- category: zod.string().nullish(),
+- color: zod.string().nullish(),
+- condition: zod.string().nullish(),
+- conditionNotes: zod.string().nullish(),
+- style: zod.string().nullish(),
+- fabric: zod.string().nullish(),
+- angleLabels: zod.array(zod.string()).optional(),
+- marketPrice: zod.string().nullish(),
+- floorPrice: zod.string().nullish(),
+- priceRangeLow: zod.string().nullish(),
+- priceRangeHigh: zod.string().nullish(),
+- estimatedDaysToSell: zod.number().nullish(),
+- .describe("Array of comparable sold listings (JSON)"),
+- recommendedPlatform: zod.string().nullish(),
+- platformRationale: zod.string().nullish(),
+- .describe("Per-platform listing copy (JSON)"),
+- platform: zod.string(),
+- shippingLogic: zod.string().nullish(),
+- disposition: zod.string(),
+- listingDescription: zod.string().nullish(),
+- createdBy: zod.string().nullish(),
+- jobTitle: zod.string().nullish(),
+- platformListingId: zod.string().nullish(),
+- platformListingUrl: zod.string().nullish(),
+- platformPublishError: zod.string().nullish(),
+- brand: zod.string().optional(),
+- model: zod.string().optional(),
+- platform: zod.string().optional(),
+- status: zod.string().optional(),
+- disposition: zod.string().optional(),
+- * @summary Aggregate counts and pipeline value across inventory
+- totalClients: zod.number(),
+- totalJobs: zod.number(),
+- marketValue: zod.number(),
+- floorValue: zod.number(),
+- byPlatform: zod.array(
+- filename: zod.string(),
+- mimeType: zod.string(),
+- "Object path returned by \/storage\/uploads\/request-url (e.g. \/objects\/uploads\/uuid)",
+- width: zod.number().optional().describe("Image width in pixels"),
+- height: zod.number().optional().describe("Image height in pixels"),
+- status: zod.string().describe("New | Duplicate"),
+- disposition: zod.string().describe("list | donate | wipe-recycle"),
+- savedCount: zod.number(),
+- duplicateCount: zod.number(),
+- donateCount: zod.number(),
+- * @summary Request a presigned URL for file upload
+- size: zod.number().min(1),
+- contentType: zod.string().min(1),
+- uploadURL: zod.string().url(),
+- objectPath: zod.string(),
+- * @summary Serve a stored object (photo)
+- objectPath: zod.coerce.string(),
+- '\"live\" - listing posted and is active on the platform; \"draft\" - a draft was saved via the platform API (e.g. eBay Seller Hub, Etsy Shop Manager); \"draft_prepared\" - platform has no public listing API (Poshmark, Chairish, Facebook Marketplace); a local draft reference is stored and copy-ready content + a direct link to the platform listing form are returned for manual completion.\n',
+- message: zod.string(),
+- newStatus: zod.string(),
+- * @summary Poll the routed platform API for the current listing state and update the master inventory status (Draft / Listed / Sold / Error). For platforms without a public API (Poshmark, Chairish, Facebook Marketplace) returns a message instructing the operator to update manually.
+- "The updated status written to the inventory: Draft | Listed | Sold | Error",
+- apiCalled: zod.boolean(),
+- description: zod.string(),
+- priceLow: zod.number(),
+- priceHigh: zod.number(),
+- estimatedDaysToSell: zod.number(),
+- recommendedPlatform: zod.string(),
+- platformRationale: zod.string(),
+- condition: zod.string(),
+- soldDate: zod.string(),
+- processed: zod.number(),
+- skipped: zod.number(),
+- errors: zod.number(),
+- poshmark: zod.object({
+- hashtags: zod.array(zod.string()),
+- facebook: zod.object({
+- export interface HealthStatus {
+- export interface OkResponse {
+- export interface Client {
+- household?: string | null;
+- contactEmail?: string | null;
+- contactPhone?: string | null;
+- notes?: string | null;
+- export interface ClientInput {
+- export interface Job {
+- clientName?: string | null;
+- export interface JobInput {
+- category?: string | null;
+- color?: string | null;
+- condition?: string | null;
+- conditionNotes?: string | null;
+- style?: string | null;
+- fabric?: string | null;
+- angleLabels?: string[];
+- marketPrice?: string | null;
+- floorPrice?: string | null;
+- priceRangeLow?: string | null;
+- priceRangeHigh?: string | null;
+- estimatedDaysToSell?: number | null;
+- marketSources?: unknown;
+- recommendedPlatform?: string | null;
+- platformRationale?: string | null;
+- listingCopy?: unknown;
+- shippingLogic?: string | null;
+- listingDescription?: string | null;
+- createdBy?: string | null;
+- jobTitle?: string | null;
+- platformListingId?: string | null;
+- platformListingUrl?: string | null;
+- platformPublishError?: string | null;
+- disposition?: string;
+- export interface PlatformBucket {
+- export interface StatusBucket {
+- export interface DashboardSummary {
+- totalClients: number;
+- byPlatform: PlatformBucket[];
+- byStatus: StatusBucket[];
+- export interface AnalyzeBatchPhoto {
+- export interface UploadUrlRequest {
+- export interface UploadUrlResponse {
+- export interface ErrorEnvelope {
+- export interface AnalyzeBatchBody {
+- photos: AnalyzeBatchPhoto[];
+- export interface MarketPricingResult {
+- estimatedDaysToSell: number;
+- recommendedPlatform: string;
+- platformRationale: string;
+- export interface ListingCopyPlatform {
+- export interface ListingCopyResult {
+- poshmark: ListingCopyPlatform;
+- ebay: ListingCopyPlatform;
+- etsy: ListingCopyPlatform;
+- facebook: ListingCopyPlatform;
+- export interface JobActionResult {
+- export interface AnalyzeBatchResult {
+- duplicateCount: number;
+- export interface ListingDescriptionBody {
+- export interface ListingDescriptionResult {
+- export interface SyncStatusResult {
+- export type ListJobsParams = {
+- } from "@tanstack/react-query";
+- ListingDescriptionBody,
+- ListingDescriptionResult,
+- = O extends AwaitedInput
+- unknown> = Parameters
+- return `/api/healthz`;
+- options?: RequestInit,
+- (getHealthCheckUrl(), {
+- return [`/api/healthz`] as const;
+- query?: UseQueryOptions<
+- request?: SecondParameter
+- const queryKey = queryOptions?.queryKey ?? getHealthCheckQueryKey();
+- const queryFn: QueryFunction
+- export type HealthCheckQueryResult = NonNullable<
+- export type HealthCheckQueryError = ErrorType
+- export function useHealthCheck<
+- const queryOptions = getHealthCheckQueryOptions(options);
+- const query = useQuery(queryOptions) as UseQueryResult
+- return `/api/reseller/clients`;
+- (getListClientsUrl(), {
+- return [`/api/reseller/clients`] as const;
+- const queryKey = queryOptions?.queryKey ?? getListClientsQueryKey();
+- export type ListClientsQueryResult = NonNullable<
+- export type ListClientsQueryError = ErrorType
+- export function useListClients<
+- const queryOptions = getListClientsQueryOptions(options);
+- clientInput: ClientInput,
+- (getCreateClientUrl(), {
+- body: JSON.stringify(clientInput),
+- mutation?: UseMutationOptions<
+- }): UseMutationOptions<
+- const mutationKey = ["createClient"];
+- ? options.mutation &&
+- "mutationKey" in options.mutation &&
+- options.mutation.mutationKey
+- const mutationFn: MutationFunction<
+- return createClient(data, requestOptions);
+- export type CreateClientMutationResult = NonNullable<
+- export type CreateClientMutationBody = BodyType
+- export type CreateClientMutationError = ErrorType
+- }): UseMutationResult<
+- return useMutation(getCreateClientMutationOptions(options));
+- (getGetClientUrl(clientId), {
+- const queryKey = queryOptions?.queryKey ?? getGetClientQueryKey(clientId);
+- >, TError, TData> & {
+- export type GetClientQueryResult = NonNullable<
+- export type GetClientQueryError = ErrorType
+- export function useGetClient<
+- const queryOptions = getGetClientQueryOptions(clientId, options);
+- const normalizedParams = new URLSearchParams();
+- if (value !== undefined) {
+- normalizedParams.append(key, value === null ? "null" : value.toString());
+- const stringifiedParams = normalizedParams.toString();
+- return stringifiedParams.length > 0
+- : `/api/reseller/jobs`;
+- params?: ListJobsParams,
+- (getListJobsUrl(params), {
+- return [`/api/reseller/jobs`, ...(params ? [params] : [])] as const;
+- const queryKey = queryOptions?.queryKey ?? getListJobsQueryKey(params);
+- export type ListJobsQueryResult = NonNullable<
+- export type ListJobsQueryError = ErrorType
+- export function useListJobs<
+- const queryOptions = getListJobsQueryOptions(params, options);
+- return `/api/reseller/jobs`;
+- (getCreateJobUrl(), {
+- body: JSON.stringify(jobInput),
+- const mutationKey = ["createJob"];
+- return createJob(data, requestOptions);
+- export type CreateJobMutationResult = NonNullable<
+- export type CreateJobMutationBody = BodyType
+- export type CreateJobMutationError = ErrorType
+- return useMutation(getCreateJobMutationOptions(options));
+- (getGetJobUrl(jobId), {
+- query?: UseQueryOptions
+- const queryKey = queryOptions?.queryKey ?? getGetJobQueryKey(jobId);
+- export type GetJobQueryResult = NonNullable
+- export type GetJobQueryError = ErrorType
+- export function useGetJob<
+- const queryOptions = getGetJobQueryOptions(jobId, options);
+- return `/api/reseller/dashboard/summary`;
+- (getGetDashboardSummaryUrl(), {
+- return [`/api/reseller/dashboard/summary`] as const;
+- const queryKey = queryOptions?.queryKey ?? getGetDashboardSummaryQueryKey();
+- const queryFn: QueryFunction<
+- export type GetDashboardSummaryQueryResult = NonNullable<
+- export type GetDashboardSummaryQueryError = ErrorType
+- export function useGetDashboardSummary<
+- const queryOptions = getGetDashboardSummaryQueryOptions(options);
+- return `/api/reseller/ai/analyze-batch`;
+- analyzeBatchBody: AnalyzeBatchBody,
+- (getAnalyzePhotoBatchUrl(), {
+- body: JSON.stringify(analyzeBatchBody),
+- const mutationKey = ["analyzePhotoBatch"];
+- return analyzePhotoBatch(data, requestOptions);
+- export type AnalyzePhotoBatchMutationResult = NonNullable<
+- export type AnalyzePhotoBatchMutationBody = BodyType
+- export type AnalyzePhotoBatchMutationError = ErrorType
+- return useMutation(getAnalyzePhotoBatchMutationOptions(options));
+- return `/api/storage/uploads/request-url`;
+- uploadUrlRequest: UploadUrlRequest,
+- (getRequestUploadUrlUrl(), {
+- body: JSON.stringify(uploadUrlRequest),
+- const mutationKey = ["requestUploadUrl"];
+- return requestUploadUrl(data, requestOptions);
+- export type RequestUploadUrlMutationResult = NonNullable<
+- export type RequestUploadUrlMutationBody = BodyType
+- export type RequestUploadUrlMutationError = ErrorType
+- return useMutation(getRequestUploadUrlMutationOptions(options));
+- (getGetStorageObjectUrl(objectPath), {
+- queryOptions?.queryKey ?? getGetStorageObjectQueryKey(objectPath);
+- enabled: !!objectPath,
+- } as UseQueryOptions<
+- export type GetStorageObjectQueryResult = NonNullable<
+- export type GetStorageObjectQueryError = ErrorType
+- export function useGetStorageObject<
+- const queryOptions = getGetStorageObjectQueryOptions(objectPath, options);
+- return `/api/reseller/ai/listing-description`;
+- listingDescriptionBody: ListingDescriptionBody,
+- getGenerateListingDescriptionUrl(),
+- body: JSON.stringify(listingDescriptionBody),
+- const mutationKey = ["generateListingDescription"];
+- return generateListingDescription(data, requestOptions);
+- export type GenerateListingDescriptionMutationResult = NonNullable<
+- export type GenerateListingDescriptionMutationBody =
+- export type GenerateListingDescriptionMutationError = ErrorType
+- return useMutation(getGenerateListingDescriptionMutationOptions(options));
+- (getGenerateJobListingsUrl(jobId), {
+- const mutationKey = ["generateJobListings"];
+- return generateJobListings(jobId, requestOptions);
+- export type GenerateJobListingsMutationResult = NonNullable<
+- export type GenerateJobListingsMutationError = ErrorType
+- return useMutation(getGenerateJobListingsMutationOptions(options));
+
+---
+
+## Section: hello
+
+### 📝 General Body Copy / Page Text
+- console.log("Hello from @workspace/scripts");
+
+---
+
+## Section: hooks
+
+### 📝 General Body Copy / Page Text
+- const MOBILE_BREAKPOINT = 768
+- export function useIsMobile() {
+- const [isMobile, setIsMobile] = React.useState
+- setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+- mql.addEventListener("change", onChange)
+- } from "@/components/ui/toast"
+- const TOAST_LIMIT = 1
+- const TOAST_REMOVE_DELAY = 1000000
+- type ToasterToast = ToastProps & {
+- title?: React.ReactNode
+- description?: React.ReactNode
+- const actionTypes = {
+- ADD_TOAST: "ADD_TOAST",
+- UPDATE_TOAST: "UPDATE_TOAST",
+- DISMISS_TOAST: "DISMISS_TOAST",
+- REMOVE_TOAST: "REMOVE_TOAST",
+- count = (count + 1) % Number.MAX_SAFE_INTEGER
+- return count.toString()
+- type ActionType = typeof actionTypes
+- type: ActionType["ADD_TOAST"]
+- type: ActionType["UPDATE_TOAST"]
+- type: ActionType["DISMISS_TOAST"]
+- toastId?: ToasterToast["id"]
+- type: ActionType["REMOVE_TOAST"]
+- toasts: ToasterToast[]
+- const toastTimeouts = new Map
+- if (toastTimeouts.has(toastId)) {
+- toastTimeouts.delete(toastId)
+- type: "REMOVE_TOAST",
+- }, TOAST_REMOVE_DELAY)
+- toastTimeouts.set(toastId, timeout)
+- switch (action.type) {
+- toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
+- case "DISMISS_TOAST": {
+- t.id === toastId || toastId === undefined
+- if (action.toastId === undefined) {
+- function dispatch(action: Action) {
+- type: "UPDATE_TOAST",
+- function useToast() {
+- const [state, setState] = React.useState
+- listeners.push(setState)
+- const index = listeners.indexOf(setState)
+- listeners.splice(index, 1)
+- description?: string;
+- const SITE_NAME = "The Well Lived Citizen";
+- const fullTitle = title.includes(SITE_NAME)
+- document.title = fullTitle;
+- let tag = document.querySelector
+- tag.name = "description";
+- document.head.appendChild(tag);
+- tag.content = description;
+- }, [title, description]);
+
+---
+
+## Section: image
+
+### 📝 General Body Copy / Page Text
+- if (!process.env.AI_INTEGRATIONS_GEMINI_BASE_URL) {
+- if (!process.env.AI_INTEGRATIONS_GEMINI_API_KEY) {
+- apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
+- baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
+- export async function generateImage(
+- const response = await ai.models.generateContent({
+- responseModalities: [Modality.TEXT, Modality.IMAGE],
+- const candidate = response.candidates?.[0];
+- const imagePart = candidate?.content?.parts?.find(
+- if (!imagePart?.inlineData?.data) {
+- throw new Error("No image data in response");
+- b64_json: imagePart.inlineData.data,
+- mimeType: imagePart.inlineData.mimeType || "image/png",
+
+---
+
+## Section: index
+
+### 📝 General Body Copy / Page Text
+- export * from "./generated/api";
+- export type * from "./generated/types";
+- if (!process.env.DATABASE_URL) {
+- "DATABASE_URL must be set. Did you forget to provision a database?",
+- const rawPort = process.env["PORT"];
+- "PORT environment variable is required but was not provided.",
+- const port = Number(rawPort);
+- if (Number.isNaN(port) || port <= 0) {
+
+---
+
+## Section: inventory
+
+### 📝 General Body Copy / Page Text
+- function platformBadgeClass(platform: string): string {
+- "Poshmark": "bg-red-100 text-red-700 border-red-200",
+- "eBay": "bg-yellow-100 text-yellow-800 border-yellow-200",
+- "Etsy": "bg-orange-100 text-orange-700 border-orange-200",
+- "Facebook Marketplace":"bg-blue-100 text-blue-700 border-blue-200",
+- "Local Pickup": "bg-gray-100 text-gray-600 border-gray-200",
+- return map[platform] ?? "bg-gray-100 text-gray-600 border-gray-200";
+- export default function Inventory() {
+- const [, setLocation] = useLocation();
+- const [platform, setPlatform] = useState
+- const [status, setStatus] = useState
+- const [clientId, setClientId] = useState
+- const [jobId, setJobId] = useState
+- platform: platform !== "all" ? platform : undefined,
+- status: status !== "all" ? status : undefined,
+- clientId: clientId !== "all" ? Number(clientId) : undefined,
+- jobId: jobId !== "all" ? Number(jobId) : undefined,
+
+---
+
+## Section: inventory-item
+
+### 📝 General Body Copy / Page Text
+- useGenerateListingDescription,
+- } from "@workspace/api-client-react";
+- ArrowLeft, Sparkles, Trash2, Save, Send, ExternalLink, AlertCircle,
+- CheckCircle2, Info, RefreshCw, TrendingUp, Copy, Check, FileText,
+- } from "lucide-react";
+- AlertDialogDescription,
+- } from "@/components/ui/alert-dialog";
+- const NO_API_PLATFORMS = new Set(["Poshmark", "Chairish", "Facebook Marketplace"]);
+- const MANUAL_PLATFORMS = new Set(["Local Pickup"]);
+- const CONDITIONS = ["Excellent", "Good", "Fair", "Poor"];
+- "Clothing","Shoes","Accessories","Jewelry","Furniture","Decor",
+- "Art","Electronics","Kitchen","Books","Toys","Vintage","Collectibles","Other",
+- const COPY_TAB_COLORS: Record
+- interface MarketSource {
+- interface PricingState {
+- estimatedDaysToSell: number;
+- recommendedPlatform: string;
+- platformRationale: string;
+- sources: MarketSource[];
+- interface CopyPlatform {
+- interface ListingCopyState {
+- poshmark: CopyPlatform;
+- facebook: CopyPlatform;
+- function isCopyPlatform(v: unknown): v is CopyPlatform {
+- if (!v || typeof v !== "object") return false;
+- const o = v as Record
+- return typeof o["title"] === "string" && typeof o["description"] === "string";
+- function isListingCopyState(v: unknown): v is ListingCopyState {
+- return isCopyPlatform(o["poshmark"]) && isCopyPlatform(o["ebay"]) &&
+- isCopyPlatform(o["etsy"]) && isCopyPlatform(o["facebook"]);
+- function isMarketSourceArray(v: unknown): v is MarketSource[] {
+- if (!Array.isArray(v)) return false;
+- const [, setLocation] = useLocation();
+- const queryClient = useQueryClient();
+- const generateDesc = useGenerateListingDescription();
+- const [formData, setFormData] = useState({
+- brand: "", model: "", category: "", color: "", condition: "",
+- conditionNotes: "", style: "", fabric: "", marketPrice: "", floorPrice: "",
+- platform: "", status: "", disposition: "", shippingLogic: "", listingDescription: "",
+- const [pricing, setPricing] = useState
+- const [listingCopy, setListingCopy] = useState
+- const [copyTab, setCopyTab] = useState<"poshmark" | "ebay" | "etsy" | "facebook">("poshmark");
+- const [copiedKey, setCopiedKey] = useState
+- const [publishResult, setPublishResult] = useState<{
+- mode: string; message: string;
+- platformListingUrl?: string | null;
+- listingTitle?: string; listingDescription?: string;
+- const [syncResult, setSyncResult] = useState<{
+- newStatus: string; message: string; apiCalled: boolean;
+- const [copied, setCopied] = useState(false);
+- setPublishResult(null);
+- if (error || isNaN(id)) {
+- setLocation("/inventory")}>
+- brand: formData.brand,
+- model: formData.model,
+- category: formData.category || null,
+- color: formData.color || null,
+- condition: formData.condition || null,
+- conditionNotes: formData.conditionNotes || null,
+- style: formData.style || null,
+- fabric: formData.fabric || null,
+- marketPrice: formData.marketPrice || null,
+- floorPrice: formData.floorPrice || null,
+- platform: formData.platform,
+- status: formData.status,
+- disposition: formData.disposition,
+- shippingLogic: formData.shippingLogic || null,
+- listingDescription: formData.listingDescription || null,
+- setLocation("/inventory");
+- setPricing(data as PricingState);
+- generateListingsMutation.mutate(
+- setListingCopy(copy);
+- mode: data.mode, message: data.message,
+- platformListingUrl: data.platformListingUrl,
+- listingTitle: formData.brand + " " + formData.model,
+- listingDescription: formData.listingDescription,
+- syncStatusMutation.mutate(
+- const msg = err instanceof Error ? err.message : "Failed to sync platform status.";
+- if (!publishResult) return;
+- const isPublishable =
+- !MANUAL_PLATFORMS.has(formData.platform) &&
+- formData.disposition === "list" &&
+- !!formData.listingDescription?.trim();
+- const activeCopyPlatform = listingCopy?.[copyTab];
+- {publishResult.mode === "live" ? (
+- ) : publishResult.mode === "draft_prepared" ? (
+- {publishResult.mode === "live" ? "Live listing created"
+- : publishResult.mode === "draft" ? "Draft saved"
+- {publishResult.mode === "draft_prepared" && (
+- {publishResult.platformListingUrl && (
+- {publishResult.mode !== "draft_prepared" && publishResult.platformListingUrl && (
+- placeholder="e.g. Navy Blue"
+- {formData.condition && formData.condition !== "Excellent" && (
+- placeholder="Brief note on flaws or wear…"
+- placeholder="e.g. Cotton, Walnut, Brass"
+- return angles.length > 0 ? (
+- Photo Angles Captured
+- Shipping Logic / Notes
+- placeholder="e.g. USPS Priority Medium box, Local pickup only"
+- <div className="space-y-6">
+- <Card className="shadow-sm">
+- <CardTitle className="text-lg">Classification</CardTitle>
+- <CardContent className="space-y-4">
+- <div className="space-y-2">
+- <SelectTrigger><SelectValue placeholder="Select platform" /></SelectTrigger>
+- {pricing?.recommendedPlatform && pricing.recommendedPlatform !== formData.platform && (
+- <div className="text-xs bg-amber-50 border border-amber-200 rounded-md p-2.5 text-amber-700 space-y-1">
+- <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
+- <Label>Disposition</Label>
+- <SelectTrigger><SelectValue placeholder="Select disposition" /></SelectTrigger>
+- <Card className="shadow-sm border-primary/20">
+- <CardHeader className="pb-3">
+- <Send className="w-4 h-4" />
+- <CardContent className="space-y-3">
+- {MANUAL_PLATFORMS.has(formData.platform) ? (
+- <p className="text-sm text-muted-foreground">
+- Local Pickup listings are managed manually. No platform integration is available.
+- ) : NO_API_PLATFORMS.has(formData.platform) ? (
+- <ExternalLink className="w-3.5 h-3.5" />
+- View existing listing
+- <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+- <Send className="w-4 h-4 mr-2" />
+- syncResult.apiCalled ? "bg-blue-50 border-blue-200 text-blue-800" : "bg-amber-50 border-amber-200 text-amber-800"
+- <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+- {!formData.listingDescription?.trim() && !MANUAL_PLATFORMS.has(formData.platform) && (
+- <p className="text-xs text-amber-600">
+- Generate a listing description first to enable publishing.
+- <div className="text-xs text-muted-foreground space-y-1">
+- <Tabs defaultValue="pricing">
+- <CardHeader className="pb-0">
+- <TabsList className="h-9">
+- <TrendingUp className="w-3.5 h-3.5" /> Market Pricing
+- <FileText className="w-3.5 h-3.5" /> Listing Copy
+- <div className="flex gap-2">
+- <Sparkles className="w-4 h-4 mr-1.5 text-blue-500" />
+- <TabsContent value="pricing">
+- <CardContent className="pt-4">
+- <div className="space-y-4">
+- <div className="grid grid-cols-3 gap-4">
+- <div className="bg-muted/40 rounded-lg p-3 text-center">
+- <div className="text-xs text-muted-foreground mb-1">Price Range</div>
+- <div className="text-xs text-muted-foreground mb-1">Est. Days to Sell</div>
+- <div className="text-xs text-muted-foreground mb-1">Best Platform</div>
+- {pricing.platformRationale && (
+- {pricing.sources.length > 0 && (
+- <p className="text-xs font-medium text-muted-foreground mb-2">Comparable Sold Listings</p>
+- <div className="border rounded-lg overflow-hidden">
+- <table className="w-full text-xs">
+- <thead className="bg-muted/50">
+- <th className="text-left p-2 font-medium text-muted-foreground">Platform</th>
+- <th className="text-left p-2 font-medium text-muted-foreground">Condition</th>
+- <th className="text-right p-2 font-medium text-muted-foreground">Sold</th>
+- <th className="text-right p-2 font-medium text-muted-foreground">Date</th>
+- <p className="text-sm text-muted-foreground py-6 text-center">
+- No pricing data yet. Click "Get Pricing" to generate market comps from recent sold listings.
+- <TabsContent value="listings">
+- <div className="flex gap-2 flex-wrap">
+- const colors = COPY_TAB_COLORS[p];
+- const isActive = copyTab === p;
+- {activeCopyPlatform && (
+- <div className="space-y-3">
+- <Label className="text-xs">Title</Label>
+- <Label className="text-xs">Description</Label>
+- {activeCopyPlatform.hashtags.length > 0 && (
+- <Label className="text-xs">Hashtags</Label>
+- <div className="flex flex-wrap gap-1">
+- No listing copy yet. Click "Generate Copy" to create platform-specific titles, descriptions, and hashtags.
+
+---
+
+## Section: job-detail
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> for (let i = 0; i < fileArray.length; i++) {
+
+> const result = await uploadPhotoToStorage(fileArray[i]);
+
+> setProgress(5 + Math.round(((i + 1) / fileArray.length) * 35));
+
+### 📝 General Body Copy / Page Text
+- useAnalyzePhotoBatch,
+- useGenerateJobListings,
+- type AnalyzeBatchResult,
+- } from "@workspace/api-client-react";
+- const CARD_CATEGORIES = [
+- "Clothing","Shoes","Accessories","Jewelry","Furniture","Decor",
+- "Art","Electronics","Kitchen","Books","Toys","Vintage","Collectibles","Other",
+- const CARD_CONDITIONS = ["Excellent", "Good", "Fair", "Poor"];
+- function isCopyPlatform(v: unknown): v is CopyPlatform {
+- if (!v || typeof v !== "object") return false;
+- const o = v as Record
+- return typeof o["title"] === "string" && typeof o["description"] === "string";
+- function isListingCopyState(v: unknown): v is ListingCopyState {
+- return isCopyPlatform(o["poshmark"]) && isCopyPlatform(o["ebay"]) &&
+- isCopyPlatform(o["etsy"]) && isCopyPlatform(o["facebook"]);
+- function isMarketSourceArray(v: unknown): v is MarketSource[] {
+- if (!Array.isArray(v)) return false;
+- const COPY_PLATFORM_COLORS: Record
+- poshmark: "bg-red-100 text-red-700 border-red-200 data-[active=true]:bg-red-600 data-[active=true]:text-white",
+- ebay: "bg-yellow-100 text-yellow-800 border-yellow-200 data-[active=true]:bg-yellow-500 data-[active=true]:text-white",
+- etsy: "bg-orange-100 text-orange-700 border-orange-200 data-[active=true]:bg-orange-500 data-[active=true]:text-white",
+- facebook: "bg-blue-100 text-blue-700 border-blue-200 data-[active=true]:bg-blue-600 data-[active=true]:text-white",
+- const BASE_PATH = import.meta.env.BASE_URL ?? "/studio/";
+- const ANGLE_LABEL_OPTIONS = ["front", "back", "left-side", "right-side", "top", "bottom", "detail", "label", "damage"] as const;
+- interface UploadedPhoto {
+- width: number | null;
+- height: number | null;
+- const url = URL.createObjectURL(file);
+- const img = new Image();
+- async function uploadPhotoToStorage(file: File): Promise
+- const [urlRes, dims] = await Promise.all([
+- credentials: "include",
+- getImageDimensions(file),
+- const putRes = await fetch(uploadURL, {
+- function platformBadgeClass(platform: string): string {
+- "Poshmark": "bg-red-100 text-red-700 border-red-200",
+- "eBay": "bg-yellow-100 text-yellow-800 border-yellow-200",
+- "Etsy": "bg-orange-100 text-orange-700 border-orange-200",
+- "Facebook Marketplace": "bg-blue-100 text-blue-700 border-blue-200",
+- "Local Pickup": "bg-gray-100 text-gray-600 border-gray-200",
+- return map[platform] ?? "bg-gray-100 text-gray-600 border-gray-200";
+- function dispositionConfig(disposition: string, status: string) {
+- const queryClient = useQueryClient();
+- const [editing, setEditing] = useState(false);
+- const [listingTab, setListingTab] = useState<"poshmark" | "ebay" | "etsy" | "facebook">("poshmark");
+- const [copiedTab, setCopiedTab] = useState
+- const [draft, setDraft] = useState({
+- if (!listingCopy) return;
+- const p = listingCopy[platform];
+- setCopiedTab(platform);
+- category: draft.category || null,
+- condition: draft.condition || null,
+- conditionNotes: draft.conditionNotes || null,
+- {photoIds.length > 0 && (
+- {photoIds.length > 5 && (
+- setEditing(true)} className="text-muted-foreground hover:text-foreground p-0.5 rounded" title="Edit">
+- {angles.length > 0 && (
+- {pricing.estimatedDaysToSell && (
+- {pricing.recommendedPlatform && (
+- {pricing.platformRationale && (
+- {pricing.sources.length > 0 && (
+- ? (p === "poshmark" ? "bg-red-600 text-white border-transparent" :
+- p === "ebay" ? "bg-yellow-500 text-white border-transparent" :
+- p === "etsy" ? "bg-orange-500 text-white border-transparent" :
+- "bg-blue-600 text-white border-transparent")
+- : (COPY_PLATFORM_COLORS[p] ?? "bg-muted text-muted-foreground border-border")
+- copyListingText(listingTab)}
+- {copiedTab === listingTab
+- export default function JobDetail() {
+- const id = Number(jobId);
+- const [, setLocation] = useLocation();
+- const fileInputRef = useRef
+- const analyzeBatch = useAnalyzePhotoBatch();
+- const generateJobListingsMutation = useGenerateJobListings();
+- const [uploading, setUploading] = useState(false);
+- const [progress, setProgress] = useState(0);
+- const [statusText, setStatusText] = useState("");
+- const [batchResult, setBatchResult] = useState
+- const [showReview, setShowReview] = useState(true);
+- const [batchActionResult, setBatchActionResult] = useState<{
+- type: "pricing" | "listings";
+- if (error || isNaN(id)) {
+- if (jobLoading || !job) {
+- const handleFileChange = async (e: React.ChangeEvent
+- const files = e.target.files;
+- if (!files || files.length === 0) return;
+- setBatchResult(null);
+- setBatchActionResult(null);
+- setStatusText("Uploading photos to storage...");
+- const fileArray = Array.from(files);
+- const uploaded: UploadedPhoto[] = [];
+- uploaded.push(result);
+- storageKey: uploaded[i].storageKey,
+- width: uploaded[i].width ?? undefined,
+- height: uploaded[i].height ?? undefined,
+- setBatchResult(result);
+- console.error("Batch error:", err);
+- console.error("Upload error:", err);
+- if (fileInputRef.current) fileInputRef.current.value = "";
+- priceJobMutation.mutate(
+- generateJobListingsMutation.mutate(
+- const batchActionsRunning = priceJobMutation.isPending || generateJobListingsMutation.isPending;
+- fileInputRef.current?.click()}>
+- {batchResult && !uploading && (
+- setShowReview(!showReview)}
+- className="w-full text-xs text-center text-primary hover:underline"
+- {batchActionsRunning && (
+- Processing sequentially — this may take a minute…
+- {batchActionResult && (
+
+---
+
+## Section: jobs
+
+### 📝 General Body Copy / Page Text
+- } from "@/components/ui/dialog";
+- export default function Jobs() {
+- const [, setLocation] = useLocation();
+- const queryClient = useQueryClient();
+- const createJob = useCreateJob();
+- const [open, setOpen] = useState(false);
+- const [formData, setFormData] = useState({
+- if (!formData.title.trim() || !formData.clientId) return;
+- clientId: Number(formData.clientId),
+- title: formData.title.trim(),
+- jobType: formData.jobType,
+- status: formData.status,
+- notes: formData.notes.trim() || null,
+- Estate clearouts, drop-offs, and processing events.
+- placeholder="e.g. Summer 2024 Estate Clearout"
+- placeholder="Details about this job..."
+- <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+- <TableRow className="bg-muted/50 hover:bg-muted/50">
+- <TableHead>Job Title</TableHead>
+- <TableHead>Client</TableHead>
+- <TableHead>Type</TableHead>
+- <TableHead>Status</TableHead>
+- <TableHead>Date</TableHead>
+- <TableCell><Skeleton className="h-4 w-48" /></TableCell>
+- <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+- <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+- <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
+- <TableCell><Skeleton className="h-4 w-12" /></TableCell>
+- <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+- ) : jobs && jobs.length > 0 ? (
+- className="cursor-pointer hover:bg-muted/50 transition-colors"
+- <TableCell className="font-medium text-foreground">
+- <Briefcase className="w-4 h-4 text-muted-foreground" />
+- <TableCell className="text-sm text-muted-foreground">
+- <Calendar className="w-3 h-3" />
+- No jobs yet. Create one to get started.
+
+---
+
+## Section: layout
+
+### 📝 General Body Copy / Page Text
+- } from "lucide-react";
+- } from "@/components/ui/sidebar";
+- const [location] = useLocation();
+
+---
+
+## Section: lib
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> ? "https://www.etsy.com/your/shops/me/tools/listings"
+
+### 📝 General Body Copy / Page Text
+- export function cn(...inputs: ClassValue[]) {
+- return twMerge(clsx(inputs))
+- } from "./objectAcl";
+- const REPLIT_SIDECAR_ENDPOINT = "http://127.0.0.1:1106";
+- subject_token_type: "access_token",
+- type: "external_account",
+- subject_token_field_name: "access_token",
+- universe_domain: "googleapis.com",
+- export class ObjectNotFoundError extends Error {
+- super("Object not found");
+- this.name = "ObjectNotFoundError";
+- Object.setPrototypeOf(this, ObjectNotFoundError.prototype);
+- export class ObjectStorageService {
+- getPublicObjectSearchPaths(): Array
+- const pathsStr = process.env.PUBLIC_OBJECT_SEARCH_PATHS || "";
+- const paths = Array.from(
+- "PUBLIC_OBJECT_SEARCH_PATHS not set. Create a bucket in 'Object Storage' " +
+- "tool and set PUBLIC_OBJECT_SEARCH_PATHS env var (comma-separated paths)."
+- getPrivateObjectDir(): string {
+- const dir = process.env.PRIVATE_OBJECT_DIR || "";
+- "PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' " +
+- "tool and set PRIVATE_OBJECT_DIR env var."
+- async searchPublicObject(filePath: string): Promise
+- for (const searchPath of this.getPublicObjectSearchPaths()) {
+- const bucket = objectStorageClient.bucket(bucketName);
+- const file = bucket.file(objectName);
+- const [exists] = await file.exists();
+- async downloadObject(file: File, cacheTtlSec: number = 3600): Promise
+- const [metadata] = await file.getMetadata();
+- const aclPolicy = await getObjectAclPolicy(file);
+- const isPublic = aclPolicy?.visibility === "public";
+- const nodeStream = file.createReadStream();
+- const webStream = Readable.toWeb(nodeStream) as ReadableStream;
+- const headers: Record
+- "Content-Type": (metadata.contentType as string) || "application/octet-stream",
+- headers["Content-Length"] = String(metadata.size);
+- async getObjectEntityUploadURL(): Promise
+- const privateObjectDir = this.getPrivateObjectDir();
+- if (!privateObjectDir) {
+- const objectId = randomUUID();
+- return signObjectURL({
+- async getObjectEntityFile(objectPath: string): Promise
+- if (!objectPath.startsWith("/objects/")) {
+- throw new ObjectNotFoundError();
+- const parts = objectPath.slice(1).split("/");
+- if (parts.length < 2) {
+- const entityId = parts.slice(1).join("/");
+- let entityDir = this.getPrivateObjectDir();
+- if (!entityDir.endsWith("/")) {
+- const objectFile = bucket.file(objectName);
+- const [exists] = await objectFile.exists();
+- normalizeObjectEntityPath(rawPath: string): string {
+- if (!rawPath.startsWith("https://storage.googleapis.com/")) {
+- const url = new URL(rawPath);
+- const rawObjectPath = url.pathname; // always starts with /
+- let objectEntityDir = this.getPrivateObjectDir();
+- if (!objectEntityDir.startsWith("/")) {
+- if (!objectEntityDir.endsWith("/")) {
+- if (!rawObjectPath.startsWith(objectEntityDir)) {
+- return rawObjectPath;
+- const entityId = rawObjectPath.slice(objectEntityDir.length);
+- async trySetObjectEntityAclPolicy(
+- aclPolicy: ObjectAclPolicy
+- const normalizedPath = this.normalizeObjectEntityPath(rawPath);
+- if (!normalizedPath.startsWith("/")) {
+- return normalizedPath;
+- const objectFile = await this.getObjectEntityFile(normalizedPath);
+- await setObjectAclPolicy(objectFile, aclPolicy);
+- async canAccessObjectEntity({
+- requestedPermission?: ObjectPermission;
+- return canAccessObject({
+- requestedPermission: requestedPermission ?? ObjectPermission.READ,
+- function parseObjectPath(path: string): {
+- const pathParts = path.split("/");
+- if (pathParts.length < 3) {
+- throw new Error("Invalid path: must contain at least a bucket name");
+- const bucketName = pathParts[1];
+- const objectName = pathParts.slice(2).join("/");
+- async function signObjectURL({
+- method: "GET" | "PUT" | "DELETE" | "HEAD";
+- bucket_name: bucketName,
+- object_name: objectName,
+- expires_at: new Date(Date.now() + ttlSec * 1000).toISOString(),
+- const response = await fetch(
+- "Content-Type": "application/json",
+- body: JSON.stringify(request),
+- signal: AbortSignal.timeout(30_000),
+- `make sure you're running on Replit`
+- const signedURL = body.signed_url;
+- const FORBIDDEN_PHRASES = [
+- const FORBIDDEN_WORDS = ["lot", "lots"];
+- function escapeRegex(s: string): string {
+- export function scrubForbidden(text: string): string {
+- for (const phrase of FORBIDDEN_PHRASES) {
+- out = out.replace(new RegExp(escapeRegex(phrase), "gi"), "");
+- for (const word of FORBIDDEN_WORDS) {
+- category: string | null;
+- color: string | null;
+- condition: string | null;
+- conditionNotes: string | null;
+- style: string | null;
+- fabric: string | null;
+- angleLabels: string[];
+- photoIndices: number[];
+- marketPrice: string | null;
+- floorPrice: string | null;
+- shippingLogic: string | null;
+- status: "New" | "Duplicate";
+- disposition: "list" | "donate" | "wipe-recycle";
+- export interface ExistingInventoryRow {
+- export interface MarketSource {
+- export interface MarketPricingResult {
+- estimatedDaysToSell: number;
+- recommendedPlatform: string;
+- platformRationale: string;
+- sources: MarketSource[];
+- export interface ListingCopyPlatform {
+- export interface ListingCopyResult {
+- poshmark: ListingCopyPlatform;
+- ebay: ListingCopyPlatform;
+- etsy: ListingCopyPlatform;
+- facebook: ListingCopyPlatform;
+- const ALLOWED_PLATFORMS = [
+- "Facebook Marketplace",
+- const ITEM_CATEGORIES = [
+- function buildPrompt(existing: ExistingInventoryRow[]): string {
+- const existingList = existing.length
+- return `You are the resale-pipeline analyst for an estate clear-out operations team in Los Angeles run by Dayna Brown.
+- 3. DEDUPE against existing master inventory (listed below). If the same brand+model already exists, set status="Duplicate". Otherwise status="New".
+- - "donate" if low-value (under ~$15 resale) or commodity (basic mugs, used linens, partial sets).
+- - "wipe-recycle" if electronics/appliances that need data wipe before disposal.
+- 5. SHIPPING LOGIC: short note like "USPS Priority Medium box", "Local pickup only - oversized", "Poshmark prepaid label".
+- PLATFORM CONSTRAINTS — only use one of these EXACT strings:
+- Do NOT suggest Depop, Grailed, Mercari, or Thumbtack. Ever.
+- CATEGORY — only use one of these EXACT strings:
+- CONDITION — only use one of: Excellent, Good, Fair, Poor
+- EXISTING INVENTORY (treat brand+model match as duplicate):
+- "category": "one of the allowed categories above",
+- "color": "primary color as a simple string (e.g. Black, Navy Blue, Ivory)",
+- "condition": "Excellent | Good | Fair | Poor",
+- "conditionNotes": "brief note on flaws/wear or null if pristine",
+- "fabric": "primary material or fabric e.g. Cotton, Linen, Velvet, Walnut, Brass, Ceramic, or null if not determinable",
+- "marketPrice": "string-decimal or null",
+- "floorPrice": "string-decimal or null",
+- "platform": "one of the allowed platforms above",
+- "shippingLogic": "string or null",
+- "status": "New" | "Duplicate",
+- "disposition": "list" | "donate" | "wipe-recycle"
+- No prose. No markdown fences. Just the JSON array.`;
+- function coercePlatform(p: unknown): string {
+- if (typeof p !== "string") return "eBay";
+- const match = ALLOWED_PLATFORMS.find(
+- return match ?? "eBay";
+- function coercePrice(v: unknown): string | null {
+- if (v == null) return null;
+- if (typeof v === "number") return v.toFixed(2);
+- const cleaned = v.replace(/[^0-9.]/g, "");
+- if (!cleaned) return null;
+- const n = Number(cleaned);
+- return Number.isFinite(n) ? n.toFixed(2) : null;
+- function coerceStatus(s: unknown): "New" | "Duplicate" {
+- return s === "Duplicate" ? "Duplicate" : "New";
+- function coerceDisposition(d: unknown): "list" | "donate" | "wipe-recycle" {
+- if (d === "donate" || d === "wipe-recycle") return d;
+- function coerceString(v: unknown): string | null {
+- return typeof v === "string" && v.trim() ? v.trim() : null;
+- function coerceNumber(v: unknown): number {
+- if (typeof v === "number" && Number.isFinite(v)) return Math.max(0, v);
+- return Number.isFinite(n) ? Math.max(0, n) : 0;
+- export async function analyzeBatch(
+- existing: ExistingInventoryRow[],
+- for (const p of photos) {
+- const response = await ai.models.generateContent({
+- const text = response.text ?? "[]";
+- parsed = JSON.parse(text);
+- parsed = match ? JSON.parse(match[0]) : [];
+- const arr = Array.isArray(parsed) ? parsed : [];
+- const prompt = `You are a resale market pricing expert with deep knowledge of eBay sold listings, Poshmark sales, Etsy, and Facebook Marketplace.
+- 2. A price range (low = quick sale price, high = patient seller price)
+- 3. Estimated days to sell at the midpoint price
+- 4. The single best platform recommendation with a one-sentence reason
+- PLATFORM — only recommend one of: eBay, Poshmark, Etsy, Chairish, Facebook Marketplace
+- "estimatedDaysToSell": number,
+- "recommendedPlatform": "platform name",
+- "platformRationale": "one sentence reason",
+- No prose, no markdown fences. Just the JSON.`;
+- parsed = JSON.parse(text) as Record
+- if (m) parsed = JSON.parse(m[0]) as Record
+- const sourcesRaw = Array.isArray(parsed["sources"]) ? parsed["sources"] : [];
+- const src = s as Record
+- platform: coerceString(src["platform"]) ?? "eBay",
+- price: coerceNumber(src["price"]),
+- condition: coerceString(src["condition"]) ?? "Good",
+- soldDate: coerceString(src["soldDate"]) ?? "",
+- priceLow: coerceNumber(parsed["priceLow"]),
+- priceHigh: coerceNumber(parsed["priceHigh"]),
+- estimatedDaysToSell: Math.round(coerceNumber(parsed["estimatedDaysToSell"])) || 30,
+- recommendedPlatform: coercePlatform(parsed["recommendedPlatform"]),
+- platformRationale: coerceString(parsed["platformRationale"]) ?? "",
+- priceLow?: number | null;
+- priceHigh?: number | null;
+- Platform tone guidelines:
+- - eBay: factual, keyword-dense, condition-forward, shipping details prominent, no hashtags
+- - Facebook Marketplace: direct, local-buyer-friendly, concise, no hashtags
+- - Each title: max 80 characters, keyword-rich
+- - Each description: 60-120 words
+- function parsePlatformCopy(key: string): ListingCopyPlatform {
+- const description = scrubForbidden(coerceString(raw["description"]) ?? "");
+- const hashtags = Array.isArray(raw["hashtags"])
+- ? (raw["hashtags"] as unknown[])
+- poshmark: parsePlatformCopy("poshmark"),
+- ebay: parsePlatformCopy("ebay"),
+- etsy: parsePlatformCopy("etsy"),
+- facebook: parsePlatformCopy("facebook"),
+- - Tone matches the platform (eBay = factual + keyword-dense; Poshmark = friendly + style-aware; Etsy = warm + craft-aware; Chairish = elevated + design-aware; Facebook Marketplace = direct + local-friendly).
+- - DO NOT mention death, wills, or "from a household clearout".
+- - 90-160 word body. Include 3-6 likely search keywords woven naturally into the prose.
+- No prose, no markdown.`;
+- typeof parsed.title === "string"
+- typeof parsed.description === "string" ? parsed.description : "";
+- title: scrubForbidden(titleRaw).slice(0, 80),
+- description: scrubForbidden(descRaw),
+- const ACL_POLICY_METADATA_KEY = "custom:aclPolicy";
+- export enum ObjectPermission {
+- export interface ObjectAclPolicy {
+- visibility: "public" | "private";
+- export async function setObjectAclPolicy(
+- aclPolicy: ObjectAclPolicy,
+- await objectFile.setMetadata({
+- export async function getObjectAclPolicy(
+- const [metadata] = await objectFile.getMetadata();
+- const raw = metadata?.metadata?.[ACL_POLICY_METADATA_KEY];
+- if (!raw) return null;
+- return JSON.parse(raw as string) as ObjectAclPolicy;
+- export async function canAccessObject({
+- requestedPermission: ObjectPermission;
+- const aclPolicy = await getObjectAclPolicy(objectFile);
+- if (!aclPolicy) return false;
+- aclPolicy.visibility === "public" &&
+- requestedPermission === ObjectPermission.READ
+- return !!userId && aclPolicy.owner === userId;
+- const isProduction = process.env.NODE_ENV === "production";
+- level: process.env.LOG_LEVEL ?? "info",
+- "req.headers.authorization",
+- "req.headers.cookie",
+- "res.headers['set-cookie']",
+- target: "pino-pretty",
+- export type PublishMode = "live" | "draft" | "draft_prepared";
+- export interface PublishResult {
+- platformListingId: string | null;
+- platformListingUrl: string | null;
+- listingDescription: string;
+- title: scrubForbidden(payload.title),
+- listingDescription: scrubForbidden(payload.listingDescription),
+- shippingLogic: payload.shippingLogic
+- ? scrubForbidden(payload.shippingLogic)
+- return payload.floorPrice ?? payload.marketPrice ?? "9.99";
+- const token = process.env["EBAY_USER_ACCESS_TOKEN"];
+- const locationKey = process.env["EBAY_MERCHANT_LOCATION_KEY"];
+- const fulfillmentPolicyId = process.env["EBAY_FULFILLMENT_POLICY_ID"];
+- const paymentPolicyId = process.env["EBAY_PAYMENT_POLICY_ID"];
+- const returnPolicyId = process.env["EBAY_RETURN_POLICY_ID"];
+- if (!token || !locationKey || !fulfillmentPolicyId || !paymentPolicyId || !returnPolicyId) {
+- mode: "draft_prepared",
+- platformListingUrl: null,
+- "eBay credentials not configured. Set EBAY_USER_ACCESS_TOKEN, EBAY_MERCHANT_LOCATION_KEY, EBAY_FULFILLMENT_POLICY_ID, EBAY_PAYMENT_POLICY_ID, EBAY_RETURN_POLICY_ID as Replit secrets to enable direct publishing. Use the link below to list manually.",
+- const baseUrl = "https://api.ebay.com";
+- condition: "USED_EXCELLENT",
+- title: payload.title.slice(0, 80),
+- description: payload.listingDescription,
+- Brand: [payload.brand],
+- const inventoryRes = await fetch(
+- "Content-Language": "en-US",
+- Accept: "application/json",
+- if (!inventoryRes.ok && inventoryRes.status !== 204) {
+- const text = await inventoryRes.text();
+- marketplaceId: "EBAY_US",
+- format: "FIXED_PRICE",
+- listingDescription: payload.listingDescription,
+- merchantLocationKey: locationKey,
+- quantityLimitPerBuyer: 1,
+- body: JSON.stringify(offerBody),
+- const text = await offerRes.text();
+- const offerId = offerData.offerId ?? null;
+- platformListingId: offerId,
+- platformListingUrl: offerId
+- ? "https://www.ebay.com/sh/lst/active"
+- const apiKey = process.env["ETSY_API_KEY"];
+- const shopId = process.env["ETSY_SHOP_ID"];
+- const accessToken = process.env["ETSY_ACCESS_TOKEN"];
+- if (!apiKey || !shopId || !accessToken) {
+- createUrl: "https://www.etsy.com/sell",
+- "Etsy credentials not configured. Set ETSY_API_KEY, ETSY_SHOP_ID, and ETSY_ACCESS_TOKEN as Replit secrets to enable direct publishing. Use the link below to list manually.",
+- ? parseFloat(payload.floorPrice)
+- : payload.marketPrice
+- ? parseFloat(payload.marketPrice)
+- const listingBody = {
+- title: payload.title.slice(0, 140),
+- who_made: "someone_else",
+- when_made: "2000_2024",
+- const res = await fetch(
+- body: JSON.stringify(listingBody),
+- const text = await res.text();
+- const listingId = data.listing_id ? String(data.listing_id) : null;
+- platformListingId: listingId,
+- platformListingUrl: listingId
+- interface NoApiConfig {
+- draftIdPrefix: string;
+- instructions: string;
+- const NO_API_CONFIG: Record
+- draftIdPrefix: "poshmark-draft",
+- createUrl: "https://poshmark.com/sell",
+- draftIdPrefix: "chairish-draft",
+- createUrl: "https://www.chairish.com/sell",
+- "Facebook Marketplace": {
+- draftIdPrefix: "fb-marketplace-draft",
+- const config = NO_API_CONFIG[platform];
+- platformListingId: null,
+- platformListingId: draftRef,
+- platformListingUrl: config.createUrl,
+- createUrl: config.createUrl,
+- message: config.instructions,
+- const NO_API_PLATFORMS = new Set(["Poshmark", "Chairish", "Facebook Marketplace"]);
+- const payload = scrubPayload(raw);
+- if (NO_API_PLATFORMS.has(payload.platform)) {
+- return buildNoApiResult(payload.platform, payload);
+- switch (payload.platform) {
+- return publishToEbay(payload);
+- return publishToEtsy(payload);
+- export interface SyncStatusResult {
+- async function syncEbayStatus(
+- message: "EBAY_USER_ACCESS_TOKEN not configured. Cannot sync status.",
+- const offerRes = await fetch(
+- const offer = (await offerRes.json()) as {
+- const offerStatus = offer.status ?? "";
+- if (offerStatus === "UNPUBLISHED") {
+- if (offerStatus !== "PUBLISHED") {
+- const orderRes = await fetch(
+- `https://api.ebay.com/sell/fulfillment/v1/order?filter=ordersFilter:COMPLETED`,
+- const orders = (await orderRes.json()) as {
+- async function syncEtsyStatus(
+- if (!apiKey || !accessToken) {
+- message: "ETSY_API_KEY or ETSY_ACCESS_TOKEN not configured. Cannot sync status.",
+- message: "ETSY_SHOP_ID is not configured. Cannot sync Etsy listing status.",
+- const state = data.state ?? "";
+- const stateMap: Record
+- const newStatus = stateMap[state] ?? "Listed";
+- export async function syncPlatformStatus(
+- platformListingId: string | null,
+- if (NO_API_PLATFORMS.has(platform)) {
+- if (!platformListingId) {
+- return syncEbayStatus(platformListingId, sku);
+- return syncEtsyStatus(platformListingId, shopId ?? process.env["ETSY_SHOP_ID"] ?? "");
+- export type Platform = typeof PLATFORMS[number];
+- export type Status = typeof STATUSES[number];
+- export type Disposition = typeof DISPOSITIONS[number];
+- export function formatCurrency(value: string | number | null | undefined): string {
+- if (!value) return "$0.00";
+- const num = typeof value === "string" ? parseFloat(value) : value;
+- if (isNaN(num)) return "$0.00";
+- return new Intl.NumberFormat("en-US", {
+- export function useAuth() {
+- const [, setLocation] = useLocation();
+- isAuthenticated: isLoaded && !!user,
+
+---
+
+## Section: login
+
+### 📝 General Body Copy / Page Text
+- export default function Login() {
+
+---
+
+## Section: main
+
+### 📝 General Body Copy / Page Text
+- import "./index.css";
+
+---
+
+## Section: middleware
+
+### 📝 General Body Copy / Page Text
+- function parseAllowlist(raw: string | undefined): Set
+- if (!raw) return new Set();
+- const allowlist = parseAllowlist(process.env.OPERATOR_EMAILS);
+- const auth = getAuth(req);
+- const userId = auth?.userId;
+- const user = await clerkClient.users.getUser(userId);
+
+---
+
+## Section: middlewares
+
+### 📝 General Body Copy / Page Text
+- * Clerk Frontend API Proxy Middleware
+- * Proxies Clerk Frontend API requests through your domain, enabling Clerk
+- * authentication on custom domains and .replit.app deployments without
+- * requiring CNAME DNS configuration.
+- * AUTH CONFIGURATION: To manage users, enable/disable login providers
+- * (Google, GitHub, etc.), change app branding, or configure OAuth credentials,
+- * use the Auth pane in the workspace toolbar. There is no external Clerk
+- * dashboard — all auth configuration is done through the Auth pane.
+- * - Only active in production (Clerk proxying doesn't work for dev instances)
+- * - Must be mounted BEFORE express.json() middleware
+- * app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+- const CLERK_FAPI = "https://frontend-api.clerk.dev";
+- * Returns the first effective public hostname for the given request,
+- * preferring x-forwarded-host over the Host header so callers behind a
+- * proxy see the original client-facing host.
+- * x-forwarded-host can take three shapes:
+- * - undefined (no proxy involved)
+- * - a single string (one proxy hop)
+- * - a comma-delimited string when an upstream appended rather than
+- * replaced the header (Node folds duplicate headers this way), or a
+- * string[] in some Express typings
+- * In the multi-value case, the leftmost value is the original client-
+- * facing host. Take that one in all forms. Exported so that app.ts
+- * (clerkMiddleware callback) and this proxy middleware agree on which
+- * hostname is canonical — otherwise multi-domain/custom-domain flows
+- export function getClerkProxyHost(req: {
+- headers: IncomingHttpHeaders;
+- }): string | undefined {
+- const forwarded = req.headers["x-forwarded-host"];
+- const raw = Array.isArray(forwarded) ? forwarded[0] : forwarded;
+- const firstHop = raw?.split(",")[0]?.trim();
+- return firstHop || req.headers.host?.trim() || undefined;
+- export function clerkProxyMiddleware(): RequestHandler {
+- if (process.env.NODE_ENV !== "production") {
+- const secretKey = process.env.CLERK_SECRET_KEY;
+- return createProxyMiddleware({
+- const protocol = req.headers["x-forwarded-proto"] || "https";
+- const host = getClerkProxyHost(req) || "";
+- proxyReq.setHeader("Clerk-Proxy-Url", proxyUrl);
+- proxyReq.setHeader("Clerk-Secret-Key", secretKey);
+- const xff = req.headers["x-forwarded-for"];
+- (Array.isArray(xff) ? xff[0] : xff)?.split(",")[0]?.trim() ||
+- proxyReq.setHeader("X-Forwarded-For", clientIp);
+- }) as RequestHandler;
+
+---
+
+## Section: mockup-sandbox
+
+### 📝 General Body Copy / Page Text
+- const rawPort = process.env.PORT;
+- "PORT environment variable is required but was not provided.",
+- const port = Number(rawPort);
+- if (Number.isNaN(port) || port <= 0) {
+- const basePath = process.env.BASE_PATH;
+- "BASE_PATH environment variable is required but was not provided.",
+- export default defineConfig({
+- mockupPreviewPlugin(),
+- runtimeErrorOverlay(),
+- ...(process.env.NODE_ENV !== "production" &&
+- process.env.REPL_ID !== undefined
+- root: path.resolve(import.meta.dirname, ".."),
+- "@": path.resolve(import.meta.dirname, "src"),
+- root: path.resolve(import.meta.dirname),
+- outDir: path.resolve(import.meta.dirname, "dist"),
+- @/components/ui
+- const MOCKUPS_DIR = "src/components/mockups";
+- const GENERATED_MODULE = "src/.generated/mockup-components.ts";
+- interface DiscoveredComponent {
+- export function mockupPreviewPlugin(): Plugin {
+- let currentSource = "";
+- let watcher: FSWatcher | null = null;
+- function getMockupsAbsDir(): string {
+- return path.join(root, MOCKUPS_DIR);
+- function getGeneratedModuleAbsPath(): string {
+- return path.join(root, GENERATED_MODULE);
+- function isMockupFile(absolutePath: string): boolean {
+- const rel = path.relative(getMockupsAbsDir(), absolutePath);
+- !rel.startsWith("..") && !path.isAbsolute(rel) && rel.endsWith(".tsx")
+- function isPreviewTarget(relativeToMockups: string): boolean {
+- return relativeToMockups
+- async function discoverComponents(): Promise
+- globKey: "./" + f.slice("src/".length),
+- importPath: path.posix.relative("src/.generated", f),
+- function generateSource(components: Array
+- const entries = components
+- "// This file is auto-generated by mockupPreviewPlugin.ts.",
+- "type ModuleMap = Record
+- function shouldAutoRescan(pathname: string): boolean {
+- pathname.includes("/components/mockups/") ||
+- pathname.includes("/.generated/mockup-components")
+- let refreshInFlight = false;
+- let refreshQueued = false;
+- async function refresh(): Promise
+- if (refreshInFlight) {
+- refreshQueued = true;
+- refreshInFlight = true;
+- const components = await discoverComponents();
+- const newSource = generateSource(components);
+- if (newSource !== currentSource) {
+- currentSource = newSource;
+- const generatedModuleAbsPath = getGeneratedModuleAbsPath();
+- writeFileSync(generatedModuleAbsPath, currentSource);
+- refreshInFlight = false;
+- refreshQueued = false;
+- const followUp = await refresh();
+- return changed || followUp;
+- name: "mockup-preview",
+- configResolved(config) {
+- async configureServer(viteServer) {
+- const mockupsAbsDir = getMockupsAbsDir();
+- watcher = chokidar.watch(mockupsAbsDir, {
+- stabilityThreshold: 100,
+- isMockupFile(file) &&
+- isPreviewTarget(path.relative(mockupsAbsDir, file))
+- if (isMockupFile(file)) {
+- const requestUrl = new URL(req.url ?? "/", "http://127.0.0.1");
+- const pathname = requestUrl.pathname;
+- const originalEnd = res.end.bind(res);
+- res.end = ((...args: Parameters
+- if (res.statusCode === 404 && shouldAutoRescan(pathname)) {
+- return originalEnd(...args);
+- }) as typeof res.end;
+- async closeWatcher() {
+- await watcher.close();
+
+---
+
+## Section: not-found
+
+### 📝 General Body Copy / Page Text
+- export default function NotFound() {
+- Did you forget to add the page to the router?
+
+---
+
+## Section: replit
+
+### 📝 General Body Copy / Page Text
+- pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+- - **Monorepo tool**: pnpm workspaces
+- - **Node.js version**: 24
+- - **Package manager**: pnpm
+- - **TypeScript version**: 5.9
+- - **API framework**: Express 5
+- - **Database**: PostgreSQL + Drizzle ORM
+- - **Validation**: Zod (`zod/v4`), `drizzle-zod`
+- - **API codegen**: Orval (from OpenAPI spec)
+- - **Build**: esbuild (CJS bundle)
+- - `pnpm run typecheck` — full typecheck across all packages
+- - `pnpm run build` — typecheck + build all packages
+- - `pnpm --filter @workspace/api-server run dev` — run API server locally
+- - **Voice / copy authority**: `.agents/skills/wlc-voice/SKILL.md` is the single source of truth. Canonical reference copy in `.local/build_v043026/*.md` — elevation only, no rewrites, no drift.
+- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+
+---
+
+## Section: reseller-studio
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> - **Different deploy lifecycle.** The marketing site is high-stakes/low-frequency. The dashboard will iterate weekly during the resale-engine build-out. Independent artifacts mean we can ship dashboard changes without redeploying the marketing site.
+
+> - **Multi-operator-per-account is first-class in Clerk.** The dashboard must support "multiple operators per account, multiple clients per operator" (`dashboard-scope.md` → "End user"). Clerk Organizations + Roles model this without us building user/role tables ourselves.
+
+> - **No client-facing portal in v1.** Clients are records, not users (`dashboard-scope.md` → "End user", "Out of scope for v1"). We are not designing for client logins yet, so we do not need a federated/multi-tenant SSO story today. Clerk Organizations leaves room for that later if needed.
+
+> - **Reuse the infra we already have.** `artifacts/api-server` already exists with `lib/db`, migrations, and the OpenAPI codegen pipeline (`pnpm --filter @workspace/api-spec run codegen`). The dashboard will call typed hooks from `lib/api-client-react` against the same server. Adding a parallel database stack for one product is unjustified overhead.
+
+> - **Firestore (carried over from `Dashboard--main` prior art).** The prior-art prototype used Firestore; we are not adopting it. Postgres + Drizzle is the existing repo standard.
+
+### 📝 General Body Copy / Page Text
+- The agent is named **"DB Strategic Resale Engine"**.
+- Tone constraint repeated throughout: **"Zero fluff. No markdown. No conversational text."** when producing structured output.
+- | --- | --- | --- | --- |
+- | Luxury purses | Small | Poshmark / eBay | You ship; use authenticated labels. |
+- | Vintage decor | Small / Medium | Etsy / eBay | You ship; calculated shipping costs. |
+- | Vintage furniture | Large | Chairish | Chairish handles white-glove shipping. |
+- | Heavy / bulky | Large | Facebook Marketplace | Local pickup. |
+- - **Small / Luxury** → eBay / Poshmark
+- - **Vintage / Handmade** → Etsy
+- - **Large / High-end** → Chairish
+- - **Heavy / Bulky** → Facebook Marketplace
+- - **Market Price** — suggested list price.
+- - **Floor Price** — lowest acceptable sell price.
+- > You are the "DB Strategic Resale Engine."
+- > - Visual Scan: Identify Brand, Model, Material, and Condition markers (e.g., date codes for purses, joinery for furniture).
+- > - Platform Routing:
+- > - Small/Luxury (Purses/Small Decor) → eBay/Poshmark.
+- > - Vintage/Handmade → Etsy.
+- > - Large/Heavy (Tables/Sofas) → Chairish (High-end) or Facebook Marketplace (Local).
+- > - Pricing: Suggest a "Market Price" and a "Floor Price" (Lowest to Sell).
+- > - Output: Provide a structured table for the Master Sheet and formatted descriptions for each platform. Zero fluff.
+- Used by the PowerShell script to constrain output to a single CSV line per image.
+- > Order: Brand, Model, Market Price, Floor Price, Platform, Shipping Logic.
+- > - Small/Luxury → eBay/Poshmark
+- > - Vintage/Handmade → Etsy
+- > - Large/High-end → Chairish
+- > - Heavy/Bulky → FB Marketplace
+- > Zero fluff. No markdown. No conversational text.
+- FileName,Brand,Model,MarketPrice,FloorPrice,PrimaryPlatform,ShippingLogic
+- 1. Iterate every `.jpg` in the upload folder.
+- 2. Base64-encode the image.
+- 4. Parse the candidate text (one CSV line) and prepend the filename.
+- 5. Append the row to `MasterInventory.csv`.
+- 1. **Batch vision processing.** Send all photos in the folder in a single request instead of one-by-one.
+- > **Task:** Analyze a batch of images and generate a consolidated inventory list.
+- > 3. **Platform Routing:** Use previous logic (Large → Chairish, Small → eBay, etc.).
+- > **Output Format:** Return ONLY a JSON array of objects with these keys: Brand, Model, MarketPrice, FloorPrice, Platform, Status (New/Duplicate).
+- "MarketPrice": "string | number",
+- "FloorPrice": "string | number",
+- "Platform": "eBay | Poshmark | Etsy | Chairish | FB Marketplace",
+- "Status": "New | Duplicate"
+- 2. Read every `.jpg` in the upload folder, base64-encode each, build a `parts` array of `inline_data` entries.
+- 3. Append the user prompt text (including the existing-inventory JSON) as the final part.
+- 5. Strip ```` ```json ```` fences from the candidate text and `JSON.parse` it.
+- Reasons captured in the source chat:
+- - Optimized for high-speed vision tasks.
+- - Generous free-tier limits at the time of writing (15 RPM, 1,500 RPD).
+- - Context-aware, not just OCR — recognizes brand markers like a "Herman Miller" logo on the underside of a chair and infers the correct routing platform.
+- - **Batch folder workflow.** Manual folder splitting for large runs — the dashboard should handle this via background jobs / queueing instead.
+- When the reseller dashboard is built, the following pieces from this pipeline are the load-bearing logic, not the PowerShell mechanics:
+- 2. The **platform routing table** (size × type → platform → shipping logic).
+- 5. The **Brand + Model + MarketPrice + FloorPrice + Platform** as the minimum master-inventory row.
+- - `attached_assets/research_la_organizers_1777845862885.csv` — 35 deeply-researched businesses with normalized fields. Mirrored as structured data in `competitors.json`.
+- - `attached_assets/competitor_list_1777845862885.md` — master list of 50 identified competitors (15 of which are not in the deep-research set).
+- - `attached_assets/Competitive_Landscape_Analysis:_Professional_Organizing_in_Los__1777845862885.md` — segmentation and market framing used below.
+- The four segments below come from the landscape analysis. Each business is then profiled in the table at the bottom of this doc.
+- - **NEAT Method** — franchise with 100+ locations; ~$1,500–$2,500+ per single space.
+- - **Horderly** — 11-step process; Sherman Oaks; nationwide travel for $8k+ projects; $300 virtual sessions.
+- - **The Home Edit** — national brand, serves LA. (Listed in master list, not in the 35-deep set.)
+- - **Inspired Closets** — LA franchise. (Listed in master list, not in the 35-deep set.)
+- - **The Beverly Hills Organizer** — Linda Koopersmith, 35+ years, founder oversees every project.
+- - **Harmony Living by V** — 30 years, celebrity clientele, $250 half-day / $400 full-day baseline.
+- - **Ethereal Edits** — KonMari Master Consultant, white-glove move concierge, $3,500 (small) → $20,000+ (extensive).
+- - **Swoon Spaces** — luxury NYC/LA; Beverly Hills, Bel Air, Pacific Palisades, Malibu.
+- - **Straighten Up by Janelle** — celebrity / TV personality, "The Folding Book" author.
+- - **Tidy Up Los Angeles** — Master Level KonMari Consultant; $375 (3 hr) / $500 (4 hr).
+- - **Tidy LA** — Meredith Ryness, Master Level KonMari; $125/hr solo, $200/hr with assist.
+- - **Minimalee** — KonMari. (Listed in master list, not in the 35-deep set.)
+- - **The Organizing Shift** — Certified KonMari + Clinical EFT Tapping practitioner.
+- - **Spaces of Mind** — ADHD specialists, transitional consultants, Hollywood.
+- - **Clutter Healing** — Brentwood, integrates breathwork meditation with organizing.
+- - **The Spatial Guy** — neurodiversity-affirming, Silver Lake. (Mentioned in landscape analysis, master list only.)
+- - **Elev8 Your Spaces** — chronic disorganization focus. (Master list only.)
+- Independent or small-team businesses serving specific neighborhoods; compete on personalization and community fit.
+- - **Shara Kay** — Beverly Hills, CPO certified, team of 10, $100/hr lead + $80/hr assist.
+- - **Organize with Leslie** — Westside (Santa Monica/Venice/Mar Vista), former educator, $125/hr.
+- - **Beautiful Life Creative Organizing** — LA/Pasadena/Burbank, blends organizing + design, in-person starts at $600.
+- - **Organizing Concepts and Designs (OCD)** — Dina Braverman, NAPO; one-stop-shop with vetted partners; estate sales + clearing.
+- - **Home Organizers Plus** — husband-and-wife team in Granada Hills / SFV.
+- - **Design Organized by Lisa Shields** — celebrity clientele; combines organizing + interior plant design; $95–$150/hr.
+- - **Leave It 2 Lori & Roz** — full-service concierge moves, estate clearing, large multi-faceted projects.
+- - **Golden West Organizing** — Encino, Dr. Julia Raz (PhD, Communication); single-day from $900; $250/hr virtual.
+- - **Spark Organizers** — Topanga, "Spark nest Method™," HeartMath/wellness layer.
+- - **Making Space Today** — LA/Santa Clarita; contracted in-home partner of The Container Store.
+- - **Simply Organized by Kari Jane** — Westside, "where style meets organization."
+- - **Clutter Girl L.A.** — superhero branding; $350 for a 4-hour intro session.
+- - **The Joyful Organizer** — LB Baer; ADHD-informed; LA.
+- - **iOrganize** — neurospicy / ADHD-informed; ~$150/hr with 3-hr min on the LA-area sister site.
+- - **The Organistas** — SFV; decluttering + interior styling.
+- - **ShipShaped Home** — South Bay (Manhattan / Hermosa / Redondo / Palos Verdes); apparel-mfg background.
+- - **Sorted & Stored** — LA/OC; "Sorted and Stored Method"; urban-living focus.
+- These are in the 50-business master list (`competitor_list_1777845862885.md`) but were not in the 35-deep-research CSV, so they have no record in `competitors.json`. Captured here for completeness:
+- - Get Organized Already (Pasadena)
+- - Organizing with Erin (Santa Monica)
+- - Wardrobe Concierge (LA)
+- - Sorted & Stored (sortedstored.com) — _is_ in the deep set, included above.
+- - A Place For It All (aplaceforitall.biz)
+- - Violet Ventures (Santa Clarita)
+- - The Modern Reset (Santa Clarita / LA)
+- - Livsmaller (Santa Monica)
+- - The Spatial Guy (Silver Lake)
+- - S.T.O.R.E. by Steph (storebysteph.com)
+- - The Tidy Abode (Long Beach)
+- - Minimalee (KonMari)
+- - Sorted (joinsorted.com) — marketplace/platform, not an organizer per se
+- - My LA Organizer (Houzz)
+- - Inspired Closets (LA franchise)
+- - The Home Edit (national, serves LA)
+- Three observed tiers (per landscape analysis):
+- | Tier | Range | Examples |
+- | Independent operator | $95–$125/hr | Organize with Leslie ($125/hr), Design Organized ($95–$150/hr) |
+- | Agency team | $150–$250/hr (team of 2) | Composed Living ($185 + $75), Tidy LA ($200 with assist) |
+- | Luxury / project-based | $1,500 → $20,000+ per project | NEAT Method, Ethereal Edits |
+- - **Estate / downsizing focus** — `OCD`, `A Clear Path`, `Leave It 2 Lori`, `Harmony Living by V`. These directly produce resale-able lots.
+- - **Interior design integration** — `Design Organized`, `The Organistas`, `Beautiful Life Creative`.
+- - **Neurodivergent / ADHD-informed** — `A Clear Path`, `Spaces of Mind`, `iOrganize`, `The Joyful Organizer`, `The Spatial Guy`, `Elev8 Your Spaces`.
+- - **Founder-as-brand** — `Shara Kay`, `Straighten Up by Janelle`, `Harmony Living by V`, `The Beverly Hills Organizer`.
+- The full structured data lives in [`competitors.json`](./competitors.json). Quick index:
+- | # | Name | Areas | Pricing |
+- | 1 | NEAT Method | South Bay / Valley / Northwest LA / Beverly Hills / Santa Monica | $1,500–$2,500+ per space |
+- | 2 | Shara Kay | Beverly Hills, South Bay, Ventura, Santa Barbara | $100/hr lead, $80/hr assist |
+- | 3 | Composed Living | LA + surrounding | $185/hr lead, $75/hr assist; virtual from $150 |
+- | 4 | Organizing Concepts and Designs | LA County, SFV, Ventura, San Gabriel | Not listed |
+- | 5 | Home Organizers Plus | Granada Hills, SFV, greater LA | Not listed |
+- | 6 | Tidy Up Los Angeles | Westside, Valley, broad LA | $375 (3 hr) / $500 (4 hr); $200 (2 hr virtual) |
+- | 7 | Organize with Leslie | Westside | $125/hr; package discounts |
+- | 8 | Tidy LA | LA, Pasadena, San Marino, Highland Park, Silverlake | $125/hr solo; $200/hr with assist |
+- | 9 | Beautiful Life Creative Organizing | LA, Pasadena, Burbank | $125 meet & greet; in-person from $600 |
+- | 10 | The Beverly Hills Organizer | Beverly Hills, LA, nationwide | Not listed |
+- | 11 | The Haute Suite / Alana's Organizing | LA, San Diego, luxury markets | Not listed; $300–$500+ design fee |
+- | 12 | Ethereal Edits | South Bay, Beverly Hills, Brentwood, OC | $3,500 (small) → $20,000+ (extensive) |
+- | 13 | Design Organized by Lisa Shields | Westside, Valley, Pasadena | $95–$150/hr |
+- | 14 | Free Your Space by Michelle Garb | SFV, Westside, Beverly Hills | Not listed |
+- | 15 | Clutter Healing | Brentwood, greater LA | Not listed |
+- | 16 | Horderly | Sherman Oaks (nationwide for $8k+) | $300/session virtual; in-home not listed |
+- | 17 | Straighten Up by Janelle | LA + global | Not listed |
+- | 18 | Harmony Living by V | LA County, OC, Beverly Hills, Manhattan Beach | $250 half-day / $400 full-day |
+- | 19 | Leave It 2 Lori & Roz | LA, Ventura, SFV, desert markets | Not listed |
+- | 20 | Golden West Organizing | Greater LA, OC | $900+ single day; $250/hr virtual |
+- | 21 | Spark Organizers | LA, Ventura, Topanga | Not listed |
+- | 22 | A Clear Path | LA, OC | Not listed |
+- | 23 | Making Space Today | LA, Santa Clarita | Not listed |
+- | 24 | The Organizing Shift | LA, SFV | Not listed |
+- | 25 | Simply Organized by Kari Jane | Westside, South Bay, Beverly Hills | Not listed |
+- | 26 | Clutter Girl L.A. | LA, SoCal | $350 for 4-hour intro; 4-hr min |
+- | 27 | The Joyful Organizer | LA | Not listed |
+- | 28 | iOrganize | (LA-area sister site) | ~$150/hr with 3-hr min (sister site) |
+- | 29 | The Organistas | SFV | Not listed |
+- | 30 | Spaces of Mind | Hollywood, LA | Not listed |
+- | 31 | Swoon Spaces | Beverly Hills, Bel Air, Palisades, Malibu | Not listed |
+- | 32 | ShipShaped Home | South Bay | $250 (2-hr virtual); rest not listed |
+- | 33 | The Spatial Guy | Silver Lake, West Hollywood, Echo Park | Custom |
+- | 34 | Elev8 Your Spaces | LA | Not listed |
+- | 35 | Sorted & Stored | LA, OC | Not listed |
+- It is still useful as prior art for three reasons:
+- 1. It is the only working artifact that already has Dayna's brand identity, service architecture, pricing, and guardrails encoded as data.
+- 3. It establishes a Firebase Auth + Firestore baseline that the future dashboard can either adopt or explicitly reject.
+- ├── AGENTS.md # "Structural Engine" role doc for the AI editing this app
+- ├── README.md # AI Studio scaffold readme
+- ├── firebase-applet-config.json # Live Firebase keys (project gen-lang-client-0138005396)
+- ├── firebase-blueprint.json # Firestore entity blueprint (Repository / Component / Spec)
+- ├── firebase.json, firestore.* # Hosting + security-rules config
+- ├── index.html, vite.config.ts, tsconfig.json, package.json
+- │ ├── master_site_spec.md # Brand identity + service architecture v1.1 (LOCKED)
+- │ ├── manus_build_directive.md # Production build directive for Manus
+- │ ├── firebase_launch.md # Cloud-launch / Vertex migration notes
+- │ └── session_summary.md # Decision Lock — full pricing + corrections list
+- ├── App.tsx # 2,141-line single-file React app (the entire dashboard)
+- ├── domain_check.ts # Retired domain-availability tool
+- ├── domain_info.ts # Retired domain-info tool
+- ├── lib/ # firebase.ts, utils.ts (cn() helper)
+- ├── main.tsx, index.css
+- - React 19 + Vite 6 + Tailwind v4 (`@tailwindcss/vite`).
+- - Firebase Auth (Google sign-in only) + Firestore.
+- - `motion`, `recharts`, `react-markdown`, `lucide-react`.
+- | Tab | What it does |
+- | Home Organization | Static charts of "top reasons to hire", color/sentiment palette, meeting-time preferences. |
+- | Service Catalog | Hardcoded `SERVICES_DATA` for the four service lines (home org, resale, legacy, house calls) with pricing + commission splits. |
+- | Spending & Fears | Static generational-fears chart. |
+- | Success Planner | Revenue projection sliders (legacy count, home-org count, resale hours, resale commission) with derived totals. |
+- The "Salvage" / Repository-Component-Spec data model in `firebase-blueprint.json` exists to capture pasted-in code snippets from prior repos for the AI to score against the brand voice — **not** for inventory.
+- These pieces are worth lifting (or re-deriving) when the real reseller dashboard is built:
+- 1. **`SERVICES_DATA` constant** in `src/App.tsx` (lines ~82–140) — already-locked copy and pricing for the four service lines, matches `outputs/manus_build_directive.md`.
+- 2. **`outputs/session_summary.md` "DECISION LOCK"** — the canonical pricing + corrections-list. The reseller commission splits (55/45 clothing, 50/50 designer + furniture) and "Flex blocks never expire" rule live here. **Note the conflict** with Dayna's own business plan (see "Discrepancies" below).
+- - Direct browser-side `@google/genai` calls with a hardcoded preview model.
+- - Single 2,141-line `App.tsx` — needs to be broken into routed components.
+- - Manus / "Switchboard" handoff plumbing — irrelevant once the build lives in this monorepo.
+- The dashboard prototype encodes one set of numbers; `Dayna_Brown_Business_Plan_Final_1777843986317.docx` encodes another. The reseller dashboard build will need a tie-breaker before persisting anything.
+- | Topic | Dashboard / Decision Lock | Dayna's business plan (March 2026) |
+- | Resale commission (clothing) | 55% Dayna / 45% client | 50/50 on net profit after platform fees |
+- | Resale commission (designer + furniture) | 50/50 | 50/50 |
+- | Markdown schedule | not stated | Day 30 −10%, Day 60 −10%, Day 90 client decides; furniture 60-day, −10% / 14 days |
+- | Markdown authority | not stated | Operator may accept offers within 15–20% of list without re-asking |
+- | Payout cadence | "Monthly payout by the 5th" | Report by the 1st, payout by the 5th, Venmo/Zelle/check |
+- These are now reflected in `dashboard-scope.md` as required-config inputs the operator must be able to set before any inventory is written.
+- - Business: **The Well Lived Citizen** (DBA under Well Dressed Citizen LLC).
+- - Tagline: *"Well Placed. Well Dressed (again). Transitions done Well."*
+- - Phone (published): (323) 433-1350.
+- - Active platforms: Etsy, Chairish, Poshmark, eBay, Facebook Marketplace; on-deck Vestiaire; future 1stDibs.
+- - Killed platforms: Depop, Grailed, Mercari, Thumbtack, Replit content app.
+- - Crosslisting tool: Nifty AI ($69.99/mo), under 90-day ROI evaluation.
+- This is a reference for the people and business structures who already manage households for multiple clients without being full-time personal assistants. The reseller dashboard's eventual end users sit somewhere inside this taxonomy.
+- **Personal Concierge Services.** Manage multiple clients simultaneously on an hourly or as-needed basis. Range from luxury travel booking to coordinating one-off personal experiences. Distinct from a personal assistant, who serves a single principal.
+- **Household Manager.** The "COO of the home." Day-to-day operations and logistics. May serve a single large estate or a family with multiple properties.
+- **Lifestyle Manager.** Hybrid role. Coordinates complex schedules, household logistics, and high-touch service across multiple residences. Common with HNW clients who travel frequently and need a dynamic global coordinator.
+- **Personal Chef.** Serves multiple clients (vs. a private chef who serves one household). Often weekly meal-prep visits stocking fridges with ready-to-eat meals tailored to dietary needs.
+- **Executive Housekeeper.** Beyond cleaning — supervises outside vendors, manages household inventory, sets cleaning schedules.
+- Where each role plausibly intersects the reseller dashboard:
+- | Role | Intersection with reseller workflow | Likely dashboard usage |
+- | Fractional Estate Manager | Coordinates property prep + downsizing; controls what leaves the property. | Creates an estate clear-out "job," uploads photo batches, reviews AI-suggested platforms before listing. |
+- | Home Concierge Company | Handles vendor/logistics across many homes; resale is incidental. | Hands-off; mostly receives notifications about pickups/shipments handled by the resale operator. |
+- | Lifestyle Manager | Coordinates across residences; resale is one of many concierge tasks. | Creates client/household records and assigns batches per residence. |
+- | Personal Chef | Generally not in the resale loop. | None expected. |
+- - The end user is **not** a one-household personal assistant. The dashboard must support **multiple clients / households per operator**.
+- - Roles split between **upload / capture** (housekeeper, concierge) and **decision / authorization** (estate manager, household manager). The future build should anticipate multi-user permissions on a single client/household record.
+- - Estate clear-out is the highest-volume use case and should be the primary "job" entity in the dashboard.
+- Los Angeles - South Bay, Los Angeles - Valley, Los Angeles - Northwest, Beverly Hills, Santa Monica
+- Residential, Commercial, Moves, New Construction Consulting
+- Services for a typical single space start at $1,500-$2,500 for a team of two professionals; organizing materials are an additional cost. A budget of $2,500 or more is generally recommended for a comprehensive project.
+- Luxury, white-glove approach; Focus on creating a calm and sophisticated home; Customized solutions; National franchise with over 100 locations; Offers a proprietary line of organizing products
+- Featured in Real Simple; Affiliate program for content creators
+- Ashley Murphy, Marissa Hagmeyer, and Molly Graves
+- Franchise with 100+ locations
+- Beverly Hills, South Bay, Ventura, Santa Barbara
+- Residential, Commercial, Moves, Estates
+- $100/hr for lead organizer, $80/hr for additional organizers; 4-hour minimum
+- Specializes in organizing for busy professionals; Team of 10 with varied specializations; Bilingual (Spanish) organizer available; In-house tech expert
+- Los Angeles, surrounding areas
+- Residential, Commercial, Moves
+- $185/hr per lead organizer; $75/hr per additional organizer; Virtual sessions from $150
+- Featured in HGTV; BuzzFeed; Thrive; ApartmentTherapy; MyDomaine; mindbodygreen; Travel & Leisure; Reader's Digest; Domino
+- Los Angeles County, San Fernando Valley, Ventura County, San Gabriel Valley
+- Residential, Office, Moves, Staging, Estates
+- Not publicly listed
+- Granada Hills, San Fernando Valley, and greater Los Angeles area
+- Residential, Commercial
+- Husband and wife team; No subcontracting; Two organizers for the price of one; No hidden fees for consultation, research, shopping, or travel
+- Top 18 on Expertise.com
+- Tina and Greg Staffon
+- Husband and wife team
+- Agoura Hills, Bell Canyon, Beverly Hills, Brentwood, Burbank, Calabasas, Canoga Park, Cheviot Hills, Culver City, Downey, Encino, Glassell Park, Glendale, Granada Hills, Hollywood Hills, La Canada Flintridge, Long Beach, Loz Feliz, Malibu, Manhattan Beach, Marina Del Rey, Mission Hills, Mt Washington, North Hills, North Hollywood, Northridge, Pacific Palisades, Pasadena, Playa Del Rey, Redondo Beach, Reseda, Sherman Oaks, Santa Monica, Silver Lake, Studio City, Tarzana, Toluca Lake, Valley Village, Van Nuys, Venice, West Hollywood, West Hills, Westlake Village, Westwood, Woodland Hills, Wilshire
+- In-Home Tidying Sessions; Virtual Tidying Sessions; Personalized Organization Sessions; KonMari Method® Checklist; Donation Haul-Away; Tech Disposal
+- Residential, Home, Closet, Kitchen, Office
+- $375 for 3-hour in-home session; $500 for 4-hour in-home session; $200 for 2-hour virtual session; Package deals available
+- Certified Master Level KonMari® Consultant
+- Vivien Lee-Mayhue
+- Solo with subcontractors
+- Santa Monica, Venice, Mar Vista, Culver City, Westchester, Century City, Beverlywood, West L.A., Westwood, Beverly Hills, Mid-City, West Hollywood, Hollywood, Hollywood Hills, Larchmont, Los Feliz, Silverlake, DTLA, Brentwood, Bel Air, Pacific Palisades, Malibu, Burbank, Studio City, Sherman Oaks, Encino, Tarzana, Woodland Hills, Calabasas
+- Home organizing; Decluttering; Kitchen organizing; Closet organizing; Garage organizing; Playroom organizing; Home office organizing
+- $125 per hour; Packages available with 5%-15% discount
+- Solo operator; Former educator (teacher and school principal); Specializes in organizing for families
+- Los Angeles, Pasadena, San Marino, Highland Park, Silverlake, Los Feliz, Hollywood
+- Hands on Tidying; Decision making hybrid; Hands off Organizing; 30 minute consult; hands on decluttering and organizing; product recommendations; support and communication for your project; product purchases; donation drop off; junk haul coordination
+- Residential, Moves
+- Tidying sessions with Meredith are $125 per hour (4 hour minimum). Tidying sessions with Meredith and an assistant organizer are $200/hour (4 hour minimum). Each additional organizer is $75/hour. Tidying sessions with a Tidy LA organizer (other than Meredith) are $100/hour (4 hour minimum).
+- Master Level Certified KonMari Consultant; Featured in Redfin
+- Meredith Ryness
+- Los Angeles, Pasadena, Burbank
+- Blends organizing with home design and lifestyle; Focus on busy families and professionals; Creates personalized, step-by-step organizing plans; Offers luxury, stress-free relocation services
+- Featured in The Spruce
+- Team of organizers
+- Beverly Hills, Los Angeles, Nationwide, Abroad
+- Closet Organization & Wardrobe Editing; Custom Closet Design; Home Organization; White Glove Relocation & Moving Organization; Prep for Staging & Home Sales; Estate & Legacy Organizing; Lifestyle & Concierge Organizing
+- Residential, Estates, Moves
+- Discreet high-end professional organizing; 35+ years of experience; Blends efficiency, psychology, and luxury design; White-glove service; Founder personally oversees every project; Upright Folding Method
+- Published author; Former co-host of a national television series
+- Linda Koopersmith
+- Solo with a trusted team
+- San Diego, Los Angeles, La Jolla, Coronado, Del Mar, Rancho Santa Fe, Pacific Palisades, Brentwood, Santa Monica, Solana Beach, Encinitas, Carmel Valley, Fairbanks Ranch, Beverly Hills, Manhattan Beach, Palm Springs
+- Residential, Luxury Homes, Whole Home Renovations, Beachfront Properties
+- Not publicly listed; custom quotes provided. Design fee of $300-$500+.
+- Top professional organizer on FindMyOrganizer.com
+- South Bay, Manhattan Beach, Palos Verdes, Beverly Hills, Brentwood, Santa Monica, Orange County
+- Small Spaces: Starts at $3,500 USD; Large Spaces: Starts at $5,500 USD; Extensive Spaces: Starts at $20,000 USD
+- White-glove service; Move concierge; KonMari certified; Focus on intentionality and creating calm; Works with discerning individuals; Offers maintenance packages
+- KonMari Master Consultant
+- Team of 2+ professionals
+- Bel Air, Brentwood, Pacific Palisades, Beverly Hills, Malibu, Calabasas, Studio City, Pasadena, Eagle Rock, Larchmont, Santa Monica, Venice, Sherman Oaks, Culver City, Hollywood, Westwood, Marina Del Rey, Highland Park, Playa Del Rey, Manhattan Beach, Woodland Hills, West Hollywood, Burbank, Glendale, Century City, Larchmont, Encino, Echo Park, Silverlake
+- Residential Organizing; Commercial Organizing; Interior Plant Design; Landscaping; Patioscaping; Plant Maintenance
+- Consultations: $95-$150/hour; Hourly Rate: $95-$150/hour (4-hour minimum); Flat rates may be provided; Travel time may be billed if over 30 minutes.
+- Organizer and interior plant designer; Celebrity clientele; Specializes in hard to kill low maintenance interior plants and drought tolerant exterior plants
+- Featured in RUE MAGAZINE; Featured in REDFIN
+- Calabasas, Woodland Hills, Tarzana, Encino, Sherman Oaks, Studio City, North Hollywood, Van Nuys, Reseda, Canoga Park, Northridge, Porter Ranch, Hidden Hills, West Los Angeles, Santa Monica, Beverly Hills
+- Home organizing; Hoarding help; Decluttering; Closet organization; Lifestyle transformation; Emotional support; Judgment-free organizing
+- Brentwood, Greater Los Angeles area
+- Home organizing; Breathwork meditation; Closet design and organization; Decluttering and downsizing services; Digital decluttering; Emergency and disaster preparedness; Garage design and organization; Moving and relocation services; 1:1 Clutter Healing Guidance Session
+- Residential, Moves, Estates
+- Featured in MindBodyGreen; Featured in In Style Magazine
+- Sherman Oaks, Los Angeles; Travel nationwide for projects over $8,000
+- In-Home Organizing; Custom Build-Outs; Unpack & Set-up; Virtual Organizing
+- Not publicly listed for in-home services; Virtual organizing sessions are $300 per session.
+- 11-step organizing process; Proprietary line of organizing products; Virtual organizing services
+- Jamie and Fillip Hord
+- Team of trained organizers
+- Los Angeles, and clients all over the globe
+- Home organizing; Virtual consultations; In-person consultations; Interior decorating
+- Celebrity home organizer; TV personality; Author of 'The Folding Book'; Straighten Up Method
+- Featured on The Today Show; Good Morning America; Business Insider
+- Los Angeles County, Orange County, Beverly Hills, Manhattan Beach, Pasadena, Newport Beach, Irvine, Huntington Beach
+- Move-In & Move-Out Support; Home Transition & Estate Organization; Professional Organization; Personal Assistant Services
+- $250 for a half day and $400 for a full day. For larger or more complex projects, a customized quote will be provided after a free consultation.
+- 30 years of experience; Australian heritage approach; Celebrity clientele; Comprehensive lifestyle services
+- Agoura Hills, Beverly Hills, Bel Air, Brentwood, Calabasas, Camarillo, Encino, Hidden Hills, Holmby Hills, West Hollywood, Indian Wells, La Cañada Flintridge, Lake Sherwood, La Quinta, Los Angeles, Malibu, Manhattan Beach, Marina Del Rey, Moorpark, Oak Park, Palm Desert, Palm Spings, Rancho Mirage, San Fernando Valley, Santa Monica, Sherman Oaks, Simi Valley, Studio City, Thousand Oaks, Toluca Lake, Westlake Village
+- Home organizing; Office organization; Moving services; Estate clearing; Home staging; Home inventory; Wine inventory; Professional shopping; Virtual organizing; Space planning; Staff training
+- Over 30 years of combined experience; Full-service concierge moving; Specialize in large, multi-faceted projects; Extensive network of trusted vendors
+- Lori Gersh and Rosalind Lakomy
+- Team of organizing professionals
+- Greater Los Angeles, Orange County
+- Home organizing; Unpacking; Decluttering; Space planning; Virtual coaching; Quarterly VIP sessions
+- Single-day sessions start at $900; Virtual coaching sessions with Dr. Raz are available at $250/hour
+- Founder holds a Ph.D. in Communication; Warm, compassionate, and non-judgmental approach; Business name is a tribute to the founder's late grandfather, an entrepreneur.
+- Los Angeles, Ventura, Topanga
+- Residential, Moves, Downsizing
+- Solo with industry partners
+- Los Angeles, Orange County
+- Residential, Estates, Chronically Disorganized, Senior Downsizing
+- Specializes in chronic disorganization, ADHD, and hoarding; brain-based approach to organizing; team approach to decluttering
+- Certified Professional Organizer (CPO®); Institute for Challenging Disorganization
+- Los Angeles, CA, Santa Clarita Valley, CA
+- Full Service Organizing; DIY Organizing Consultations; Moving and Unpacking Services; Custom Closet Design
+- Residential, Moves, Custom Closet Design
+- Contracted In-Home Organizing partner of The Container Store; Personalized approach from the founder; Focus on creating functional and aesthetically pleasing spaces
+- Contracted In-Home Organizing partner of The Container Store
+- Los Angeles, San Fernando Valley
+- 1:1 Decluttering and Organizing; 1:1 EFT Tapping; Group Tapping and Declutter Coaching
+- Residential, Kitchen & Pantry Decluttering, Clothes & Closets, Garage Reorganization
+- EFT Tapping; KonMari Specialist
+- Certified Clinical EFT Practitioner; Certified KonMari Specialist
+- West Los Angeles, Santa Monica, Manhattan Beach, Beverly Hills, Playa Vista, Marina del Rey, the Heart of the Valley, Hermosa Beach, Redondo Beach, Venice
+- Where style meets organization; Stylish organizational solutions; Three-part organizational process; Labeling and sourcing of organizational materials
+- Los Angeles, Southern California
+- Home Organization; Space Planning; Paperwork; Move Coordination; Packing/Unpacking; Senior Downsizing
+- Residential, Moves, Senior Downsizing
+- $350 for a 4-hour "Getting Your Feet Wet" session; 4-hour minimum for other services
+- Team of unspecified size
+- Decluttering; Purging; Donating; Reorganizing; Check-In
+- Residential, Home Office
+- ADHD-informed; Customized solutions; Follow-up check-ins
+- Shreveport, LA (Note: The prompt specified the LA area, but the researched website is for a business in Shreveport, LA. There appears to be another business with a similar name that may be the one in the LA area.)
+- Not publicly listed on iorganize.co. Another iOrganize business website mentions $150/hr with a 3-hour minimum.
+- Neurospicy professional organizer of 15+ years; ADHD-informed; Published author and content creator
+- Rachel, Christen Fackler
+- San Fernando Valley, Los Angeles, CA
+- Decluttering and organizing with interior styling; Focus on functionality and aesthetics
+- Hollywood, Los Angeles
+- Beverly Hills, Bel Air, Pacific Palisades, Malibu
+- Residential, Moves, Renovations
+- Luxury home organization; High-profile clientele; Discretion and privacy; Projects personally led by founder; Wellness-based approach (founder is a certified yoga instructor)
+- Certified yoga instructor (founder); Featured in People Magazine; Featured in Bravo TV; Featured in Apartment Therapy
+- Team of organizers, designers, and move specialists
+- Manhattan Beach, Hermosa Beach, Redondo Beach, Palos Verdes, Los Angeles South Bay, Long Beach
+- Expert organizing + ongoing maintenance sessions; Virtual organizing sessions; Pre-Move Services; Unpack Services
+- Virtual Organizing Session: $250/2-hour Session; Other pricing not publicly listed
+- Bonded and Insured
+- West Hollywood, Silver Lake, Santa Monica, Beverly Hills, Pasadena, Echo Park, Culver City, Downtown LA
+- Decluttering & Organization; Virtual Organizing; Room-by-Room Organizing; Specialty Services (Move-in/move-out organizing, packing/unpacking, holiday decoration storage, home staging prep, paper and digital file organization)
+- Background in branding and visual merchandising; Neurodiversity-affirming approach; Personalized service; Judgment-free
+- Los Angeles, California
+- Consultation; Declutter & Organize; Move-In/Out Concierge; Virtual/In-person Coaching; Home organizing; Closet organizing; Office organizing; Children's room organizing; Storage unit organizing; Retail space organizing; Garage organizing
+- Specializes in working with neurodivergent individuals (Autism, ADHD) and those with depression; Empathetic approach; Accountability coaching; Personalized four-step organizational program; Founder has a background in Early Childhood Education Development Studies
+- Residential, Business
+- The Sorted and Stored Method is born from a deep understanding of urban living; It's about more than just decluttering; it's about carving a space for yourself.
+- This is the agreed feature set for the future "reselling dashboard studio" build, captured here so the build task can start from a single source of truth instead of re-parsing `attached_assets/`. Nothing in this document is built yet.
+- **Internal ops, not client self-serve.**
+- See `household-roles.md` for the role taxonomy. The dashboard must support multiple operators per account and multiple clients/households per operator.
+- Source: v1 + v2 of the AI pipeline in `ai-resale-pipeline.md`.
+- Source: `ai-resale-pipeline.md` §6.
+- Source: `ai-resale-pipeline.md` §2.
+- These are the operator-facing settings and behaviors the dashboard must support before it can write inventory or payouts. Folded in from `attached_assets/Dayna_Brown_Business_Plan_Final_1777843986317.docx`. Where they conflict with the older "Decision Lock" baked into the prior-art dashboard (`prior-art-dashboard.md`), the conflict is called out — the build task must pick a winner before persisting anything.
+- - **Default**: 50/50 on net profit after platform fees (business plan).
+- - **Conflict**: prior-art dashboard hardcodes 55/45 for clothing, 50/50 for designer + furniture.
+- - Operator has standing authority to accept any offer within **15–20% of the listed price** without re-asking.
+- - **Clothing / general**: Day 30 −10%, Day 60 −10%, Day 90 client decides (pick up at their expense, donate with tax receipt, or accept best offer).
+- - **Furniture**: 60-day timeline, −10% every 14 days.
+- - **Expedited (client-requested 30 days)**: weekly markdowns, full operator authority.
+- - The dashboard should auto-schedule markdowns and surface a "ready for client decision" queue at Day 90.
+- - Report sent by the **1st** of the month.
+- - Payout by the **5th** (Venmo, Zelle, or check).
+- - The dashboard must be able to produce this report from inventory + sale records.
+- - **Active**: Poshmark (primary clothing), eBay (luxury / collectibles), Etsy (curated vintage / home), Facebook Marketplace (furniture / local pickup, zero fees), Chairish (higher-end home decor — under evaluation), Nifty AI ($69.99/mo crosslister, under 90-day ROI evaluation).
+- - **On deck**: Vestiaire Collective (designer bags, built-in authentication).
+- - **Killed — must not be suggested**: Depop, Grailed, Mercari, Thumbtack.
+- - The platform-routing table from `ai-resale-pipeline.md` must respect this killed-list when selecting a platform.
+- Any AI-generated listing description, client message, or report copy must avoid:
+- Where each feature came from in the raw materials:
+- | Feature | Primary source | Supporting sources |
+- | Master inventory + dedup | Same `.dat` file (v2 batch flow) | `ai-resale-pipeline.md` §4 |
+- | SEO listing description generator | Same `.dat` file ("Pro-Tip" carry-forward) | `ai-resale-pipeline.md` §6 |
+- | Cross-platform routing | Same `.dat` file (platform routing table) | `ai-resale-pipeline.md` §2 |
+- | Client / household tracking | `attached_assets/Pasted_content_10_1777845862885.txt` + landscape analysis | `household-roles.md`; `competitors.md` |
+- | Resale operating rules (commission, markdown, payout, hard lines, platform list, forbidden language) | `attached_assets/Dayna_Brown_Business_Plan_Final_1777843986317.docx` (Resale Engine + Rules and Boundaries) | `prior-art-dashboard.md` (conflict notes) |
+- | Prior-art / reusable copy + auth shape | `attached_assets/Dashboard--main_1777846011968.zip` | `prior-art-dashboard.md` |
+- These need a decision before, or at the start of, the build task. They are deliberately not answered here.
+- 6. **Listing publish-out.** Does the dashboard generate descriptions only (operator copy-pastes into eBay/Poshmark/etc.), or does it integrate directly with each platform's API in v1? Default assumption: generate-only in v1.
+- 9. **Commission-split source of truth.** 50/50 (Dayna's business plan) vs. 55/45 clothing + 50/50 designer/furniture (prior-art dashboard "Decision Lock"). Pick the default before writing the splits column. See `prior-art-dashboard.md` "Discrepancies".
+- - Client self-serve portal.
+- - Direct marketplace API publishing (eBay, Poshmark, Etsy, Chairish, FB Marketplace).
+- - Payment processing / commission tracking.
+- - Shipping label generation.
+- - Mobile app (assume web-only for v1).
+- This document is not a build plan. It does not contain:
+- - UI mockups or component breakdowns.
+- - A milestone or timeline estimate.
+- Those belong in the future build task, not in source extraction.
+- Status: **Decided** (May 2026). Resolves open questions 1, 2, and 5 in `dashboard-scope.md`. This document is the single source of truth for those three decisions; the build task starts from here.
+- | Decision | Choice |
+- | Where the dashboard lives | **New artifact**: `artifacts/reseller-studio` (sibling of `well-lived-citizen` and `api-server`). |
+- **Decision: new artifact `artifacts/reseller-studio`, sibling of the existing artifacts.**
+- - **Different branding.** The marketing site is brand-controlled and uses the WLC voice rules (`.agents/skills/wlc-voice`). The dashboard is utilitarian and should not carry that voice or risk leaking the forbidden language list (`dashboard-scope.md` → "Forbidden language") into public-facing copy.
+- - **Different auth boundary.** Putting an authed `/dashboard` route inside the marketing site means every visitor's bundle pulls Clerk and the auth runtime. A separate artifact keeps the marketing site fully static and the dashboard's auth scope contained.
+- - **Routing is already solved.** The shared proxy routes by path (see `pnpm-workspace` skill). The new artifact will mount under `/studio` (or similar — finalized at scaffold time) and coexist with `/` (marketing) and `/api` (server).
+- - **The `clerk-auth` skill is the platform default.** Per the skill index, Clerk is the default auth solution unless the user explicitly asks for Replit Auth. They have not.
+- Rejected alternatives:
+- - **Replit Auth.** Wrong end-user; ops staff aren't Replit users.
+- - **Single shared login.** Loses per-operator attribution; incompatible with payout reports.
+- - **Operationally, one DB is one backup, one migration story, one point of monitoring.** Per-client DBs multiply ops cost linearly with clients. Dayna's team is small; this would not pay for itself.
+- - **Database-per-client.** Rejected as above.
+- - Q3 (photo storage — object storage vs. local cache).
+- - Q6 (listing publish-out — generate-only vs. direct API integration).
+- - Q7 (photo grouping at scale).
+- - Q8 (client/household data sensitivity, retention, encryption-at-rest).
+- - Q9 (commission-split source of truth — 50/50 vs. 55/45 clothing).
+- - Q10 (reuse vs. rebuild prior-art dashboard).
+- const rawPort = process.env.PORT;
+- "PORT environment variable is required but was not provided.",
+- const port = Number(rawPort);
+- if (Number.isNaN(port) || port <= 0) {
+- const basePath = process.env.BASE_PATH;
+- "BASE_PATH environment variable is required but was not provided.",
+- export default defineConfig({
+- runtimeErrorOverlay(),
+- ...(process.env.NODE_ENV !== "production" &&
+- process.env.REPL_ID !== undefined
+- root: path.resolve(import.meta.dirname, ".."),
+- "@": path.resolve(import.meta.dirname, "src"),
+- "@assets": path.resolve(import.meta.dirname, "..", "..", "attached_assets"),
+- dedupe: ["react", "react-dom"],
+- root: path.resolve(import.meta.dirname),
+- outDir: path.resolve(import.meta.dirname, "dist/public"),
+- @/components/ui
+
+---
+
+## Section: routes
+
+### 📝 General Body Copy / Page Text
+- const router: IRouter = Router();
+- export default router;
+- router.use(healthRouter);
+- router.use(intakeRouter);
+- router.use("/storage", requireOperator);
+- router.use(storageRouter);
+- router.use("/reseller", requireOperator);
+- router.use(resellerRouter);
+- const body = req.body as Record
+- const serviceType = typeof body.serviceType === "string" && body.serviceType.trim();
+- const name = typeof body.name === "string" && body.name.trim();
+- body.answers && typeof body.answers === "object" && !Array.isArray(body.answers)
+- ? (body.answers as Record
+- const phone = typeof body.phone === "string" ? body.phone.trim() || null : null;
+- const realLife = typeof body.realLife === "string" ? body.realLife.trim() || null : null;
+- const bestTime = typeof body.bestTime === "string" ? body.bestTime.trim() || null : null;
+- await db.insert(intakeSubmissions).values({
+- req.log.error(err, "intake insert failed");
+- clients as clientsTable,
+- } from "@workspace/db";
+- CreateClientBody as ClientInput,
+- CreateJobBody as JobInput,
+- AnalyzePhotoBatchBody,
+- GenerateListingDescriptionBody,
+- } from "@workspace/api-zod";
+- generateListingDescription,
+- const objectStorage = new ObjectStorageService();
+- router.get("/reseller/clients", async (_req, res): Promise
+- const rows = await db
+- .orderBy(desc(clientsTable.createdAt));
+- router.post("/reseller/clients", async (req, res): Promise
+- const parsed = ClientInput.safeParse(req.body);
+- if (!parsed.success) {
+- const [row] = await db
+- .insert(clientsTable)
+- router.get("/reseller/clients/:clientId", async (req, res): Promise
+- const params = GetClientParams.safeParse(req.params);
+- if (!params.success) {
+- .where(eq(clientsTable.id, params.data.clientId));
+- router.get("/reseller/jobs", async (req, res): Promise
+- const q = ListJobsQueryParams.safeParse(req.query);
+- const where = q.data.clientId
+- ? eq(jobsTable.clientId, q.data.clientId)
+- createdAt: jobsTable.createdAt,
+- clientId: jobsTable.clientId,
+- title: jobsTable.title,
+- jobType: jobsTable.jobType,
+- status: jobsTable.status,
+- notes: jobsTable.notes,
+- clientName: clientsTable.name,
+- .leftJoin(clientsTable, eq(clientsTable.id, jobsTable.clientId))
+- .orderBy(desc(jobsTable.createdAt));
+- router.post("/reseller/jobs", async (req, res): Promise
+- const parsed = JobInput.safeParse(req.body);
+- router.get("/reseller/jobs/:jobId", async (req, res): Promise
+- const params = GetJobParams.safeParse(req.params);
+- .where(eq(jobsTable.id, params.data.jobId));
+- jobTitle: jobsTable.title,
+- .where(filters.length ? and(...filters) : undefined)
+- router.get("/reseller/dashboard/summary", async (_req, res): Promise
+- const [counts] = await db
+- .select({ totalClients: sql
+- .select({ totalJobs: sql
+- const byPlatform = await db
+- const byStatus = await db
+- totalClients: totalClients ?? 0,
+- totalJobs: totalJobs ?? 0,
+- marketValue: counts?.marketValue ?? 0,
+- floorValue: counts?.floorValue ?? 0,
+- router.post("/reseller/ai/analyze-batch", async (req, res): Promise
+- const parsed = AnalyzePhotoBatchBody.safeParse(req.body);
+- const operator = req.operatorEmail ?? null;
+- const [job] = await db
+- .where(eq(jobsTable.id, jobId));
+- const existing = await db
+- const file = await objectStorage.getObjectEntityFile(p.storageKey);
+- const nodeStream = file.createReadStream();
+- for await (const chunk of nodeStream) {
+- chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+- if (err instanceof ObjectNotFoundError) {
+- let insertedPhotoIds: string[] = [];
+- filename: p.filename,
+- mimeType: p.mimeType,
+- storageKey: p.storageKey,
+- width: p.width ?? null,
+- height: p.height ?? null,
+- const result: Array<{
+- marketPrice: string | null;
+- floorPrice: string | null;
+- shippingLogic: string | null;
+- let duplicateCount = 0;
+- for (const a of analyzed) {
+- a.disposition === "donate" || a.disposition === "wipe-recycle";
+- const isDuplicate = a.status === "Duplicate";
+- clientId: job.clientId,
+- category: a.category,
+- condition: a.condition,
+- conditionNotes: a.conditionNotes,
+- angleLabels: a.angleLabels as unknown as Record
+- marketPrice: a.marketPrice,
+- floorPrice: a.floorPrice,
+- platform: a.platform,
+- shippingLogic: a.shippingLogic,
+- disposition: a.disposition,
+- aiRaw: a as unknown as Record
+- const validIndices = a.photoIndices.filter(
+- if (isDonate) donateCount++;
+- else if (isDuplicate) duplicateCount++;
+- const [photo] = await db
+- if (!photo?.storageKey) {
+- const file = await objectStorage.getObjectEntityFile(photo.storageKey);
+- const [metadata] = await file.getMetadata();
+- res.set("Content-Type", (metadata.contentType as string) || photo.mimeType);
+- res.set("Cache-Control", "private, max-age=3600");
+- if (metadata.size) res.set("Content-Length", String(metadata.size));
+- file.createReadStream().pipe(res);
+- const FORBIDDEN_PUBLISH_PLATFORMS = new Set([
+- "Depop", "Grailed", "Mercari", "Thumbtack",
+- res.status(400).json({
+- if (!description || !description.trim()) {
+- listingDescription: description,
+- const errMsg = err instanceof Error ? err.message : String(err);
+- const newStatus = result.mode === "live" ? "Listed" : "Draft";
+- platformListingId: result.platformListingId ?? null,
+- platformListingUrl: result.platformListingUrl ?? null,
+- platformPublishError: result.mode === "draft_prepared" ? result.message : null,
+- platformListingId: result.platformListingId,
+- platformListingUrl: result.platformListingUrl,
+- message: result.message,
+- async (req, res): Promise
+- result = await syncPlatformStatus(
+- if (result.apiCalled) {
+- newStatus: result.apiCalled ? result.newStatus : "(not written — no API)",
+- apiCalled: result.apiCalled,
+- "Platform status sync complete",
+- newStatus: effectiveStatus,
+- "/reseller/ai/listing-description",
+- const parsed = GenerateListingDescriptionBody.safeParse(req.body);
+- generated = await generateListingDescription({
+- title: generated.title,
+- description: generated.description,
+- pricing = await fetchMarketPricing({
+- priceRangeLow: String(pricing.priceLow),
+- priceRangeHigh: String(pricing.priceHigh),
+- estimatedDaysToSell: pricing.estimatedDaysToSell,
+- marketSources: pricing.sources as unknown as Record
+- recommendedPlatform: pricing.recommendedPlatform,
+- platformRationale: pricing.platformRationale,
+- router.post("/reseller/jobs/:jobId/pricing", async (req, res): Promise
+- const [job] = await db.select().from(jobsTable).where(eq(jobsTable.id, params.data.jobId));
+- const pricing = await fetchMarketPricing({
+- category: it.category,
+- condition: it.condition,
+- conditionNotes: it.conditionNotes,
+- platform: it.platform,
+- copy = await generateListingCopy({
+- .set({ listingCopy: copy as unknown as Record
+- router.post("/reseller/jobs/:jobId/listings", async (req, res): Promise
+- const copy = await generateListingCopy({
+- marketPrice: it.marketPrice,
+- floorPrice: it.floorPrice,
+- shippingLogic: it.shippingLogic,
+- priceLow: it.priceRangeLow ? Number(it.priceRangeLow) : null,
+- priceHigh: it.priceRangeHigh ? Number(it.priceRangeHigh) : null,
+- RequestUploadUrlBody,
+- RequestUploadUrlResponse,
+- const objectStorageService = new ObjectStorageService();
+- const parsed = RequestUploadUrlBody.safeParse(req.body);
+- const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+- const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+- RequestUploadUrlResponse.parse({
+- const raw = req.params.filePath;
+- const filePath = Array.isArray(raw) ? raw.join("/") : raw;
+- const file = await objectStorageService.searchPublicObject(filePath);
+- const response = await objectStorageService.downloadObject(file);
+- res.status(response.status);
+- Readable.fromWeb(response.body as ReadableStream
+- const raw = req.params.path;
+- const wildcardPath = Array.isArray(raw) ? raw.join("/") : raw;
+- const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
+- const response = await objectStorageService.downloadObject(objectFile);
+- if (error instanceof ObjectNotFoundError) {
+
+---
+
+## Section: schema
+
+### 📝 General Body Copy / Page Text
+- export * from "./intake";
+- export * from "./reseller";
+- id: serial("id").primaryKey(),
+- createdAt: timestamp("created_at").defaultNow().notNull(),
+- serviceType: text("service_type").notNull(),
+- answers: jsonb("answers").notNull(),
+- name: text("name").notNull(),
+- phone: text("phone"),
+- realLife: text("real_life"),
+- bestTime: text("best_time"),
+- status: text("status").default("new").notNull(),
+- export type IntakeSubmission = typeof intakeSubmissions.$inferSelect;
+- export type InsertIntake = typeof intakeSubmissions.$inferInsert;
+- } from "drizzle-orm/pg-core";
+- household: text("household"),
+- contactPhone: text("contact_phone"),
+- notes: text("notes"),
+- export type Client = typeof clients.$inferSelect;
+- export type InsertClient = typeof clients.$inferInsert;
+- clientId: integer("client_id")
+- title: text("title").notNull(),
+- jobType: text("job_type").notNull().default("estate-clearout"),
+- status: text("status").notNull().default("active"),
+- export type Job = typeof jobs.$inferSelect;
+- export type InsertJob = typeof jobs.$inferInsert;
+- jobId: integer("job_id")
+- brand: text("brand").notNull(),
+- model: text("model").notNull(),
+- category: text("category"),
+- color: text("color"),
+- condition: text("condition"),
+- conditionNotes: text("condition_notes"),
+- style: text("style"),
+- fabric: text("fabric"),
+- angleLabels: jsonb("angle_labels"),
+- estimatedDaysToSell: integer("estimated_days_to_sell"),
+- marketSources: jsonb("market_sources"),
+- recommendedPlatform: text("recommended_platform"),
+- platformRationale: text("platform_rationale"),
+- listingCopy: jsonb("listing_copy"),
+- platform: text("platform").notNull(),
+- shippingLogic: text("shipping_logic"),
+- status: text("status").notNull().default("New"),
+- disposition: text("disposition").notNull().default("list"),
+- listingDescription: text("listing_description"),
+- aiRaw: jsonb("ai_raw"),
+- createdBy: text("created_by"),
+- platformListingId: text("platform_listing_id"),
+- platformListingUrl: text("platform_listing_url"),
+- platformPublishError: text("platform_publish_error"),
+- id: uuid("id").defaultRandom().primaryKey(),
+- filename: text("filename").notNull(),
+- mimeType: text("mime_type").notNull(),
+- storageKey: text("storage_key"),
+- width: integer("width"),
+- height: integer("height"),
+
+---
+
+## Section: services
+
+### 🗣️ Original Client Voice / Unpolished Business Thoughts
+> Possibly my favorite service, and the spirit of this company.
+
+> Everyone helps celebrate the moment — I help make it livable afterward. That's House Calls.
+
+> The longer we have worked together, the easier this becomes. The philosophy is simple: why spend time coordinating a bag when it can simply be in my hands by noon.
+
+> I was thinking about the ease of my life here since you streamlined my environment.
+
+> I wake up and my clicker for all my lamps is on my bedside table. I get up and move it to the dresser by the door so every time I come back in I can turn any lamp from the doorway. Then I go in to shower and my wonderful shower head makes it so easy — it beats down on me but doesn't get to the very back of the tub, which makes clean up easier.
+
+> Then I go to the living room where the heat is set perfectly and keeps the house warmed the way I want.
+
+> P.S. I forgot to mention the TV. It is set up perfectly for me to get to all the channels I want with only one clicker.
+
+### 📝 General Body Copy / Page Text
+- export default function Legacy() {
+- title: "Legacy Planning & Inventory Catalog",
+- 02 — Legacy Planning & Inventory Catalog
+- Clarity without fear.
+- The operational side of a home, made visible again.
+- It is not estate planning.
+- It is not asset planning.
+- It is planning the actual pieces of a life.
+- Not the will, not the paperwork, not the part a lawyer handles. The part that lives inside the walls.
+- This service is the person who can see what is actually there.
+- What this work actually is
+- The operational side of a home is the layer that quietly adds up over time:
+- "The backup bedding",
+- "The linen closets stacked with care",
+- "The vintage pieces with story",
+- "The everyday things with future value",
+- "The candles tucked away because the house was always tidy enough",
+- "The designer pieces in sizes the family doesn't share",
+- "The collection no one else in the house ever learned to see",
+- "The objects that deserve clarity before family stress builds",
+- Sometimes the people who love you don't share your eye, your size, or the history behind what you chose. That is not a failure of family. It is just the reality of inherited space — people can only hold what they recognize.
+- Possible outputs include
+- Family distribution references
+- Sentiment and story preservation
+- Resale-ready routing notes
+- Second-home and storage references
+- Duplicate family copies
+- Digital or web-based workflows
+- When a piece has a story worth keeping with it, that history is documented too — not for paperwork, but so the next person who wears the fur coat, sets the table with the china, or lights the candle in the drawer has just enough of the mystery underneath to feel like they are living inside a second life, not just holding an object.
+- How project timelines work
+- Larger projects are completed across focused work sessions over a shared timeline, rather than continuous daily presence. A two-week catalog may look like three focused 11–4 sessions, with off-site documentation, resale routing, and continuity work completed between visits.
+- Hourly is $175 with a two-hour minimum. Larger projects and whole-home catalogs are scoped and quoted after a walkthrough.
+- export default function HouseCalls() {
+- title: "House Calls",
+- description: "For the things life leaves unfinished. Fixed rate, hourly, and continuity — concierge house calls in Los Angeles.",
+- For the things life leaves unfinished.
+- The person you used to be able to call. This is that — offered as a real service, by someone who is genuinely good at it.
+- For when the issue isn't the room — it's the person you used to have to call.
+- The world changed, the process got heavier, and no one can be expected to keep up with every new layer alone. House Calls fills the missing person role in real life: the partner who handled it, the nearby parent, the neighbor, the adult child in another city, the friend who always knew how to make the day still work.
+- Ways to use House Calls
+- "One-time practical resets",
+- "Monthly continuity",
+- "Post-project upkeep",
+- "Donation and return routing",
+- "Home re-entry after travel",
+- "Guest and event resets",
+- This is why House Calls exists.
+- Gayle didn't need a project. She needed someone to show up and make her home work like it should. That's House Calls.
+- The 8-month pregnant woman with a beautiful baby shower, hundreds of gifts, duplicate baby gear, no time, and no energy to turn a mountain of love into something functional.
+- Vendor & project oversight
+- When needed, House Calls also covers:
+- Flat-rate blocks start at $350 for two hours, $500 for four. Hourly is $175 with a two-hour minimum. Continuity retainer is $500/month.
+- export default function CuratedResale() {
+- title: "Curated Resale & Consignment",
+- description: "Is it cool? Is it sellable? Will they even take it? Piece-by-piece curation from someone who knows the platforms — pickup through payout.",
+- 04 — Curated Resale & Consignment
+- Is it cool? Is it sellable? Will they even take it?
+- For the things that still have value, story, or second-market potential — without asking you to become a part-time reseller.
+- It is not a donation pickup substitute, bulk textile recycling service, or a shortcut for things that are no longer in resellable condition.
+- This service is built for
+- "Clothing and designer accessories",
+- "Home decor and furniture",
+- "Rare textiles and story-rich vintage",
+- The work is not just listing. It includes:
+- "Pickup, intake, evaluation",
+- "Buyer communication",
+- "Routing and return logic",
+- "Donation reroute when appropriate",
+- "Monthly reporting and payout rhythm",
+- Easy handoff and pickup
+- "Route-based stop-ins",
+- "Uber Business courier",
+- "Building desk drop",
+- "Direct bag shipment or handoff during another project block",
+- The assumption is: these are things you took care of and know deserve another life. That is the spirit of this service.
+- "Poshmark (Poshmark Ambassador)",
+- "Facebook Marketplace",
+- "Vinted, Vestiaire, Grailed",
+- "Vetted local high-end resale and private collector network",
+- Realistic resale timeline
+- The Well Lived Closet
+- Follow on Instagram →
+- Full commission structure →
+- export default function HomeOrganization() {
+- title: "Home Organization & Modern Move",
+- description: "Your home, made to work for how you actually live. Concierge home organization and move support in Los Angeles.",
+- 01 — Home Organization & Modern Move
+- The relief of the room.
+- Your home, made to work for how you actually live. For the room that keeps collecting piles, the move that technically happened but never settled, the closet that no longer fits your life, or the spaces where everyday friction quietly steals time.
+- How we can work together
+- "Side-by-side guided sessions",
+- "Hybrid decision blocks",
+- "Solo resets while you're away",
+- "Packing and move prep with or without you",
+- The right style is the one that creates the easiest lasting outcome.
+- "Intake call, prior coordination, and any pre-planning — or an on-site, task-focused immediate dive in, depending on what the project needs",
+- "Sourcing recommendations",
+- "Pre-order coordination",
+- "Workflow tools and install basics",
+- "Measuring tools and reusable sort bins",
+- "Cord wraps, Velcro, adapters, and utility hardware",
+- Hourly is $150 with a three-hour minimum. Flex blocks and project rates available. Studio and one-bedroom move resets book as a flat day rate.
+- Thank you for making life easier for me.
+
+---
+
+## Section: site
+
+### 📝 General Body Copy / Page Text
+- export default function Footer() {
+- export default function FloatCall() {
+- const [location] = useLocation();
+- window.scrollTo(0, 0);
+- export default function Nav() {
+- const [isOpen, setIsOpen] = useState(false);
+- const [servicesOpen, setServicesOpen] = useState(false);
+- const [scrolled, setScrolled] = useState(false);
+- const menuRef = useRef
+- const btnRef = useRef
+- const dropdownRef = useRef
+- function handleClickOutside(e: MouseEvent) {
+- !menuRef.current.contains(e.target as Node) &&
+- !btnRef.current.contains(e.target as Node)
+- dropdownRef.current &&
+- !dropdownRef.current.contains(e.target as Node)
+- setServicesOpen(false);
+- document.addEventListener("click", handleClickOutside);
+- }, [isOpen, servicesOpen]);
+- Home Organization & Modern Move
+- Legacy Planning & Inventory Catalog
+- Curated Resale & Consignment
+
+---
+
+## Section: skills-lock
+
+### 📝 General Body Copy / Page Text
+- tools/agent-tools/SKILL.md
+- 3e8e1e6d9b56fa1126e09c589b171e786efee01c806623f7cb41dfde724b0274
+- squirrelscan/skills
+- audit-website/SKILL.md
+- 2c060290f90340e8bb6009502ec936b8ebb3ff889332a43e24bf210528ebba9f
+- better-auth/skills
+- better-auth/best-practices/SKILL.md
+- a4c830509e85557b59339d8d93a4e243e9e59c686e7678854d39230e12c2a6dc
+- obra/superpowers
+- skills/brainstorming/SKILL.md
+- 8df9b47092524833138b58682d03f2e153a242e550d1693657afdbee0cc9cdb0
+- browser-use/browser-use
+- skills/browser-use/SKILL.md
+- 9f3a097275554dc44356f37d17d445d9c2b5b3579332fa93a1e9422f465f01bb
+- coreyhaines31/marketingskills
+- skills/copywriting/SKILL.md
+- 2e83eda2221e97166172a0798e9b0379e34080595e107e2fc0cf580e9b3bbf7b
+- vercel-labs/skills
+- skills/find-skills/SKILL.md
+- 9e1c8b3103f92fa8092568a44fe64858de7c5c9dc65ce4bea8f168080e889cfd
+- anthropics/skills
+- skills/frontend-design/SKILL.md
+- 063a0e6448123cd359ad0044cc46b0e490cc7964d45ef4bb9fd842bd2ffbca67
+- vercel-labs/next-skills
+- skills/next-best-practices/SKILL.md
+- db85045827ebeb83ac8dbc992b69188755eeb74dcf01cbf5e694d58aa494a106
+- skills/seo-audit/SKILL.md
+- ddd028951738fcbcdebf0f9bd90b708c55d1b9370a31603e0c13e5b262d8b8bb
+- vercel-labs/agent-skills
+- skills/react-best-practices/SKILL.md
+- ca7b0c0c6e5f2750043f7f0cd72d16ac4e2abc48f9b5500d047a4b77a2506212
+- skills/react-native-skills/SKILL.md
+- 41d24eafa7c3d82e270439808f7cfbc4d51aeb2d14f2809a2267c16275784d06
+- skills/web-design-guidelines/SKILL.md
+- f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474
+
+---
+
+## Section: types
+
+### 📝 General Body Copy / Page Text
+- * Generated by orval v8.5.3 🍺
+- * Do not edit manually.
+- * OpenAPI spec version: 0.1.0
+- category?: string | null;
+- color?: string | null;
+- condition?: string | null;
+- conditionNotes?: string | null;
+- style?: string | null;
+- fabric?: string | null;
+- angleLabels?: string[];
+- marketPrice?: string | null;
+- floorPrice?: string | null;
+- priceRangeLow?: string | null;
+- priceRangeHigh?: string | null;
+- estimatedDaysToSell?: number | null;
+- marketSources?: unknown;
+- recommendedPlatform?: string | null;
+- platformRationale?: string | null;
+- listingCopy?: unknown;
+- shippingLogic?: string | null;
+- listingDescription?: string | null;
+- createdBy?: string | null;
+- clientName?: string | null;
+- jobTitle?: string | null;
+- platformListingId?: string | null;
+- platformListingUrl?: string | null;
+- platformPublishError?: string | null;
+- export interface ListingDescriptionBody {
+- export interface Job {
+- notes?: string | null;
+- export interface ListingDescriptionResult {
+- export interface OkResponse {
+- export interface ClientInput {
+- household?: string | null;
+- contactEmail?: string | null;
+- contactPhone?: string | null;
+- export interface SyncStatusResult {
+- export interface AnalyzeBatchBody {
+- photos: AnalyzeBatchPhoto[];
+- export interface Client {
+- export interface JobActionResult {
+- export * from "./analyzeBatchBody";
+- export * from "./analyzeBatchPhoto";
+- export * from "./analyzeBatchResult";
+- export * from "./client";
+- export * from "./clientInput";
+- export * from "./dashboardSummary";
+- export * from "./errorEnvelope";
+- export * from "./healthStatus";
+- export * from "./job";
+- export * from "./jobActionResult";
+- export * from "./jobInput";
+- export * from "./listingCopyPlatform";
+- export * from "./listingCopyResult";
+- export * from "./listingDescriptionBody";
+- export * from "./listingDescriptionResult";
+- export * from "./listJobsParams";
+- export * from "./marketPricingResult";
+- export * from "./okResponse";
+- export * from "./platformBucket";
+- export * from "./statusBucket";
+- export * from "./syncStatusResult";
+- export * from "./uploadUrlRequest";
+- export * from "./uploadUrlResponse";
+- export interface HealthStatus {
+- export interface MarketPricingResult {
+- estimatedDaysToSell: number;
+- recommendedPlatform: string;
+- platformRationale: string;
+- export interface StatusBucket {
+- disposition?: string;
+- export interface DashboardSummary {
+- totalClients: number;
+- byPlatform: PlatformBucket[];
+- byStatus: StatusBucket[];
+- export interface AnalyzeBatchPhoto {
+- export interface JobInput {
+- export interface UploadUrlRequest {
+- export interface UploadUrlResponse {
+- export interface ListingCopyResult {
+- poshmark: ListingCopyPlatform;
+- ebay: ListingCopyPlatform;
+- etsy: ListingCopyPlatform;
+- facebook: ListingCopyPlatform;
+- export interface ErrorEnvelope {
+- export interface PlatformBucket {
+- export type ListJobsParams = {
+- export interface ListingCopyPlatform {
+- export interface AnalyzeBatchResult {
+- duplicateCount: number;
+- declare namespace Express {
+- operatorEmail?: string;
+
+---
+
+## Section: ui
+
+### 📝 General Body Copy / Page Text
+- }: React.HTMLAttributes
+- const Accordion = AccordionPrimitive.Root
+- React.ComponentPropsWithoutRef
+- const AccordionTrigger = React.forwardRef<
+- AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
+- const AccordionContent = React.forwardRef<
+- AccordionContent.displayName = AccordionPrimitive.Content.displayName
+- default: "bg-transparent",
+- function EmptyMedia({
+- }: React.ComponentProps<"div"> & VariantProps
+- a:hover]:text-primary text-sm/relaxed [&>a]:underline [&>a]:underline-offset-4",
+- const HoverCard = HoverCardPrimitive.Root
+- const HoverCardTrigger = HoverCardPrimitive.Trigger
+- const HoverCardContent = React.forwardRef<
+- HoverCardContent.displayName = HoverCardPrimitive.Content.displayName
+- const Command = React.forwardRef<
+- Command.displayName = CommandPrimitive.displayName
+- const CommandInput = React.forwardRef<
+- CommandInput.displayName = CommandPrimitive.Input.displayName
+- const CommandList = React.forwardRef<
+- CommandList.displayName = CommandPrimitive.List.displayName
+- const CommandEmpty = React.forwardRef<
+- CommandEmpty.displayName = CommandPrimitive.Empty.displayName
+- const CommandGroup = React.forwardRef<
+- CommandGroup.displayName = CommandPrimitive.Group.displayName
+- const CommandSeparator = React.forwardRef<
+- CommandSeparator.displayName = CommandPrimitive.Separator.displayName
+- const CommandShortcut = ({
+- CommandShortcut.displayName = "CommandShortcut"
+- const ResizablePanelGroup = ({
+- }: React.ComponentProps
+- const ResizablePanel = ResizablePrimitive.Panel
+- const ResizableHandle = ({
+- const DropdownMenu = DropdownMenuPrimitive.Root
+- const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
+- const DropdownMenuGroup = DropdownMenuPrimitive.Group
+- const DropdownMenuPortal = DropdownMenuPrimitive.Portal
+- const DropdownMenuSub = DropdownMenuPrimitive.Sub
+- const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup
+- const DropdownMenuSubTrigger = React.forwardRef<
+- DropdownMenuSubTrigger.displayName =
+- DropdownMenuPrimitive.SubTrigger.displayName
+- const DropdownMenuSubContent = React.forwardRef<
+- DropdownMenuSubContent.displayName =
+- DropdownMenuPrimitive.SubContent.displayName
+- const DropdownMenuContent = React.forwardRef<
+- DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
+- svg]:size-4 [&>svg]:shrink-0",
+- const DropdownMenuLabel = React.forwardRef<
+- DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName
+- const DropdownMenuSeparator = React.forwardRef<
+- DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
+- const DropdownMenuShortcut = ({
+- DropdownMenuShortcut.displayName = "DropdownMenuShortcut"
+- DropdownMenuSeparator,
+- DropdownMenuShortcut,
+- DropdownMenuSubContent,
+- DropdownMenuSubTrigger,
+- DropdownMenuRadioGroup,
+- const Separator = React.forwardRef<
+- Separator.displayName = SeparatorPrimitive.Root.displayName
+- Pagination.displayName = "Pagination"
+- const PaginationContent = React.forwardRef<
+- React.ComponentProps<"ul">
+- PaginationContent.displayName = "PaginationContent"
+- React.ComponentProps<"li">
+- type PaginationLinkProps = {
+- React.ComponentProps<"a">
+- const PaginationLink = ({
+- PaginationLink.displayName = "PaginationLink"
+- const PaginationPrevious = ({
+- PaginationPrevious.displayName = "PaginationPrevious"
+- const PaginationNext = ({
+- PaginationNext.displayName = "PaginationNext"
+- const PaginationEllipsis = ({
+- PaginationEllipsis.displayName = "PaginationEllipsis"
+- const AlertDialog = AlertDialogPrimitive.Root
+- const AlertDialogTrigger = AlertDialogPrimitive.Trigger
+- const AlertDialogPortal = AlertDialogPrimitive.Portal
+- const AlertDialogOverlay = React.forwardRef<
+- AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName
+- const AlertDialogContent = React.forwardRef<
+- AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName
+- const AlertDialogHeader = ({
+- AlertDialogHeader.displayName = "AlertDialogHeader"
+- const AlertDialogFooter = ({
+- AlertDialogFooter.displayName = "AlertDialogFooter"
+- const AlertDialogTitle = React.forwardRef<
+- AlertDialogTitle.displayName = AlertDialogPrimitive.Title.displayName
+- const AlertDialogDescription = React.forwardRef<
+- AlertDialogDescription.displayName =
+- AlertDialogPrimitive.Description.displayName
+- const AlertDialogAction = React.forwardRef<
+- AlertDialogAction.displayName = AlertDialogPrimitive.Action.displayName
+- const AlertDialogCancel = React.forwardRef<
+- AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName
+- AlertDialogDescription,
+- const InputOTP = React.forwardRef<
+- InputOTP.displayName = "InputOTP"
+- const InputOTPGroup = React.forwardRef<
+- React.ComponentPropsWithoutRef<"div">
+- InputOTPGroup.displayName = "InputOTPGroup"
+- const InputOTPSlot = React.forwardRef<
+- const inputOTPContext = React.useContext(OTPInputContext)
+- InputOTPSlot.displayName = "InputOTPSlot"
+- const InputOTPSeparator = React.forwardRef<
+- InputOTPSeparator.displayName = "InputOTPSeparator"
+- const alertVariants = cva(
+- default: "bg-background text-foreground",
+- "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
+- const Alert = React.forwardRef<
+- Alert.displayName = "Alert"
+- const AlertTitle = React.forwardRef<
+- AlertTitle.displayName = "AlertTitle"
+- const AlertDescription = React.forwardRef<
+- AlertDescription.displayName = "AlertDescription"
+- "has-[>[data-align=inline-start]]:[&>input]:pl-2",
+- "has-[>[data-align=inline-end]]:[&>input]:pr-2",
+- "has-[>[data-align=block-start]]:h-auto has-[>[data-align=block-start]]:flex-col has-[>[data-align=block-start]]:[&>input]:pb-3",
+- "has-[>[data-align=block-end]]:h-auto has-[>[data-align=block-end]]:flex-col has-[>[data-align=block-end]]:[&>input]:pt-3",
+- "has-[[data-slot=input-group-control]:focus-visible]:ring-ring has-[[data-slot=input-group-control]:focus-visible]:ring-1",
+- "has-[[data-slot][aria-invalid=true]]:ring-destructive/20 has-[[data-slot][aria-invalid=true]]:border-destructive dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40",
+- const inputGroupAddonVariants = cva(
+- align: "inline-start",
+- function InputGroupAddon({
+- align = "inline-start",
+- const inputGroupButtonVariants = cva(
+- "icon-sm": "size-8 p-0 has-[>svg]:p-0",
+- function InputGroupButton({
+- function InputGroupInput({
+- }: React.ComponentProps<"input">) {
+- function InputGroupTextarea({
+- }: React.ComponentProps<"textarea">) {
+- const Popover = PopoverPrimitive.Root
+- const PopoverTrigger = PopoverPrimitive.Trigger
+- const PopoverAnchor = PopoverPrimitive.Anchor
+- const PopoverContent = React.forwardRef<
+- PopoverContent.displayName = PopoverPrimitive.Content.displayName
+- const Table = React.forwardRef<
+- Table.displayName = "Table"
+- const TableHeader = React.forwardRef<
+- TableHeader.displayName = "TableHeader"
+- const TableBody = React.forwardRef<
+- TableBody.displayName = "TableBody"
+- const TableFooter = React.forwardRef<
+- tr]:last:border-b-0",
+- TableFooter.displayName = "TableFooter"
+- const TableRow = React.forwardRef<
+- TableRow.displayName = "TableRow"
+- const TableHead = React.forwardRef<
+- React.ThHTMLAttributes
+- TableHead.displayName = "TableHead"
+- const TableCell = React.forwardRef<
+- React.TdHTMLAttributes
+- TableCell.displayName = "TableCell"
+- const TableCaption = React.forwardRef<
+- TableCaption.displayName = "TableCaption"
+- const Progress = React.forwardRef<
+- Progress.displayName = ProgressPrimitive.Root.displayName
+- const Select = SelectPrimitive.Root
+- const SelectGroup = SelectPrimitive.Group
+- const SelectValue = SelectPrimitive.Value
+- const SelectTrigger = React.forwardRef<
+- SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
+- const SelectScrollUpButton = React.forwardRef<
+- SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
+- const SelectScrollDownButton = React.forwardRef<
+- SelectScrollDownButton.displayName =
+- SelectPrimitive.ScrollDownButton.displayName
+- const SelectContent = React.forwardRef<
+- SelectContent.displayName = SelectPrimitive.Content.displayName
+- const SelectLabel = React.forwardRef<
+- SelectLabel.displayName = SelectPrimitive.Label.displayName
+- const SelectSeparator = React.forwardRef<
+- SelectSeparator.displayName = SelectPrimitive.Separator.displayName
+- SelectScrollUpButton,
+- SelectScrollDownButton,
+- type ToasterProps = React.ComponentProps
+- outline: "border-border",
+- muted: "bg-muted/50",
+- default: "gap-4 p-4 ",
+- }: React.ComponentProps<"div"> &
+- const Comp = asChild ? Slot : "div"
+- icon: "bg-muted size-8 rounded-sm border [&_svg:not([class*='size-'])]:size-4",
+- "size-10 overflow-hidden rounded-sm [&_img]:size-full [&_img]:object-cover",
+- a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4",
+- const Textarea = React.forwardRef<
+- React.ComponentProps<"textarea">
+- Textarea.displayName = "Textarea"
+- const toggleVariants = cva(
+- "border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground",
+- const Toggle = React.forwardRef<
+- Toggle.displayName = TogglePrimitive.Root.displayName
+- [data-slot=checkbox-group]]:gap-3 has-[>[data-slot=radio-group]]:gap-3",
+- function FieldLegend({
+- [data-slot=field-group]]:gap-4",
+- const fieldVariants = cva(
+- "group/field data-[invalid=true]:text-destructive flex w-full gap-3",
+- vertical: ["flex-col [&>*]:w-full [&>.sr-only]:w-auto"],
+- "[&>[data-slot=field-label]]:flex-auto",
+- "@md/field-group:[&>[data-slot=field-label]]:flex-auto",
+- orientation: "vertical",
+- orientation = "vertical",
+- function FieldLabel({
+- [data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border [&>[data-slot=field]]:p-4",
+- "has-data-[state=checked]:bg-primary/5 has-data-[state=checked]:border-primary dark:has-data-[state=checked]:bg-primary/10",
+- function FieldSeparator({
+- }: React.ComponentProps<"div"> & {
+- children?: React.ReactNode
+- function FieldError({
+- if (errors?.length === 1 && errors[0]?.message) {
+- return errors[0].message
+- }, [children, errors])
+- const ToggleGroupContext = React.createContext<
+- const ToggleGroup = React.forwardRef<
+- ToggleGroup.displayName = ToggleGroupPrimitive.Root.displayName
+- const context = React.useContext(ToggleGroupContext)
+- const ScrollArea = React.forwardRef<
+- ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName
+- const ScrollBar = React.forwardRef<
+- ScrollBar.displayName = ScrollAreaPrimitive.ScrollAreaScrollbar.displayName
+- const labelVariants = cva(
+- "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+- const Label = React.forwardRef<
+- Label.displayName = LabelPrimitive.Root.displayName
+- export type ChartConfig = {
+- label?: React.ReactNode
+- icon?: React.ComponentType
+- type ChartContextProps = {
+- const ChartContext = React.createContext
+- function useChart() {
+- const context = React.useContext(ChartContext)
+- throw new Error("useChart must be used within a
+- const ChartContainer = React.forwardRef<
+- React.ComponentProps<"div"> & {
+- children: React.ComponentProps<
+- typeof RechartsPrimitive.ResponsiveContainer
+- const uniqueId = React.useId()
+- ChartContainer.displayName = "Chart"
+- const colorConfig = Object.entries(config).filter(
+- if (!colorConfig.length) {
+- } from "@/components/ui/sheet"
+- } from "@/components/ui/tooltip"
+- const SIDEBAR_COOKIE_NAME = "sidebar_state"
+- const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
+- const SIDEBAR_KEYBOARD_SHORTCUT = "b"
+- type SidebarContextProps = {
+- state: "expanded" | "collapsed"
+- const SidebarContext = React.createContext
+- function useSidebar() {
+- const context = React.useContext(SidebarContext)
+- throw new Error("useSidebar must be used within a SidebarProvider.")
+- function SidebarProvider({
+- onOpenChange: setOpenProp,
+- defaultOpen?: boolean
+- const isMobile = useIsMobile()
+- const [openMobile, setOpenMobile] = React.useState(false)
+- const [_open, _setOpen] = React.useState(defaultOpen)
+- const open = openProp ?? _open
+- const setOpen = React.useCallback(
+- const openState = typeof value === "function" ? value(open) : value
+- setOpenProp(openState)
+- }, [isMobile, setOpen, setOpenMobile])
+- event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
+- (event.metaKey || event.ctrlKey)
+- event.preventDefault()
+- window.addEventListener("keydown", handleKeyDown)
+- const state = open ? "expanded" : "collapsed"
+- [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+- collapsible = "offcanvas",
+- side?: "left" | "right"
+- variant?: "sidebar" | "floating" | "inset"
+- collapsible?: "offcanvas" | "icon" | "none"
+- Displays the mobile sidebar.
+- function SidebarTrigger({
+- function SidebarInput({
+- function SidebarSeparator({
+- function SidebarGroupLabel({
+- svg]:h-4 [&>svg]:w-4 [&>svg]:shrink-0",
+- "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
+- function SidebarGroupAction({
+- const Comp = asChild ? Slot : "button"
+- "after:absolute after:-inset-2 md:after:hidden",
+- "group-data-[collapsible=icon]:hidden",
+- function SidebarGroupContent({
+- }: React.ComponentProps<"div">) {
+- const sidebarMenuButtonVariants = cva(
+- default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+- default: "h-8 text-sm",
+- lg: "h-12 text-sm group-data-[collapsible=icon]:p-0!",
+- function SidebarMenuButton({
+- }: React.ComponentProps<"button"> & {
+- tooltip?: string | React.ComponentProps
+- if (typeof tooltip === "string") {
+- function SidebarMenuAction({
+- showOnHover?: boolean
+- "peer-data-[size=sm]/menu-button:top-1",
+- "peer-data-[size=default]/menu-button:top-1.5",
+- "peer-data-[size=lg]/menu-button:top-2.5",
+- function SidebarMenuBadge({
+- function SidebarMenuSkeleton({
+- }: React.ComponentProps<"li">) {
+- function SidebarMenuSubButton({
+- }: React.ComponentProps<"a"> & {
+- const Comp = asChild ? Slot : "a"
+- "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",
+- size === "sm" && "text-xs",
+- size === "md" && "text-sm",
+- SidebarMenuSubButton,
+- const Tabs = TabsPrimitive.Root
+- const TabsList = React.forwardRef<
+- TabsList.displayName = TabsPrimitive.List.displayName
+- const TabsTrigger = React.forwardRef<
+- TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
+- const TabsContent = React.forwardRef<
+- TabsContent.displayName = TabsPrimitive.Content.displayName
+- const Switch = React.forwardRef<
+- Switch.displayName = SwitchPrimitives.Root.displayName
+- const Checkbox = React.forwardRef<
+- Checkbox.displayName = CheckboxPrimitive.Root.displayName
+- const ContextMenu = ContextMenuPrimitive.Root
+- const ContextMenuTrigger = ContextMenuPrimitive.Trigger
+- const ContextMenuGroup = ContextMenuPrimitive.Group
+- const ContextMenuPortal = ContextMenuPrimitive.Portal
+- const ContextMenuSub = ContextMenuPrimitive.Sub
+- const ContextMenuRadioGroup = ContextMenuPrimitive.RadioGroup
+- const ContextMenuSubTrigger = React.forwardRef<
+- ContextMenuSubTrigger.displayName = ContextMenuPrimitive.SubTrigger.displayName
+- const ContextMenuSubContent = React.forwardRef<
+- ContextMenuSubContent.displayName = ContextMenuPrimitive.SubContent.displayName
+- const ContextMenuContent = React.forwardRef<
+- ContextMenuContent.displayName = ContextMenuPrimitive.Content.displayName
+- const ContextMenuLabel = React.forwardRef<
+- ContextMenuLabel.displayName = ContextMenuPrimitive.Label.displayName
+- const ContextMenuSeparator = React.forwardRef<
+- ContextMenuSeparator.displayName = ContextMenuPrimitive.Separator.displayName
+- const ContextMenuShortcut = ({
+- ContextMenuShortcut.displayName = "ContextMenuShortcut"
+- ContextMenuSeparator,
+- ContextMenuSubContent,
+- ContextMenuSubTrigger,
+- ContextMenuRadioGroup,
+- const badgeVariants = cva(
+- "border-transparent bg-primary text-primary-foreground shadow-xs",
+- "border-transparent bg-secondary text-secondary-foreground",
+- "border-transparent bg-destructive text-destructive-foreground shadow-xs",
+- export interface BadgeProps
+- extends React.HTMLAttributes
+- } from "lucide-react"
+- showOutsideDays = true,
+- captionLayout = "label",
+- buttonVariant = "ghost",
+- buttonVariant?: React.ComponentProps
+- const defaultClassNames = getDefaultClassNames()
+- String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
+- root: cn("w-fit", defaultClassNames.root),
+- "relative flex flex-col gap-4 md:flex-row",
+- defaultClassNames.months
+- month: cn("flex w-full flex-col gap-4", defaultClassNames.month),
+- defaultClassNames.nav
+- "h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50",
+- defaultClassNames.button_previous
+- defaultClassNames.button_next
+- defaultClassNames.month_caption
+- defaultClassNames.dropdowns
+- defaultClassNames.dropdown_root
+- "bg-popover absolute inset-0 opacity-0",
+- defaultClassNames.dropdown
+- "select-none font-medium",
+- captionLayout === "label"
+- defaultClassNames.caption_label
+- table: "w-full border-collapse",
+- weekdays: cn("flex", defaultClassNames.weekdays),
+- defaultClassNames.weekday
+- week: cn("mt-2 flex w-full", defaultClassNames.week),
+- week_number_header: cn(
+- "w-[--cell-size] select-none",
+- defaultClassNames.week_number_header
+- defaultClassNames.week_number
+- "group/day relative aspect-square h-full w-full select-none p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-md [&:last-child[data-selected=true]_button]:rounded-r-md",
+- defaultClassNames.day
+- "bg-accent rounded-l-md",
+- defaultClassNames.range_start
+- range_middle: cn("rounded-none", defaultClassNames.range_middle),
+- range_end: cn("bg-accent rounded-r-md", defaultClassNames.range_end),
+- "bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none",
+- defaultClassNames.today
+- "text-muted-foreground aria-selected:text-muted-foreground",
+- defaultClassNames.outside
+- "text-muted-foreground opacity-50",
+- defaultClassNames.disabled
+- hidden: cn("invisible", defaultClassNames.hidden),
+- if (orientation === "right") {
+- DayButton: CalendarDayButton,
+- function CalendarDayButton({
+- const ref = React.useRef
+- if (modifiers.focused) ref.current?.focus()
+- }, [modifiers.focused])
+- span]:text-xs [&>span]:opacity-70",
+- defaultClassNames.day,
+- } from "@/components/ui/toast"
+- export function Toaster() {
+- const NavigationMenu = React.forwardRef<
+- NavigationMenu.displayName = NavigationMenuPrimitive.Root.displayName
+- const NavigationMenuList = React.forwardRef<
+- NavigationMenuList.displayName = NavigationMenuPrimitive.List.displayName
+- const navigationMenuTriggerStyle = cva(
+- const NavigationMenuTrigger = React.forwardRef<
+- NavigationMenuTrigger.displayName = NavigationMenuPrimitive.Trigger.displayName
+- const NavigationMenuContent = React.forwardRef<
+- NavigationMenuContent.displayName = NavigationMenuPrimitive.Content.displayName
+- const NavigationMenuLink = NavigationMenuPrimitive.Link
+- const NavigationMenuViewport = React.forwardRef<
+- NavigationMenuViewport.displayName =
+- NavigationMenuPrimitive.Viewport.displayName
+- const NavigationMenuIndicator = React.forwardRef<
+- NavigationMenuIndicator.displayName =
+- NavigationMenuPrimitive.Indicator.displayName
+- navigationMenuTriggerStyle,
+- NavigationMenuContent,
+- NavigationMenuTrigger,
+- NavigationMenuIndicator,
+- NavigationMenuViewport,
+- const ToastProvider = ToastPrimitives.Provider
+- const ToastViewport = React.forwardRef<
+- ToastViewport.displayName = ToastPrimitives.Viewport.displayName
+- const toastVariants = cva(
+- default: "border bg-background text-foreground",
+- "destructive group border-destructive bg-destructive text-destructive-foreground",
+- const Toast = React.forwardRef<
+- Toast.displayName = ToastPrimitives.Root.displayName
+- const ToastAction = React.forwardRef<
+- ToastAction.displayName = ToastPrimitives.Action.displayName
+- const ToastClose = React.forwardRef<
+- ToastClose.displayName = ToastPrimitives.Close.displayName
+- const ToastTitle = React.forwardRef<
+- ToastTitle.displayName = ToastPrimitives.Title.displayName
+- const ToastDescription = React.forwardRef<
+- ToastDescription.displayName = ToastPrimitives.Description.displayName
+- type ToastProps = React.ComponentPropsWithoutRef
+- const buttonVariants = cva(
+- " hover-elevate active-elevate-2",
+- "bg-primary text-primary-foreground border border-primary-border",
+- "bg-destructive text-destructive-foreground shadow-sm border-destructive-border",
+- "border bg-secondary text-secondary-foreground border border-secondary-border",
+- ghost: "border border-transparent",
+- link: "text-primary underline-offset-4 hover:underline",
+- export interface ButtonProps
+- extends React.ButtonHTMLAttributes
+- const Button = React.forwardRef
+- Button.displayName = "Button"
+- const Avatar = React.forwardRef<
+- Avatar.displayName = AvatarPrimitive.Root.displayName
+- const AvatarImage = React.forwardRef<
+- AvatarImage.displayName = AvatarPrimitive.Image.displayName
+- const AvatarFallback = React.forwardRef<
+- AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
+- const Dialog = DialogPrimitive.Root
+- const DialogTrigger = DialogPrimitive.Trigger
+- const DialogPortal = DialogPrimitive.Portal
+- const DialogClose = DialogPrimitive.Close
+- const DialogOverlay = React.forwardRef<
+- DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
+- const DialogContent = React.forwardRef<
+- DialogContent.displayName = DialogPrimitive.Content.displayName
+- const DialogHeader = ({
+- DialogHeader.displayName = "DialogHeader"
+- const DialogFooter = ({
+- DialogFooter.displayName = "DialogFooter"
+- const DialogTitle = React.forwardRef<
+- DialogTitle.displayName = DialogPrimitive.Title.displayName
+- const DialogDescription = React.forwardRef<
+- DialogDescription.displayName = DialogPrimitive.Description.displayName
+- const Breadcrumb = React.forwardRef<
+- React.ComponentPropsWithoutRef<"nav"> & {
+- separator?: React.ReactNode
+- Breadcrumb.displayName = "Breadcrumb"
+- const BreadcrumbList = React.forwardRef<
+- React.ComponentPropsWithoutRef<"ol">
+- BreadcrumbList.displayName = "BreadcrumbList"
+- React.ComponentPropsWithoutRef<"li">
+- const BreadcrumbLink = React.forwardRef<
+- React.ComponentPropsWithoutRef<"a"> & {
+- BreadcrumbLink.displayName = "BreadcrumbLink"
+- const BreadcrumbPage = React.forwardRef<
+- React.ComponentPropsWithoutRef<"span">
+- BreadcrumbPage.displayName = "BreadcrumbPage"
+- const BreadcrumbSeparator = ({
+- svg]:w-3.5 [&>svg]:h-3.5", className)}
+- BreadcrumbSeparator.displayName = "BreadcrumbSeparator"
+- const BreadcrumbEllipsis = ({
+- BreadcrumbEllipsis.displayName = "BreadcrumbElipssis"
+- type ControllerProps,
+- } from "react-hook-form"
+- const Form = FormProvider
+- type FormFieldContextValue<
+- TFieldValues extends FieldValues = FieldValues,
+- TName extends FieldPath
+- const FormFieldContext = React.createContext
+- const fieldContext = React.useContext(FormFieldContext)
+- throw new Error("useFormField should be used within
+- const fieldState = getFieldState(fieldContext.name, formState)
+- name: fieldContext.name,
+- const id = React.useId()
+- const FormLabel = React.forwardRef<
+- FormLabel.displayName = "FormLabel"
+- const FormControl = React.forwardRef<
+- FormControl.displayName = "FormControl"
+- const FormDescription = React.forwardRef<
+- FormDescription.displayName = "FormDescription"
+- const FormMessage = React.forwardRef<
+- const body = error ? String(error?.message ?? "") : children
+- FormMessage.displayName = "FormMessage"
+- const Slider = React.forwardRef<
+- Slider.displayName = SliderPrimitive.Root.displayName
+- function MenubarMenu({
+- function MenubarGroup({
+- function MenubarPortal({
+- function MenubarRadioGroup({
+- function MenubarSub({
+- const Menubar = React.forwardRef<
+- Menubar.displayName = MenubarPrimitive.Root.displayName
+- const MenubarTrigger = React.forwardRef<
+- MenubarTrigger.displayName = MenubarPrimitive.Trigger.displayName
+- const MenubarSubTrigger = React.forwardRef<
+- MenubarSubTrigger.displayName = MenubarPrimitive.SubTrigger.displayName
+- const MenubarSubContent = React.forwardRef<
+- MenubarSubContent.displayName = MenubarPrimitive.SubContent.displayName
+- const MenubarContent = React.forwardRef<
+- MenubarContent.displayName = MenubarPrimitive.Content.displayName
+- const MenubarLabel = React.forwardRef<
+- MenubarLabel.displayName = MenubarPrimitive.Label.displayName
+- const MenubarSeparator = React.forwardRef<
+- MenubarSeparator.displayName = MenubarPrimitive.Separator.displayName
+- const MenubarShortcut = ({
+- MenubarShortcut.displayname = "MenubarShortcut"
+- const TooltipProvider = TooltipPrimitive.Provider
+- const Tooltip = TooltipPrimitive.Root
+- const TooltipTrigger = TooltipPrimitive.Trigger
+- const TooltipContent = React.forwardRef<
+- TooltipContent.displayName = TooltipPrimitive.Content.displayName
+- const AspectRatio = AspectRatioPrimitive.Root
+- import useEmblaCarousel, {
+- type UseEmblaCarouselType,
+- type CarouselApi = UseEmblaCarouselType[1]
+- type UseCarouselParameters = Parameters
+- type CarouselOptions = UseCarouselParameters[0]
+- type CarouselPlugin = UseCarouselParameters[1]
+- type CarouselProps = {
+- opts?: CarouselOptions
+- plugins?: CarouselPlugin
+- orientation?: "horizontal" | "vertical"
+- type CarouselContextProps = {
+- carouselRef: ReturnType
+- canScrollPrev: boolean
+- canScrollNext: boolean
+- const CarouselContext = React.createContext
+- function useCarousel() {
+- const context = React.useContext(CarouselContext)
+- throw new Error("useCarousel must be used within a
+- const Carousel = React.forwardRef<
+- orientation = "horizontal",
+- const [carouselRef, api] = useEmblaCarousel(
+- axis: orientation === "horizontal" ? "x" : "y",
+- const [canScrollPrev, setCanScrollPrev] = React.useState(false)
+- const [canScrollNext, setCanScrollNext] = React.useState(false)
+- setCanScrollPrev(api.canScrollPrev())
+- setCanScrollNext(api.canScrollNext())
+- const handleKeyDown = React.useCallback(
+- (event: React.KeyboardEvent
+- if (event.key === "ArrowLeft") {
+- } else if (event.key === "ArrowRight") {
+- [scrollPrev, scrollNext]
+- if (!api || !setApi) {
+- api.on("reInit", onSelect)
+- api.on("select", onSelect)
+- api?.off("select", onSelect)
+- Carousel.displayName = "Carousel"
+- const CarouselContent = React.forwardRef<
+- CarouselContent.displayName = "CarouselContent"
+- const CarouselPrevious = React.forwardRef<
+- CarouselPrevious.displayName = "CarouselPrevious"
+- const CarouselNext = React.forwardRef<
+- CarouselNext.displayName = "CarouselNext"
+- const Card = React.forwardRef<
+- Card.displayName = "Card"
+- const CardHeader = React.forwardRef<
+- CardHeader.displayName = "CardHeader"
+- const CardTitle = React.forwardRef<
+- CardTitle.displayName = "CardTitle"
+- const CardDescription = React.forwardRef<
+- CardDescription.displayName = "CardDescription"
+- const CardContent = React.forwardRef<
+- CardContent.displayName = "CardContent"
+- const CardFooter = React.forwardRef<
+- CardFooter.displayName = "CardFooter"
+- const Sheet = SheetPrimitive.Root
+- const SheetTrigger = SheetPrimitive.Trigger
+- const SheetClose = SheetPrimitive.Close
+- const SheetPortal = SheetPrimitive.Portal
+- const SheetOverlay = React.forwardRef<
+- SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
+- const sheetVariants = cva(
+- "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out",
+- top: "inset-x-0 top-0 border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
+- "inset-x-0 bottom-0 border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+- left: "inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm",
+- "inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm",
+- interface SheetContentProps
+- extends React.ComponentPropsWithoutRef
+- const SheetContent = React.forwardRef<
+- SheetContent.displayName = SheetPrimitive.Content.displayName
+- const SheetHeader = ({
+- SheetHeader.displayName = "SheetHeader"
+- const SheetFooter = ({
+- SheetFooter.displayName = "SheetFooter"
+- const SheetTitle = React.forwardRef<
+- SheetTitle.displayName = SheetPrimitive.Title.displayName
+- const SheetDescription = React.forwardRef<
+- SheetDescription.displayName = SheetPrimitive.Description.displayName
+- shouldScaleBackground = true,
+- Drawer.displayName = "Drawer"
+- const DrawerTrigger = DrawerPrimitive.Trigger
+- const DrawerPortal = DrawerPrimitive.Portal
+- const DrawerClose = DrawerPrimitive.Close
+- const DrawerOverlay = React.forwardRef<
+- DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
+- const DrawerContent = React.forwardRef<
+- DrawerContent.displayName = "DrawerContent"
+- const DrawerHeader = ({
+- DrawerHeader.displayName = "DrawerHeader"
+- const DrawerFooter = ({
+- DrawerFooter.displayName = "DrawerFooter"
+- const DrawerTitle = React.forwardRef<
+- DrawerTitle.displayName = DrawerPrimitive.Title.displayName
+- const DrawerDescription = React.forwardRef<
+- DrawerDescription.displayName = DrawerPrimitive.Description.displayName
+- const buttonGroupVariants = cva(
+- "[&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none",
+- "flex-col [&>*:not(:first-child)]:rounded-t-none [&>*:not(:first-child)]:border-t-0 [&>*:not(:last-child)]:rounded-b-none",
+- orientation: "horizontal",
+- function ButtonGroup({
+- function ButtonGroupText({
+- function ButtonGroupSeparator({
+- ButtonGroupSeparator,
+- const Input = React.forwardRef
+- Input.displayName = "Input"
+- const Collapsible = CollapsiblePrimitive.Root
+- const CollapsibleTrigger = CollapsiblePrimitive.CollapsibleTrigger
+- const CollapsibleContent = CollapsiblePrimitive.CollapsibleContent
+- const RadioGroup = React.forwardRef<
+- RadioGroup.displayName = RadioGroupPrimitive.Root.displayName
+- "border bg-secondary text-secondary-foreground border border-secondary-border ",
+
+---
+
+## Section: use-upload
+
+### 📝 General Body Copy / Page Text
+- interface UploadMetadata {
+- interface UploadResponse {
+- metadata: UploadMetadata;
+- interface UseUploadOptions {
+- * React hook for handling file uploads with presigned URLs.
+- * 1. Request a presigned URL from your backend (sends JSON metadata, NOT the file)
+- * 2. Upload the file directly to the presigned URL
+- * function FileUploader() {
+- * console.log("Uploaded to:", response.objectPath);
+- * const handleFileChange = async (e: React.ChangeEvent
+- * const file = e.target.files?.[0];
+- * await uploadFile(file);
+- const basePath = options.basePath ?? "/api/storage";
+- const [isUploading, setIsUploading] = useState(false);
+- const [error, setError] = useState
+- const [progress, setProgress] = useState(0);
+- const requestUploadUrl = useCallback(
+- async (file: File): Promise
+- "Content-Type": "application/json",
+- body: JSON.stringify({
+- contentType: file.type || "application/octet-stream",
+- throw new Error(errorData.error || "Failed to get upload URL");
+- return response.json();
+- const uploadToPresignedUrl = useCallback(
+- async (file: File, uploadURL: string): Promise
+- const response = await fetch(uploadURL, {
+- "Content-Type": file.type || "application/octet-stream",
+- throw new Error("Failed to upload file to storage");
+- const uploadFile = useCallback(
+- setIsUploading(true);
+- const uploadResponse = await requestUploadUrl(file);
+- await uploadToPresignedUrl(file, uploadResponse.uploadURL);
+- options.onSuccess?.(uploadResponse);
+- return uploadResponse;
+- const error = err instanceof Error ? err : new Error("Upload failed");
+- options.onError?.(error);
+- setIsUploading(false);
+- [requestUploadUrl, uploadToPresignedUrl, options]
+- const getUploadParameters = useCallback(
+- throw new Error("Failed to get upload URL");
+- const data = await response.json();
+
+---
+
+## Section: well-lived-citizen
+
+### 📝 General Body Copy / Page Text
+- const rawPort = process.env.PORT;
+- "PORT environment variable is required but was not provided.",
+- const port = Number(rawPort);
+- if (Number.isNaN(port) || port <= 0) {
+- const basePath = process.env.BASE_PATH;
+- "BASE_PATH environment variable is required but was not provided.",
+- export default defineConfig({
+- runtimeErrorOverlay(),
+- ...(process.env.NODE_ENV !== "production" &&
+- process.env.REPL_ID !== undefined
+- root: path.resolve(import.meta.dirname, ".."),
+- "@": path.resolve(import.meta.dirname, "src"),
+- "@assets": path.resolve(import.meta.dirname, "..", "..", "attached_assets"),
+- dedupe: ["react", "react-dom"],
+- root: path.resolve(import.meta.dirname),
+- outDir: path.resolve(import.meta.dirname, "dist/public"),
+- @/components/ui
+
+---

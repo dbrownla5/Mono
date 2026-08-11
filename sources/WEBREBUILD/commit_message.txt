@@ -1,0 +1,12 @@
+🧪 [testing improvement] Add tests for normalizeText logic in collectClickableElements.js
+
+🎯 **What:** Tested the text normalization logic (`normalizeText`) in `collectClickableElements.js`.
+
+📊 **Coverage:** Covered edge cases and scenarios:
+- Falsy values (null, undefined, empty string)
+- Trimming leading/trailing whitespace
+- Replacing internal sequential spaces with a single space
+- Length limiting and truncation (max length with '...')
+- Strings composed entirely of whitespace characters
+
+✨ **Result:** Improved test coverage by verifying the isolated string normalization helper that previously lacked testing, providing confidence against regressions when refactoring string manipulation within the elements extraction code.

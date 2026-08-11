@@ -1,0 +1,54 @@
+ROUTE /
+<title>The Well Lived Citizen — Los Angeles</title>
+tel:3234331350 
+
+
+----
+ROUTE /about
+<title>About Dayna Brown — The Well Lived Citizen</title>
+tel:3234331350 
+
+
+----
+ROUTE /services
+<title>Services & Pricing — The Well Lived Citizen</title>
+tel:3234331350 
+
+
+----
+ROUTE /services/home-organization
+<title>Home Organization & Modern Move — The Well Lived Citizen</title>
+tel:3234331350 
+
+
+----
+ROUTE /services/house-calls
+<title>House Calls — The Well Lived Citizen</title>
+tel:3234331350 
+
+
+----
+ROUTE /services/legacy
+<title>Legacy Planning & Inventory Catalog — The Well Lived Citizen</title>
+tel:3234331350 
+
+
+----
+ROUTE /services/resale
+<title>Curated Resale & Consignment — The Well Lived Citizen</title>
+tel:3234331350 
+
+
+----
+ROUTE /pricing
+<title>Pricing — The Well Lived Citizen</title>
+tel:3234331350 
+mailto:dayna@thewelllivedcitizen.com mailto:zelleEmail 
+
+----
+ROUTE /contact
+<title>Get in Touch — The Well Lived Citizen</title>
+tel:3234331350 
+mailto:dayna@thewelllivedcitizen.com mailto:zelleEmail 
+https://formspree.io/f/xreojkvo 
+----

@@ -1,0 +1,23 @@
+# The Well Lived Citizen — TODO
+
+- [x] Home page — editorial hero, origin story, service pillars, CTA strip
+- [x] About page — Dayna's origin story, career credentials
+- [x] Services page — all four pillars with inline pricing
+- [x] Pricing page — transparent rate tables, Good to Know notes
+- [x] Contact page — intake form, service/situation dropdowns, direct contact sidebar
+- [x] Global nav — sticky header, mobile hamburger
+- [x] Global footer — brand, nav, contact, social links
+- [x] Brand palette — cream, charcoal, rust, linen; Plus Jakarta Sans
+- [x] Upgrade to full-stack with database and user management
+- [x] Add contact_submissions table to database schema
+- [x] Wire contact form to tRPC backend (replace Formspree)
+- [x] Add owner notification on new contact form submission
+- [x] Add admin dashboard to view contact submissions
+- [x] Push database schema
+- [x] Find correct tagline and hero copy from archive (replace retired "Well Placed. Well Dressed again.")
+- [x] Fix homepage hero copy to be front-facing, first-impression pitch language
+- [x] Add three Book Now CTA drops above the four service pillars on homepage
+- [x] Build individual deep-dive page for each of the four service pillars
+- [x] Update nav: Services links to individual service pages (dropdown or dedicated nav)
+- [x] Ensure Pricing page is properly linked from nav and service pages
+- [x] Add Pricing page link on each individual service page footer CTA
