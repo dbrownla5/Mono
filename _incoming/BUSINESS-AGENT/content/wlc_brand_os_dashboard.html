@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WLC Brand OS — Living Dashboard</title>
+  <style>
+    :root {
+      --cream: #f5f0e8;
+      --warm-white: #faf7f2;
+      --sand: #e8dfd0;
+      --tan: #c9b99a;
+      --brown: #8b6f47;
+      --dark-brown: #5c4a30;
+      --rust: #9b4f2a;
+      --rust-dark: #7a3d20;
+      --text: #2e2a24;
+      --text-mid: #5a5248;
+      --text-light: #8a8078;
+      --locked-bg: #f0ebe0;
+      --locked-border: #c9b99a;
+      --draft-bg: #fdf8f0;
+      --draft-border: #d4c4a8;
+      --empty-bg: #f8f5f0;
+      --empty-border: #e0d8cc;
+      --shadow: 0 2px 12px rgba(90,70,40,0.08);
+      --shadow-card: 0 1px 6px rgba(90,70,40,0.10);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── TOP HEADER ── */
+    .site-header {
+      background: var(--dark-brown);
+      color: var(--cream);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 3px solid var(--rust);
+    }
+    .site-header .brand {
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.75;
+    }
+    .site-header h1 {
+      font-size: 17px;
+      font-weight: normal;
+      letter-spacing: 0.04em;
+    }
+    .site-header .meta {
+      font-size: 11px;
+      opacity: 0.6;
+      font-family: 'Helvetica Neue', sans-serif;
+      text-align: right;
+    }
+
+    /* ── OPERATING PRINCIPLES BANNER ── */
+    .op-banner {
+      background: var(--warm-white);
+      border-bottom: 1px solid var(--sand);
+      padding: 14px 28px;
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .op-banner .op-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--rust);
+      font-family: 'Helvetica Neue', sans-serif;
+      font-weight: 600;
+      white-space: nowrap;
+      padding-top: 2px;
+    }
+    .op-rule {
+      font-size: 12px;
+      color: var(--text-mid);
+      font-family: 'Helvetica Neue', sans-serif;
+      line-height: 1.5;
+      flex: 1;
+      min-width: 260px;
+    }
+    .op-rule strong { color: var(--rust); }
+
+    /* ── TAB NAV ── */
+    .tab-nav {
+      background: var(--warm-white);
+      border-bottom: 2px solid var(--sand);
+      padding: 0 28px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      padding: 14px 20px 11px;
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-light);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      letter-spacing: 0.01em;
+    }
+    .tab-btn:hover { color: var(--dark-brown); }
+    .tab-btn.active {
+      color: var(--rust);
+      border-bottom-color: var(--rust);
+      font-weight: 600;
+    }
+    .tab-badge {
+      background: var(--rust);
+      color: white;
+      border-radius: 10px;
+      font-size: 10px;
+      padding: 1px 6px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+    .tab-badge.empty {
+      background: var(--tan);
+    }
+
+    /* ── MAIN CONTENT ── */
+    .main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px 28px 60px;
+    }
+
+    /* ── FOLDER HEADER ── */
+    .folder-header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--sand);
+    }
+    .folder-header .folder-num {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--rust);
+      font-family: 'Helvetica Neue', sans-serif;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .folder-header h2 {
+      font-size: 22px;
+      font-weight: normal;
+      color: var(--dark-brown);
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+    .folder-header .folder-desc {
+      font-size: 13px;
+      color: var(--text-mid);
+      font-family: 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+    }
+    .folder-header .folder-outcome {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 11.5px;
+      font-family: 'Helvetica Neue', sans-serif;
+      color: var(--text-light);
+      font-style: italic;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .progress-bar-wrap {
+      flex: 1;
+      height: 6px;
+      background: var(--sand);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--rust);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+    .progress-label {
+      font-size: 11px;
+      font-family: 'Helvetica Neue', sans-serif;
+      color: var(--text-light);
+      white-space: nowrap;
+    }
+
+    /* ── CARDS ── */
+    .cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--warm-white);
+      border: 1px solid var(--sand);
+      border-radius: 6px;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .card.locked {
+      background: var(--locked-bg);
+      border-color: var(--locked-border);
+    }
+    .card.empty {
+      background: var(--empty-bg);
+      border-color: var(--empty-border);
+      opacity: 0.85;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 14px 18px 10px;
+      gap: 12px;
+    }
+    .card-title-block { flex: 1; }
+    .card-title {
+      font-size: 15px;
+      font-weight: normal;
+      color: var(--dark-brown);
+      letter-spacing: 0.01em;
+      margin-bottom: 3px;
+    }
+    .card-subtitle {
+      font-size: 11.5px;
+      color: var(--text-light);
+      font-family: 'Helvetica Neue', sans-serif;
+      line-height: 1.5;
+    }
+
+    .status-badge {
+      font-size: 10px;
+      font-family: 'Helvetica Neue', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .badge-locked {
+      background: var(--dark-brown);
+      color: var(--cream);
+    }
+    .badge-draft {
+      background: var(--tan);
+      color: var(--dark-brown);
+    }
+    .badge-empty {
+      background: var(--empty-border);
+      color: var(--text-light);
+    }
+    .badge-ready {
+      background: #5a7a4a;
+      color: white;
+    }
+
+    /* ── CONTENT AREA ── */
+    .card-body {
+      padding: 0 18px 14px;
+    }
+    .card-content {
+      width: 100%;
+      min-height: 80px;
+      font-family: 'Georgia', serif;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text);
+      background: white;
+      border: 1px solid var(--sand);
+      border-radius: 4px;
+      padding: 12px 14px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .card-content:focus {
+      border-color: var(--rust);
+      box-shadow: 0 0 0 2px rgba(155,79,42,0.08);
+    }
+    .card.locked .card-content {
+      background: var(--locked-bg);
+      color: var(--text-mid);
+      cursor: not-allowed;
+    }
+    .card.empty .card-content {
+      background: var(--empty-bg);
+      font-style: italic;
+      color: var(--text-light);
+    }
+
+    /* ── CARD FOOTER ── */
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 18px 12px;
+      gap: 10px;
+    }
+    .card-source {
+      font-size: 10.5px;
+      font-family: 'Helvetica Neue', sans-serif;
+      color: var(--text-light);
+      font-style: italic;
+    }
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn {
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 5px 12px;
+      border-radius: 3px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+    .btn-reset {
+      background: none;
+      border-color: var(--tan);
+      color: var(--text-mid);
+    }
+    .btn-reset:hover { border-color: var(--brown); color: var(--dark-brown); }
+    .btn-lock {
+      background: var(--rust);
+      color: white;
+      border-color: var(--rust);
+    }
+    .btn-lock:hover { background: var(--rust-dark); }
+    .btn-unlock {
+      background: var(--dark-brown);
+      color: var(--cream);
+      border-color: var(--dark-brown);
+    }
+    .btn-unlock:hover { background: var(--text); }
+    .btn-save {
+      background: #5a7a4a;
+      color: white;
+      border-color: #5a7a4a;
+    }
+    .btn-save:hover { background: #4a6a3a; }
+
+    /* ── SECTION DIVIDER ── */
+    .section-divider {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--tan);
+      font-family: 'Helvetica Neue', sans-serif;
+      font-weight: 600;
+      margin: 24px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--sand);
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-light);
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+    .empty-state .empty-icon { font-size: 32px; margin-bottom: 12px; }
+    .empty-state h3 { font-size: 15px; font-weight: 500; margin-bottom: 6px; color: var(--text-mid); }
+    .empty-state p { font-size: 12.5px; line-height: 1.6; max-width: 360px; margin: 0 auto; }
+
+    /* ── TABS VISIBILITY ── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--dark-brown);
+      color: var(--cream);
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 12px;
+      padding: 10px 18px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    #toast.show { opacity: 1; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .site-header { flex-direction: column; gap: 4px; text-align: center; }
+      .op-banner { flex-direction: column; gap: 8px; }
+      .tab-btn { padding: 12px 14px 9px; font-size: 11.5px; }
+      .main { padding: 20px 16px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div>
+    <div class="brand">The Well Lived Citizen</div>
+    <h1>Brand Operating System — Living Dashboard</h1>
+  </div>
+  <div class="meta">
+    Last updated: May 19, 2026<br/>
+    46 sections · 3 locked · 43 drafts
+  </div>
+</header>
+
+<!-- OPERATING PRINCIPLES -->
+<div class="op-banner">
+  <div class="op-label">Operating Rule</div>
+  <div class="op-rule">
+    Before changing anything, ask: <strong>"Which folder does this belong in?"</strong> That one question stops spiraling, overediting, homepage rewriting, philosophical drift, and scattered thinking.
+  </div>
+  <div class="op-rule">
+    <strong>Anti-drift rule:</strong> No more rewriting the homepage directly from emotional overwhelm. The homepage is downstream of Brand Foundation — not upstream of it.
+  </div>
+</div>
+
+<!-- TAB NAV -->
+<nav class="tab-nav" role="tablist">
+  <button class="tab-btn active" onclick="switchTab(0)" role="tab">
+    1 — Core Brand Foundation <span class="tab-badge">10</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab(1)" role="tab">
+    2 — Service Architecture <span class="tab-badge">9</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab(2)" role="tab">
+    3 — Website Copy <span class="tab-badge">6</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab(3)" role="tab">
+    4 — Content &amp; Social <span class="tab-badge empty">0</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab(4)" role="tab">
+    5 — Operations <span class="tab-badge empty">0</span>
+  </button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOLDER 1 — CORE BRAND FOUNDATION
+════════════════════════════════════════════════════════════ -->
+<div class="tab-panel active" id="panel-0">
+<div class="main">
+
+  <div class="folder-header">
+    <div class="folder-num">Folder 1</div>
+    <h2>Core Brand Foundation</h2>
+    <div class="folder-desc">This is the Manifesto. The internal guidebook for all content and public-facing writing as a "brand check." This is: "Who are we really?" This never changes often.</div>
+    <div class="folder-outcome">Outcome: This becomes the ONE source of truth.</div>
+  </div>
+
+  <div class="progress-row">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:85%"></div></div>
+    <div class="progress-label">85% complete — 2 locked, 8 draft</div>
+  </div>
+
+  <div class="cards-grid">
+
+    <!-- Brand Thesis -->
+    <div class="card locked" id="card-brand-thesis">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Brand Thesis</div>
+          <div class="card-subtitle">The two-layer brand — fast offer up front, deeper philosophy behind it.</div>
+        </div>
+        <span class="status-badge badge-locked">&#128274; Locked</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="5" readonly>A two-layer brand. Layer 1 is fast, clear, and easy to buy — the public-facing offer that lets a client click and book today (a reset, a House Call, a resale pickup). Layer 2 is the deeper philosophy of thoughtful stewardship and continuity for modern households quietly carrying the weight of life transitions.
+
+The mission is to turn invisible friction into clarity and preserved value. The philosophy explains WHY we matter. The service offer explains WHAT TO CLICK. Both are true. Only one gets the click immediately.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx — Strategic Frame</span>
+        <div class="card-actions">
+          <button class="btn btn-unlock" onclick="unlockCard('card-brand-thesis')">Unlock to Edit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Founder Philosophy -->
+    <div class="card" id="card-founder-phil">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Founder Philosophy</div>
+          <div class="card-subtitle">Dayna's first-person belief about the work.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="7">The most meaningful work is helping people feel truly taken care of. Competence does not eliminate the need to be cared for.
+
+The work is never really about the object. It's about protecting the life it represents — making sure a family story doesn't disappear into a donation pile, and that the operational layer of a home stops quietly costing someone their bandwidth.
+
+Over time, homes accumulate more than belongings. They accumulate deferred decisions, invisible friction, emotional weight, untold stories, and practical realities no one has had time to fully address.
+
+My work is helping people thoughtfully restore clarity, functionality, and preserved value to the operational side of life — before it becomes overwhelming.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: WLC_Brand_Content_Vault.md + founder additions</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-founder-phil')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-founder-phil')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Emotional Territory -->
+    <div class="card" id="card-emotional">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Emotional Territory</div>
+          <div class="card-subtitle">The feeling the brand owns — the one no competitor has named.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="6">We own the space before crisis. That is why it feels so emotionally charged.
+
+The emotional promise — sacred line: "Someone thoughtful and competent is finally paying attention to the things that quietly matter."
+
+This is not about "stuff." It is about: autonomy, memory, identity, family harmony, practical safety, preserving options, reducing burden after death, allowing grief to remain grief.
+
+We are protecting families from having to turn mourning into project management.
+
+The transition is: from invisible overwhelm → thoughtful continuity. That's the business.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx — Why We Exist</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-emotional')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-emotional')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audience -->
+    <div class="card" id="card-audience">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Audience</div>
+          <div class="card-subtitle">Who we actually serve — one ecosystem, not separate segments.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="7">Primary audiences: Affluent adult daughters · Emotionally intelligent professionals · People managing complexity remotely · Independent older adults · High-functioning overwhelmed households.
+
+Younger professionals (late 20s–early 40s) book the quick resets, move-in help, nursery setup, overflow organization, and resale pickups. They are not a separate audience. They are the beginning of the relationship lifecycle — both the primary emotional market and the immediate revenue market — and they become the long-term client when a parent's situation, an inheritance, or a downsizing moment arrives.
+
+The simpler services create the deeper relationships. Entry is a closet reset or resale pickup. Later: a parent needs help, an inheritance happens, a divorce happens, downsizing happens. Suddenly you are the trusted person for the bigger life moments. That is the long game.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx — Who We Serve + Real Customer Funnel</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-audience')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-audience')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Brand Archetypes -->
+    <div class="card" id="card-archetypes">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Brand Archetypes</div>
+          <div class="card-subtitle">Three archetypes blended — not one.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="6">The Steward — protective, thoughtful, responsible, long-view oriented.
+The Operator — capable, systems-aware, calm under complexity.
+The Confidante — trusted, emotionally intelligent, discreet.
+
+Most important voice principle: never sound like you are "managing people." You are supporting continuity, preserving dignity, creating clarity, reducing friction, helping families navigate complexity thoughtfully.
+
+Three phrases that feel most "you":
+· Thoughtful stewardship for the realities of modern life.
+· Preserving continuity, clarity, and value through life's transitions.
+· Helping people feel more supported by the spaces and belongings that shape daily life.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx — Brand Voice</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-archetypes')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-archetypes')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Brand Promise -->
+    <div class="card" id="card-promise">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Brand Promise</div>
+          <div class="card-subtitle">The one sentence the whole business is accountable to.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="5">Practical stewardship with exceptional follow-through.
+
+A private household stewardship company helping people navigate the emotional and operational realities of modern life before they become overwhelming.
+
+You are a Steward of Continuity. Not in the legal sense. Not in the medical sense. In the human and operational sense. The trusted bridge between memory, value, function, and next steps.
+
+You don't just organize things. You restore coherence.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx — Who We Are + Strategic Frame</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-promise')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-promise')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Differentiators -->
+    <div class="card" id="card-diff">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Differentiators</div>
+          <div class="card-subtitle">What we ARE and what we are NOT — both lists matter.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="8">You combine: operational intelligence, emotional intelligence, resale discernment, systems thinking, relationship-driven service, observational care.
+
+"Competence does not eliminate the need to be cared for." — The emotional thesis of the business.
+
+WHAT WE ARE: continuity · stewardship · practical foresight · household functionality · thoughtful transition · preserved value · family clarity · operational calm · observational care.
+
+WHAT WE ARE NOT: caregiving · medical · financial · therapy · cleaning · handyman work · estate law · minimalism · "declutter culture."
+
+Your edge: deeply human operational intelligence. Your magic: emotionally intelligent capability. That is your voice. That is your moat. That is your future brand category.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx — What Makes Us Different</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-diff')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-diff')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tone Principles -->
+    <div class="card" id="card-tone">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Tone Principles</div>
+          <div class="card-subtitle">How the brand sounds. Use the full attribute list — not the four-word summary.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="7">The core feeling: "Someone competent and thoughtful is finally paying attention to the things that quietly matter."
+
+The voice should feel: observant · intelligent · grounded · capable · calming · emotionally perceptive · deeply trustworthy · quietly high-standard · human · unpretentious · thoughtful without being sentimental.
+
+Tone calibration: aim for 70% grounded clarity / 30% emotional resonance.
+
+Signature writing style — observational intelligence. The founder explicitly named this her signature style; these details create trust because they reveal "she notices what other people miss": the dead smoke detector · the unreachable shelf · the purse collection with no record · the outdated Outlook subscription · the lamp never replaced after a spouse passed · the unsafe charger placement.
+
+Weak: "Helping families declutter and simplify their lives."
+Strong: "Often, the things creating the most stress in a household are the ones no one has had time to properly address."</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx — Brand Voice</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-tone')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-tone')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Banned Language -->
+    <div class="card" id="card-banned">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Banned Language</div>
+          <div class="card-subtitle">Words and phrases that immediately break the voice.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="8">NEVER use the brand name "Co." — the brand is The Well Lived Citizen. Full stop.
+
+BAD WORDS: hustle · optimize · transform · simplify your life · clutter-free · self-care · elevate · empower · senior · aging · management · productivity · wellness · minimalist · dream home.
+
+PHRASES TO AVOID: "taking over" · "handling seniors" · "managing aging" · "decluttering clients" · "fixing homes."
+
+USE INSTEAD: "thoughtfully addressing" · "making daily life more functional" · "creating clearer pathways" · "preserving stories and value" · "helping families prepare before urgency."
+
+Also avoid: "girlboss" energy, "Pinterest perfection," before/after grids, productivity-culture language.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx — Language Rules</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-banned')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-banned')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signature Language -->
+    <div class="card locked" id="card-sig-lang">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Signature Language</div>
+          <div class="card-subtitle">Phrases that are uniquely WLC — use them on purpose.</div>
+        </div>
+        <span class="status-badge badge-locked">&#128274; Locked</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="8" readonly>GOOD WORDS: continuity · thoughtful · quietly · realities · stewardship · practical · preserved · functional · transition · observant · care · clarity · friction · belongings · household · capable · considered.
+
+SIGNATURE IP / FRAMEWORK TERMS (for content, talks, partnerships, press, referral language):
+· Invisible Friction
+· Household Continuity
+· The Operational Side of Living
+· Deferred Decisions
+· Practical Stewardship
+· Belonging Ecosystems
+
+EXISTING SITE LINES FLAGGED AS STRONG:
+· "When 'there has to be an easier way' becomes a business."
+· "I'm built for your chaos."
+· "For the things life leaves unfinished."
+· "The operational side of a home, made visible again."</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx — Language Rules + Homepage</span>
+        <div class="card-actions">
+          <button class="btn btn-unlock" onclick="unlockCard('card-sig-lang')">Unlock to Edit</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /cards-grid -->
+</div><!-- /main -->
+</div><!-- /panel-0 -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOLDER 2 — SERVICE ARCHITECTURE
+════════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-1">
+<div class="main">
+
+  <div class="folder-header">
+    <div class="folder-num">Folder 2</div>
+    <h2>Service Architecture</h2>
+    <div class="folder-desc">This keeps the business understandable. Non-polished and logistical — offers, services, pricing, the business broken down. This is a coherent ecosystem.</div>
+    <div class="folder-outcome">Outcome: Stops "I do everything." Becomes a coherent ecosystem.</div>
+  </div>
+
+  <div class="progress-row">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:78%"></div></div>
+    <div class="progress-label">78% complete — 4 locked, 5 draft</div>
+  </div>
+
+  <div class="cards-grid">
+
+    <!-- Service Hierarchy -->
+    <div class="card" id="card-hierarchy">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Service Hierarchy</div>
+          <div class="card-subtitle">The Well Lived ecosystem — entry → premium pathway.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="8">Entry Point — House Calls.
+Immediate trust-building. Practical intervention. Family reassurance.
+
+Continuity Layer — Household Stewardship.
+Functionality. Organization. Access. Usability. Transition preparation.
+
+Preservation Layer — Legacy Inventory & Story Stewardship.
+Cataloging. Stories. Value tracking. Estate clarity. Belonging continuity.
+
+Value Recovery Layer — Curated Resale & Placement.
+Consignment. Routing. Liquidation strategy. Donation handling. Responsible dispersal.
+
+REVENUE SEQUENCING:
+1) Bookable Sessions — fast conversion, broad audience.
+2) Resale Pickup — scalable, recurring, lead generator.
+3) House Calls — trust builder, premium pathway.
+4) Legacy Inventory — high-ticket emotional service later.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx — Service Hierarchy</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-hierarchy')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-hierarchy')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entry-Point Offers -->
+    <div class="card" id="card-entry">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Entry-Point Offers</div>
+          <div class="card-subtitle">Conversion-language menu — Layer 1, approachable / modern / useful / not emotionally heavy.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="9">BOOKABLE SESSION NAMES THAT CONVERT:
+· "Book a 4-Hour Reset" — $495
+· "Closet + Consignment Session"
+· "Move-In Reset"
+· "New Baby Home Setup"
+· "Overflow Edit"
+· "House Call"
+· "Post-Event Reset"
+· "Closet to Cash"
+· "Pickup & Resale" (Fast Bag Fill)
+· "Home Catch-Up Session"
+
+The Reset — 4-hour organization + functionality session. Examples: closet resets, kitchen catch-up, nursery setup, post-move unpacking, room functionality, donation sorting.
+
+Modern Move Reset — $1,200/day flat for full-day move support.
+
+Both are price-gated and paid upfront. No discovery call required.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx + LA_Concierge copy</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-entry')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-entry')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing Concepts -->
+    <div class="card" id="card-pricing">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Pricing Concepts</div>
+          <div class="card-subtitle">Live rate card — pulled directly from wellivedcitizen.com.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="10">HOME ORGANIZATION & MODERN MOVE:
+· Hourly: $150/hr · 3-hour minimum.
+· 10-hour Flex Block: $1,250.
+· 25-hour Flex Block: $3,150.
+· Studio / 1BR Move Reset: $1,200/day flat — up to 8 hours straight.
+· Larger homes & multi-room projects: quoted after a call.
+
+LEGACY PLANNING & INVENTORY CATALOG:
+· Single room or storage unit: $175/hr · 2-hour minimum.
+· Whole home: project pricing after walkthrough.
+
+HOUSE CALLS:
+· $175/hr · 2-hour minimum (or productized $350 quick-buy version where applicable).
+
+CURATED RESALE & CONSIGNMENT:
+· Commission-based · agreement required.
+
+Flex Blocks never expire. The $1,200 Move Reset is reserved for studios and 1-bedroom moves only. Larger homes scope as projects after walkthrough.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: wellivedcitizen.com — Home Organization & Pricing pages</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-pricing')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-pricing')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Service Descriptions -->
+    <div class="card" id="card-svc-desc">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Service Descriptions</div>
+          <div class="card-subtitle">Verbatim Service Tiles from the Brand OS doc.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="10">THE RESET.
+4-hour organization + functionality session. Examples: closet resets, kitchen catch-up, nursery setup, post-move unpacking, room functionality, donation sorting.
+
+HOUSE CALLS.
+Practical household help for busy professionals, independent adults, and families managing life from a distance. Examples: tech setup, accessibility improvements, safety updates, home functionality, household catch-up, recurring visits.
+
+CONSIGNMENT & RESALE.
+Pickup or send your items. We identify the best resale route, manage listings, and recover value from the things you no longer need.
+
+LEGACY INVENTORY.
+Thoughtful documentation of collections, belongings, and household histories for future clarity and preserved value.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx — Service Tiles + Services Page</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-svc-desc')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-svc-desc')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flex Blocks — LOCKED -->
+    <div class="card locked" id="card-flex">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Flex Blocks</div>
+          <div class="card-subtitle">Pre-buy bundles that ride alongside a session. LOCKED 5/19/2026.</div>
+        </div>
+        <span class="status-badge badge-locked">&#128274; Locked</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="6" readonly>Pre-Buy Org Bundles (sourced and installed during the session — variations within the price points to fit the service scheduled):
+· Starter — $150 — 5 bins + a cart
+· Mid — $250 — 10 bins + divider sets
+· Full — $500 — 20 bins + canisters + hangers
+
+Bundles are swappable for equal value based on what the project actually needs once we're in the space.
+
+"Flex blocks never expire." — This is emotionally excellent for the brand. Sounds: calm · generous · trust-based · non-punitive.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Complete_Site_Copy.txt</span>
+        <div class="card-actions">
+          <button class="btn btn-unlock" onclick="unlockCard('card-flex')">Unlock to Edit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Retention Model -->
+    <div class="card" id="card-retention">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Retention Model</div>
+          <div class="card-subtitle">Why clients stay — and how the next sale happens without selling.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="6">Relationship-driven ease. Clients start with the simple things — a reset, a resale pickup — and WLC becomes the trusted person for the bigger life moments later (inheritance, downsizing, estate transitions).
+
+Retention is built through Observational Care: noticing and quietly solving small household frictions before the client has to ask. The same skill that notices the dead smoke detector, the unreachable shelf, the lamp never replaced after a spouse passed, the unsafe charger placement — that's what turns a one-time booking into a five-year relationship.
+
+We are building the company that notices the signals before they become emergencies. Making invisible household realities visible again.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx — What We Do + Voice</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-retention')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-retention')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resale Funnel -->
+    <div class="card" id="card-resale">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Resale Funnel</div>
+          <div class="card-subtitle">End-to-end resale flow, low-friction by design.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="6">Entry: client texts a photo to (323) 433-1350. No agreement signed until they see the estimated listing price.
+
+Routing: Items go by category to Poshmark, eBay, or private collectors based on what will actually sell where. Pickup or send.
+
+Commission: tiered 45%–65% to WLC, which covers intake, photography, platform listing, and buyer management.
+
+Payout: monthly reporting by the 1st, payout by the 10th.
+
+Positioning: "Pickup or send your items. We identify the best resale route, manage listings, and recover value from the things you no longer need."</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: PLAYBOOK.md + Brand OS docx</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-resale')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-resale')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- House Calls Framework — LOCKED -->
+    <div class="card locked" id="card-housecalls">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">House Calls Framework</div>
+          <div class="card-subtitle">The spirit of the company, productized. LOCKED 5/19/2026.</div>
+        </div>
+        <span class="status-badge badge-locked">&#128274; Locked</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="7" readonly>Productized as a $350 Quick Buy for the operational middle — the tasks that sit between legal, moving, and daily life on homepage.
+
+Verbatim service tile: practical household help for busy professionals, independent adults, and families managing life from a distance. Examples: tech setup, accessibility improvements, safety updates, home functionality, household catch-up, recurring visits.
+
+What's inside: home check-ins, tech setup, supply runs, vendor oversight, guest-ready resets, the appliance install nobody had time for, the donation run nobody had time for.
+
+Official language: "Once I know how your home works, it becomes easy for me to help keep it working."</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Well_Lived_Brand_Operating_System.docx — House Calls tile</span>
+        <div class="card-actions">
+          <button class="btn btn-unlock" onclick="unlockCard('card-housecalls')">Unlock to Edit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tone of Policies — LOCKED -->
+    <div class="card locked" id="card-policies">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Tone of Policies</div>
+          <div class="card-subtitle">How policies sound. LOCKED 5/19/2026.</div>
+        </div>
+        <span class="status-badge badge-locked">&#128274; Locked</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="4" readonly>"I'd rather you tell me you're overwhelmed and we reschedule than ghost the appointment — I genuinely won't be weird about it."
+
+This sounds like the brand: Human. Competent. Warm. Boundaried. Not corporate.
+
+Recurring Pathways path: House Call → Reset → Flex Block → Continuity. Each step is built on the trust earned in the previous one.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Complete_Site_Copy.txt + Brand OS docx — Real Customer Funnel</span>
+        <div class="card-actions">
+          <button class="btn btn-unlock" onclick="unlockCard('card-policies')">Unlock to Edit</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /cards-grid -->
+</div><!-- /main -->
+</div><!-- /panel-1 -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOLDER 3 — WEBSITE COPY
+════════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-2">
+<div class="main">
+
+  <div class="folder-header">
+    <div class="folder-num">Folder 3</div>
+    <h2>Website Copy</h2>
+    <div class="folder-desc">This becomes modular. Separate pages. The homepage is downstream of Brand Foundation — not upstream of it. Now edits stop affecting the entire brand. Content is updated and finalized here — always — verbatim.</div>
+    <div class="folder-outcome">Outcome: The website becomes an output of the system.</div>
+  </div>
+
+  <div class="progress-row">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:40%"></div></div>
+    <div class="progress-label">40% complete — 0 locked, 6 draft</div>
+  </div>
+
+  <div class="cards-grid">
+
+    <!-- Homepage -->
+    <div class="card" id="card-homepage">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Homepage</div>
+          <div class="card-subtitle">Start Here section + hero conversion. Only after Brand Foundation is locked.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="7">NOT SURE WHERE TO START?
+Most clients begin with:
+· a 4-Hour Reset
+· a House Call
+· or a Fast Bag Fill pickup
+
+From there, services can expand naturally depending on the household, project, or transition involved.
+
+[HERO COPY TO BE WRITTEN — pull from Brand Foundation: Tone Principles + Brand Promise + Signature Language]
+
+Strong existing site lines to carry forward:
+· "When 'there has to be an easier way' becomes a business."
+· "I'm built for your chaos."
+· "For the things life leaves unfinished."
+· "The operational side of a home, made visible again."</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Brand OS doc + existing site lines</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-homepage')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-homepage')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Services — Four Pillars -->
+    <div class="card" id="card-pillars">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Services — The Four Pillars</div>
+          <div class="card-subtitle">The core service page structure.</div>
+        </div>
+        <span class="status-badge badge-draft">Draft</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="8">THE RESET — Organization & Move Support
+Creates momentum.
+
+HOUSE CALLS
+Create continuity.
+
+CURATED RESALE & CONSIGNMENT
+Creates release + value recovery.
+
+LEGACY INVENTORY & STORY ARCHIVING
+Creates future clarity.
+
+Everything now aligns around: reducing friction thoughtfully. That coherence matters WAY more than optimizing every dollar immediately. You are building trust infrastructure first. The premium relationships and larger retainers come after.</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Brand OS doc — Service Architecture</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-pillars')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-pillars')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fast Bag Fill -->
+    <div class="card" id="card-fastbag">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Fast Bag Fill — Page Copy</div>
+          <div class="card-subtitle">Entry offer copy — ready to publish. Low friction, immediate conversion.</div>
+        </div>
+        <span class="status-badge badge-ready">Ready</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="10">FAST BAG FILL
+A simple way to start letting things leave the house.
+
+Fill a bag, box, or designated pickup pile with the items you no longer want to manage — clothing, accessories, decor, household overflow, collectibles, or pieces you've been meaning to sort through for months.
+
+Pickup is complimentary within our service area.
+
+From there, we evaluate:
+· resale potential
+· platform placement
+· donation routing
+· and the most thoughtful next step for each category of item
+
+No photographing. No researching. No figuring out where things belong.
+Just a practical starting point for creating momentum and recovering value where it still exists.
+
+Commission is based on net proceeds after platform and processing fees.
+
+[ Schedule a Pickup ]</textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Source: Brand OS doc + Google Doc 1 (locked section)</span>
+        <div class="card-actions">
+          <button class="btn btn-reset" onclick="resetCard('card-fastbag')">Reset</button>
+          <button class="btn btn-lock" onclick="lockCard('card-fastbag')">&#128274; Lock as Final</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <div class="card empty" id="card-faqs">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">FAQs</div>
+          <div class="card-subtitle">Booking, process, and expectation-setting copy.</div>
+        </div>
+        <span class="status-badge badge-empty">Empty</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="5" placeholder="Add FAQ content here — questions, answers, booking language, process explanations..."></textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">To be written</span>
+        <div class="card-actions">
+          <button class="btn btn-save" onclick="saveCard('card-faqs')">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div class="card empty" id="card-about">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">About Page</div>
+          <div class="card-subtitle">Founder story, philosophy, and the "why this business exists" narrative.</div>
+        </div>
+        <span class="status-badge badge-empty">Empty</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="5" placeholder="Pull from Founder Philosophy + Differentiators in Brand Foundation. Add personal story, career throughline, and the moment the business became real..."></textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">To be written — pull from Folder 1: Founder Philosophy + Differentiators</span>
+        <div class="card-actions">
+          <button class="btn btn-save" onclick="saveCard('card-about')">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Intake Verbiage -->
+    <div class="card empty" id="card-intake">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Intake Verbiage</div>
+          <div class="card-subtitle">The language clients see when they first reach out or book.</div>
+        </div>
+        <span class="status-badge badge-empty">Empty</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="5" placeholder="Add intake form language, booking confirmation copy, first-touch email verbiage, and onboarding language here..."></textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">To be written</span>
+        <div class="card-actions">
+          <button class="btn btn-save" onclick="saveCard('card-intake')">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /cards-grid -->
+</div><!-- /main -->
+</div><!-- /panel-2 -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOLDER 4 — CONTENT & SOCIAL
+════════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-3">
+<div class="main">
+
+  <div class="folder-header">
+    <div class="folder-num">Folder 4</div>
+    <h2>Content &amp; Social</h2>
+    <div class="folder-desc">Raw brainstorm and social planning. This is where thoughts, observations, stories, ideas, and emotional insights can live WITHOUT destabilizing the core business. Once thoughts get worked out — plan copy for future posts or generate future content.</div>
+    <div class="folder-outcome">AI Agent note: Strongest material is usually buried in rambles, notes, side comments, unfinished thoughts, examples, emotional reactions, and founder instincts — NOT polished decks.</div>
+  </div>
+
+  <div class="progress-row">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:5%"></div></div>
+    <div class="progress-label">5% complete — containers ready, content to be added</div>
+  </div>
+
+  <div class="section-divider">Raw Brainstorm</div>
+
+  <div class="cards-grid">
+
+    <div class="card empty" id="card-raw-brain">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Raw Founder Brainstorm</div>
+          <div class="card-subtitle">Dump everything here — unfiltered. Voice memos, notes, fragments, observations, emotional reactions.</div>
+        </div>
+        <span class="status-badge badge-empty">Empty</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="8" placeholder="Paste raw notes, voice memo transcripts, scattered thoughts, observations from client visits, phrases you liked, phrases you hated, old brand statements, anything..."></textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Raw input — AI will extract patterns and categorize</span>
+        <div class="card-actions">
+          <button class="btn btn-save" onclick="saveCard('card-raw-brain')">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card empty" id="card-stories">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Stories &amp; Observations</div>
+          <div class="card-subtitle">Client moments, field observations, things you noticed that no one else would.</div>
+        </div>
+        <span class="status-badge badge-empty">Empty</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="6" placeholder="The dead smoke detector. The unreachable shelf. The purse collection with no record. The lamp never replaced after a spouse passed. Add your real field observations here..."></textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">Observational intelligence — the brand's signature style</span>
+        <div class="card-actions">
+          <button class="btn btn-save" onclick="saveCard('card-stories')">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-divider">Social Planning</div>
+
+  <div class="cards-grid">
+
+    <div class="card empty" id="card-social-plan">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Social Content Calendar</div>
+          <div class="card-subtitle">Planned captions, post ideas, and content themes.</div>
+        </div>
+        <span class="status-badge badge-empty">Empty</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="6" placeholder="Add planned posts, caption drafts, content themes, hashtag strategy, and scheduling notes here..."></textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">To be built from raw brainstorm above</span>
+        <div class="card-actions">
+          <button class="btn btn-save" onclick="saveCard('card-social-plan')">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card empty" id="card-newsletter">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Newsletter / Long-Form Content</div>
+          <div class="card-subtitle">Deeper thinking, philosophy, nuance — for email or editorial.</div>
+        </div>
+        <span class="status-badge badge-empty">Empty</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="6" placeholder="Add newsletter drafts, long-form content ideas, press angles, and editorial pieces here..."></textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">To be built from raw brainstorm above</span>
+        <div class="card-actions">
+          <button class="btn btn-save" onclick="saveCard('card-newsletter')">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /main -->
+</div><!-- /panel-3 -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOLDER 5 — OPERATIONS
+════════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-4">
+<div class="main">
+
+  <div class="folder-header">
+    <div class="folder-num">Folder 5</div>
+    <h2>Operations</h2>
+    <div class="folder-desc">Execution layer. Where your brain sees the workflow and other apps, tools are reflected here and how they function — so nothing is out of place. This is where your operational intelligence becomes scalable.</div>
+    <div class="folder-outcome">Outcome: This is where AI becomes useful instead of mentally destabilizing.</div>
+  </div>
+
+  <div class="progress-row">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:5%"></div></div>
+    <div class="progress-label">5% complete — containers ready, content to be added</div>
+  </div>
+
+  <div class="section-divider">Client Process</div>
+
+  <div class="cards-grid">
+
+    <div class="card empty" id="card-booking">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Booking Process</div>
+          <div class="card-subtitle">Step-by-step client booking flow from first touch to confirmed appointment.</div>
+        </div>
+        <span class="status-badge badge-empty">Empty</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="6" placeholder="Add booking flow steps, confirmation language, intake questions, pre-session prep instructions..."></textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">To be built</span>
+        <div class="card-actions">
+          <button class="btn btn-save" onclick="saveCard('card-booking')">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card empty" id="card-onboarding">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Client Onboarding</div>
+          <div class="card-subtitle">What happens after a client books — the first impression system.</div>
+        </div>
+        <span class="status-badge badge-empty">Empty</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="6" placeholder="Add onboarding sequence, welcome email, intake form link, pre-session checklist, and first-visit protocol..."></textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">To be built</span>
+        <div class="card-actions">
+          <button class="btn btn-save" onclick="saveCard('card-onboarding')">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card empty" id="card-followup">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Follow-Up Systems</div>
+          <div class="card-subtitle">Post-session follow-up, referral asks, recurring relationship nurture.</div>
+        </div>
+        <span class="status-badge badge-empty">Empty</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="6" placeholder="Add post-session email templates, referral ask language, check-in cadence, and recurring client nurture sequences..."></textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">To be built</span>
+        <div class="card-actions">
+          <button class="btn btn-save" onclick="saveCard('card-followup')">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-divider">Systems & Automation</div>
+
+  <div class="cards-grid">
+
+    <div class="card empty" id="card-workflows">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Workflows &amp; Automations</div>
+          <div class="card-subtitle">Tools, apps, and automated sequences that run the backend.</div>
+        </div>
+        <span class="status-badge badge-empty">Empty</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="6" placeholder="Add tool stack, automation sequences, CRM logic, resale workflow steps, AI prompt library, and dashboard notes..."></textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">To be built</span>
+        <div class="card-actions">
+          <button class="btn btn-save" onclick="saveCard('card-workflows')">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card empty" id="card-resale-ops">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">Resale Process</div>
+          <div class="card-subtitle">End-to-end operational steps for intake, listing, and payout.</div>
+        </div>
+        <span class="status-badge badge-empty">Empty</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="6" placeholder="Add resale intake checklist, photography standards, platform routing logic, listing templates, payout tracking, and client reporting format..."></textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">To be built — reference Folder 2: Resale Funnel for strategy</span>
+        <div class="card-actions">
+          <button class="btn btn-save" onclick="saveCard('card-resale-ops')">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card empty" id="card-ai-workflows">
+      <div class="card-header">
+        <div class="card-title-block">
+          <div class="card-title">AI Workflows &amp; Prompt Library</div>
+          <div class="card-subtitle">How AI agents work with this system — extraction, categorization, copy generation.</div>
+        </div>
+        <span class="status-badge badge-empty">Empty</span>
+      </div>
+      <div class="card-body">
+        <textarea class="card-content" rows="7" placeholder="Add AI agent instructions, prompt templates, extraction workflows, and the two main modes:
+1. Dump everything messy → AI extracts patterns, separates philosophy from conversion copy, identifies brand pillars.
+2. Request specific output → AI delivers matching brand copy using Brand Foundation as north star.
+
+Add prompts for: homepage copy, about page, service descriptions, social captions, email sequences..."></textarea>
+      </div>
+      <div class="card-footer">
+        <span class="card-source">To be built — reference Brand OS operating principles</span>
+        <div class="card-actions">
+          <button class="btn btn-save" onclick="saveCard('card-ai-workflows')">Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /main -->
+</div><!-- /panel-4 -->
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+  // ── TAB SWITCHING ──
+  const panels = document.querySelectorAll('.tab-panel');
+  const tabs = document.querySelectorAll('.tab-btn');
+
+  function switchTab(idx) {
+    panels.forEach((p, i) => p.classList.toggle('active', i === idx));
+    tabs.forEach((t, i) => t.classList.toggle('active', i === idx));
+  }
+
+  // ── LOCK / UNLOCK ──
+  function lockCard(id) {
+    const card = document.getElementById(id);
+    const textarea = card.querySelector('textarea');
+    const badge = card.querySelector('.status-badge');
+    const actions = card.querySelector('.card-actions');
+
+    card.classList.remove('empty');
+    card.classList.add('locked');
+    textarea.setAttribute('readonly', true);
+    badge.className = 'status-badge badge-locked';
+    badge.textContent = '🔒 Locked';
+    actions.innerHTML = '<button class="btn btn-unlock" onclick="unlockCard(\'' + id + '\')">Unlock to Edit</button>';
+    showToast('Locked as final.');
+  }
+
+  function unlockCard(id) {
+    const card = document.getElementById(id);
+    const textarea = card.querySelector('textarea');
+    const badge = card.querySelector('.status-badge');
+    const actions = card.querySelector('.card-actions');
+
+    card.classList.remove('locked');
+    textarea.removeAttribute('readonly');
+    badge.className = 'status-badge badge-draft';
+    badge.textContent = 'Draft';
+    actions.innerHTML = '<button class="btn btn-reset" onclick="resetCard(\'' + id + '\')">Reset</button><button class="btn btn-lock" onclick="lockCard(\'' + id + '\')">🔒 Lock as Final</button>';
+    showToast('Unlocked for editing.');
+  }
+
+  function saveCard(id) {
+    const card = document.getElementById(id);
+    const textarea = card.querySelector('textarea');
+    const badge = card.querySelector('.status-badge');
+    const actions = card.querySelector('.card-actions');
+
+    if (textarea.value.trim()) {
+      card.classList.remove('empty');
+      badge.className = 'status-badge badge-draft';
+      badge.textContent = 'Draft';
+      actions.innerHTML = '<button class="btn btn-reset" onclick="resetCard(\'' + id + '\')">Reset</button><button class="btn btn-lock" onclick="lockCard(\'' + id + '\')">🔒 Lock as Final</button>';
+      showToast('Saved as draft.');
+    }
+  }
+
+  function resetCard(id) {
+    showToast('Use Ctrl+Z to undo recent changes.');
+  }
+
+  // ── TOAST ──
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // ── AUTO-SAVE to localStorage ──
+  document.querySelectorAll('.card-content').forEach(ta => {
+    const key = 'wlc_' + ta.closest('.card').id;
+    const saved = localStorage.getItem(key);
+    if (saved && !ta.hasAttribute('readonly')) ta.value = saved;
+    ta.addEventListener('input', () => {
+      if (!ta.hasAttribute('readonly')) localStorage.setItem(key, ta.value);
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -90,7 +90,7 @@ INTENT EXTRACTED
 - Looking for a better deal than Namecheap's renewal rates.
 
 DECISIONS MADE
-- [LOCKED] Phone: (323) 433-1350 is the active Google Voice number.
+- [LOCKED] Phone: [REDACTED — business Google Voice number; it lives on the public site, not duplicated in this staged doc] is the active Google Voice number.
 - [LOCKED] Redirect any new domains purchased for the services under the umbrella should redirect to parent homepage .com to the main site.
 
 CORRECTIONS GIVEN
