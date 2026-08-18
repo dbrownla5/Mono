@@ -100,21 +100,21 @@ describe('INDEX.md', () => {
   }
 
   test('declares the tracker totals in its summary line', () => {
-    assert.match(content, /_37 source repos · 3 reviewed · 34 remaining_/);
+    assert.match(content, /_37 source repos · 4 reviewed · 33 remaining_/);
   });
 
   test('the actual number of repo rows across all tables equals the declared total (37)', () => {
     assert.equal(tableRows().length, 37);
   });
 
-  test('the number of rows marked ✅ matches the declared "3 reviewed"', () => {
+  test('the number of rows marked ✅ matches the declared "4 reviewed"', () => {
     const reviewed = tableRows().filter(([, status]) => status === '✅');
-    assert.equal(reviewed.length, 3);
+    assert.equal(reviewed.length, 4);
   });
 
-  test('the number of rows not marked ✅ matches the declared "34 remaining"', () => {
+  test('the number of rows not marked ✅ matches the declared "33 remaining"', () => {
     const remaining = tableRows().filter(([, status]) => status !== '✅');
-    assert.equal(remaining.length, 34);
+    assert.equal(remaining.length, 33);
   });
 
   test('repo names are unique across the whole tracker (no repo listed twice)', () => {

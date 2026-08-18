@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listing — Greg Copeland Mirror Sculpture — The Well Lived Citizen</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --tan: #C4A882; --tan-light: #E8DCC8; --tan-bg: #FAF6F0;
+    --charcoal: #2C2C2C; --text: #3A3A3A; --text-light: #6B6B6B;
+    --white: #FFFFFF; --border: #E0D6C8; --alert: #B85C3A;
+    --green: #4A7A5B; --green-bg: #F0F7F2;
+  }
+  body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--white); line-height: 1.6; font-weight: 300; }
+  .page { max-width: 800px; margin: 0 auto; }
+
+  .header { text-align: center; padding: 48px 40px 36px; border-bottom: 2px solid var(--tan); }
+  .header h1 { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 36px; letter-spacing: 6px; text-transform: uppercase; color: var(--charcoal); margin-bottom: 4px; }
+  .header .tagline { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--tan); margin-bottom: 20px; }
+  .header .doc-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 500; color: var(--charcoal); margin-top: 16px; }
+
+  .listing-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: var(--tan-bg); border-bottom: 1px solid var(--border); font-size: 13px; }
+  .listing-bar .field-group { display: flex; flex-direction: column; gap: 4px; }
+  .listing-bar label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-light); font-weight: 500; }
+  .listing-bar .value { color: var(--charcoal); font-weight: 400; }
+  .listing-bar .sku { font-family: monospace; font-size: 11px; color: var(--text-light); }
+
+  .section { padding: 28px 40px; border-bottom: 1px solid var(--border); }
+  .section:last-of-type { border-bottom: none; }
+  .section-title { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--tan); font-weight: 500; margin-bottom: 16px; }
+
+  .product-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; color: var(--charcoal); margin-bottom: 16px; line-height: 1.4; }
+
+  .spec-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px 24px; }
+  .spec-item { display: flex; flex-direction: column; gap: 4px; }
+  .spec-item label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-light); font-weight: 500; }
+  .spec-item .value { font-size: 14px; border-bottom: 1px solid var(--border); padding-bottom: 4px; min-height: 24px; }
+  .spec-item.full { grid-column: 1 / -1; }
+  .spec-item.half { grid-column: span 2; }
+
+  .description-block { font-size: 14px; line-height: 1.85; color: var(--text); }
+  .description-block p { margin-bottom: 12px; }
+  .description-block p:last-child { margin-bottom: 0; }
+
+  .pricing-box { background: var(--tan-bg); border: 1px solid var(--border); border-radius: 4px; padding: 24px; }
+  .price-row { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .price-row:last-child { border-bottom: none; }
+  .price-row label { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-light); font-weight: 500; }
+  .price-row .amount { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--charcoal); }
+  .price-row.primary { padding-top: 16px; margin-top: 8px; }
+  .price-row.primary .amount { font-size: 28px; color: var(--tan); }
+
+  .platform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .platform-card { background: var(--white); border: 1px solid var(--border); border-radius: 4px; padding: 16px; }
+  .platform-card h5 { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--charcoal); font-weight: 500; margin-bottom: 6px; }
+  .platform-card p { font-size: 12px; line-height: 1.6; color: var(--text-light); }
+  .platform-card .price { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--tan); font-weight: 600; margin-top: 6px; }
+
+  .shipping-box { background: var(--green-bg); border: 1px solid var(--green); border-radius: 4px; padding: 20px; }
+  .shipping-box h4 { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--green); font-weight: 500; margin-bottom: 8px; }
+  .shipping-box p { font-size: 13px; line-height: 1.7; color: var(--text); }
+  .shipping-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .shipping-stat { text-align: center; }
+  .shipping-stat .num { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--green); }
+  .shipping-stat .label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-light); }
+
+  .alert-box { background: #FDF5F0; border: 1px solid var(--alert); border-radius: 4px; padding: 20px; margin-top: 16px; }
+  .alert-box:first-child { margin-top: 0; }
+  .alert-box h4 { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--alert); font-weight: 500; margin-bottom: 8px; }
+  .alert-box p { font-size: 13px; line-height: 1.7; color: var(--text); }
+
+  .rec-box { background: var(--tan-bg); border: 1px solid var(--tan); border-radius: 4px; padding: 20px; margin-top: 16px; }
+  .rec-box:first-child { margin-top: 0; }
+  .rec-box h4 { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--tan); font-weight: 500; margin-bottom: 8px; }
+  .rec-box p { font-size: 13px; line-height: 1.7; color: var(--text); }
+
+  .copy-block { background: #F5F5F5; border: 1px solid #DDD; border-radius: 4px; padding: 20px; margin-top: 16px; position: relative; }
+  .copy-block h4 { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--charcoal); font-weight: 500; margin-bottom: 12px; }
+  .copy-block .copy-content { font-size: 13px; line-height: 1.8; color: var(--text); white-space: pre-wrap; }
+  .copy-btn { position: absolute; top: 12px; right: 12px; background: var(--charcoal); color: white; border: none; padding: 6px 14px; border-radius: 3px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; letter-spacing: 1px; }
+  .copy-btn:hover { background: var(--tan); }
+
+  .footer { text-align: center; padding: 32px 40px; border-top: 2px solid var(--tan); background: var(--tan-bg); }
+  .footer .contact { font-size: 12px; color: var(--text-light); letter-spacing: 1px; }
+  .footer .legal { font-size: 10px; color: #B8B0A4; margin-top: 12px; line-height: 1.6; }
+
+  @media print { body { background: white; } .page { max-width: 100%; } .no-print { display: none; } .copy-btn { display: none; } }
+  .toolbar { position: fixed; bottom: 24px; right: 24px; display: flex; gap: 8px; z-index: 100; }
+  .toolbar button { background: var(--charcoal); color: white; border: none; padding: 10px 20px; border-radius: 4px; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; letter-spacing: 1px; }
+  .toolbar button:hover { background: var(--tan); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <h1>The Well Lived Citizen</h1>
+    <div class="tagline">Curated Resale &amp; Legacy Planning</div>
+    <div class="doc-title">Resale Listing &amp; Posting Sheet</div>
+  </div>
+
+  <div class="listing-bar">
+    <div class="field-group">
+      <label>Listing Date</label>
+      <div class="value">July 28, 2026</div>
+    </div>
+    <div class="field-group">
+      <label>SKU</label>
+      <div class="sku">ccc90442-45eb-4751-6eda-a9cf39c03a81</div>
+    </div>
+    <div class="field-group">
+      <label>Status</label>
+      <div class="value">Ready to Post</div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- PRODUCT SPECS -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Product Specifications</div>
+    <div class="product-title">Vintage 1970s Greg Copeland Layered Mirror Art Wall Sculpture &mdash; Op Art Geometric Multi-Layer Signed Studio Piece</div>
+    <div class="spec-grid">
+      <div class="spec-item">
+        <label>Brand / Maker</label>
+        <div class="value">Greg Copeland Studio</div>
+      </div>
+      <div class="spec-item">
+        <label>Category</label>
+        <div class="value">Wall Art / Sculpture</div>
+      </div>
+      <div class="spec-item">
+        <label>Era / Year</label>
+        <div class="value">1970s</div>
+      </div>
+      <div class="spec-item">
+        <label>Condition</label>
+        <div class="value">Pre-owned &mdash; Good</div>
+      </div>
+      <div class="spec-item">
+        <label>Size</label>
+        <div class="value">One Size</div>
+      </div>
+      <div class="spec-item">
+        <label>Style</label>
+        <div class="value">Op Art / Mid-Century Modern</div>
+      </div>
+      <div class="spec-item">
+        <label>Dimensions</label>
+        <div class="value">26 &times; 26 &times; 3 in</div>
+      </div>
+      <div class="spec-item">
+        <label>Actual Weight</label>
+        <div class="value">~30.16 lb</div>
+      </div>
+      <div class="spec-item">
+        <label>Shipping Weight</label>
+        <div class="value">~50 lb (boxed)</div>
+      </div>
+      <div class="spec-item">
+        <label>Materials</label>
+        <div class="value">Layered mirror, glass, gold-tone metal frame</div>
+      </div>
+      <div class="spec-item">
+        <label>Cost of Goods</label>
+        <div class="value">$550.00</div>
+      </div>
+      <div class="spec-item">
+        <label>Estimated Earning</label>
+        <div class="value">$489.00</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- FULL DESCRIPTION -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Full Product Description</div>
+    <div class="description-block">
+      <p>Vintage Greg Copeland layered mirror wall sculpture with a gold-tone frame and geometric, multi-dimensional Op Art design. This is a signed studio piece from the 1970s &mdash; part of the era when Copeland's layered mirror sculptures defined the intersection of fine art and functional d&eacute;cor in high-end American interiors.</p>
+      <p>The sculpture features multiple layers of cut and etched mirror set at varying depths within a structured gold-tone metal frame, creating the signature three-dimensional optical illusion that made Copeland's work iconic. The layered construction catches and refracts light from every angle, producing a shifting visual effect that changes depending on the viewer's position and the room's lighting. This is not a flat decorative mirror &mdash; it is a sculptural wall piece with real depth and presence.</p>
+      <p>Greg Copeland Studio pieces from the 1970s are actively collected by mid-century modern and Op Art enthusiasts. His work has sold through major design platforms including 1stDibs (where gallery-priced Copeland pieces average $1,600 and range up to $4,500+), LiveAuctioneers, and specialty vintage dealers. This piece is in pre-owned good condition with the kind of honest patina and character that confirms its age and authenticity.</p>
+      <p>Measures approximately 26 &times; 26 &times; 3 inches. Weighs approximately 30 pounds; boxed/shipping weight approximately 50 pounds. This is a substantial, large-format wall sculpture &mdash; it makes a statement. Local pickup strongly preferred due to weight, fragility of layered mirror construction, and shipping costs. Will ship with full professional packing (rigid box, mirror-safe corner protection, layered cushioning) at buyer's expense if needed.</p>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- PRICING & PLATFORM STRATEGY -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Pricing &amp; Platform Strategy</div>
+    <div class="pricing-box">
+      <div class="price-row">
+        <label>Cost of Goods</label>
+        <div class="amount">$550</div>
+      </div>
+      <div class="price-row">
+        <label>Comparable Range (Market)</label>
+        <div class="amount">$750 &ndash; $1,800</div>
+      </div>
+      <div class="price-row">
+        <label>Gallery / 1stDibs Range</label>
+        <div class="amount">$1,200 &ndash; $4,500</div>
+      </div>
+      <div class="price-row primary">
+        <label>Recommended List Price</label>
+        <div class="amount">$1,100 &ndash; $1,400</div>
+      </div>
+    </div>
+
+    <div class="platform-grid" style="margin-top: 20px;">
+      <div class="platform-card">
+        <h5>eBay</h5>
+        <p>Largest audience for signed Copeland pieces. List at top of range with Best Offer enabled. Completed sales show $750&ndash;$1,800 for comparable layered mirrors. Factor in 13% fees.</p>
+        <div class="price">List: $1,400 OBO</div>
+      </div>
+      <div class="platform-card">
+        <h5>Facebook Marketplace</h5>
+        <p>Local pickup eliminates shipping risk entirely. Price slightly under eBay since no platform fees and no shipping negotiation. Target mid-century / MCM collector groups.</p>
+        <div class="price">List: $1,100 firm</div>
+      </div>
+      <div class="platform-card">
+        <h5>1stDibs / Chairish</h5>
+        <p>Gallery-tier platforms. Higher price ceiling but slower turnover and dealer commissions apply. Best if patience allows. Copeland averages $1,600 on 1stDibs.</p>
+        <div class="price">List: $1,600 &ndash; $2,200</div>
+      </div>
+      <div class="platform-card">
+        <h5>Specialty Dealers</h5>
+        <p>Mid-century modern dealers, vintage furniture shops, design consignment. They handle the buyer and the shipping. Consignment split or outright purchase.</p>
+        <div class="price">Consignment or buyout</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SHIPPING & LOGISTICS -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Shipping &amp; Logistics</div>
+    <div class="shipping-box">
+      <h4>Weight &amp; Handling</h4>
+      <div class="shipping-grid">
+        <div class="shipping-stat">
+          <div class="num">30 lb</div>
+          <div class="label">Actual Weight</div>
+        </div>
+        <div class="shipping-stat">
+          <div class="num">50 lb</div>
+          <div class="label">Boxed Weight</div>
+        </div>
+        <div class="shipping-stat">
+          <div class="num">26&times;26&times;3</div>
+          <div class="label">Dimensions (in)</div>
+        </div>
+      </div>
+      <p style="margin-top: 16px;">Local pickup strongly preferred. This is a layered mirror sculpture with fragile multi-depth glass construction &mdash; shipping requires professional-grade packing: rigid outer box, custom foam or layered bubble wrap between each mirror layer, corner protectors, and fragile/glass stickers on all six sides. Insure for full declared value. Estimated shipping cost: $80&ndash;$150+ depending on distance (UPS/FedEx Ground, oversized). Buyer pays shipping unless negotiated into sale price.</p>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SELLER NOTES -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Seller Notes &amp; Red Flags</div>
+    <div class="alert-box">
+      <h4>Shipping Risk</h4>
+      <p>Layered mirror construction means multiple glass surfaces at different depths. One hard impact can crack an interior layer that's not visible until unpacking. Professional packing is non-negotiable. If shipping, build the cost into the listing price or pass it to the buyer explicitly. Local pickup eliminates this risk entirely.</p>
+    </div>
+    <div class="alert-box">
+      <h4>Weight</h4>
+      <p>At 30 lbs actual / 50 lbs boxed, this piece hits oversized surcharges on most carriers. UPS and FedEx Ground are the most cost-effective for heavy wall art. USPS is not an option at this weight. Get a shipping quote before committing to a price that includes shipping.</p>
+    </div>
+    <div class="alert-box">
+      <h4>Condition Accuracy</h4>
+      <p>List as "Pre-owned &mdash; Good." Be specific in photos and description about any patina, oxidation on the gold-tone frame, or clouding on any mirror layer. Copeland collectors expect honest vintage condition &mdash; they want authentic pieces, not restored ones. Photograph in natural light from multiple angles to show the layered depth effect.</p>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- DAYNA'S STRATEGY -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Dayna's Recommendation</div>
+    <div class="rec-box">
+      <h4>Market Read</h4>
+      <p>Greg Copeland is a recognized name in the mid-century modern and Op Art collecting world. His layered mirror sculptures are the signature pieces &mdash; they're what people search for by name. The market is steady with dedicated collectors who know what they're looking at. 1stDibs averages $1,600, eBay completed sales range $750&ndash;$1,800 for comparable pieces. This isn't a fast-flip garage sale item &mdash; it's a placed piece that needs the right buyer, but the right buyer will pay for it.</p>
+    </div>
+    <div class="rec-box">
+      <h4>Selling Strategy</h4>
+      <p>Dual-list: eBay at $1,400 with Best Offer enabled to capture the national collector audience, and Facebook Marketplace at $1,100 firm for local pickup to avoid the shipping headache entirely. If it doesn't move in 30 days, reach out to mid-century modern dealers and consignment shops directly &mdash; they move these pieces to interior designers and staging companies regularly. The cost basis is $550, so anything above $1,000 after fees is a strong return.</p>
+    </div>
+    <div class="rec-box">
+      <h4>Listing Optimization</h4>
+      <p>Keywords that drive traffic for this piece: "Greg Copeland," "Op Art mirror," "layered mirror sculpture," "1970s wall art," "mid-century modern mirror," "geometric wall sculpture," "signed studio piece." Lead with the artist name in the title &mdash; collectors search by maker. Photos need to show the depth of the layers and the light-catching effect. Shoot at an angle, not straight-on, so the 3D quality comes through.</p>
+    </div>
+    <div class="rec-box">
+      <h4>Immediate Action</h4>
+      <p>Clean the frame and mirror surfaces gently (glass cleaner on mirrors, soft cloth on gold-tone frame &mdash; no abrasives). Take listing photos in natural light from at least 4 angles: straight-on, 45-degree left, 45-degree right, and a close-up of the signature/label. Include one photo showing the depth of the layers from the side. Pre-box if possible so it's ship-ready the moment a buyer commits.</p>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- READY-TO-POST COPY -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Ready-to-Post Listing Copy</div>
+
+    <div class="copy-block">
+      <h4>eBay / Poshmark / Mercari Title (Max 80 Characters)</h4>
+      <button class="copy-btn no-print" onclick="copyText(this)">Copy</button>
+      <div class="copy-content">Vintage 1970s Greg Copeland Layered Mirror Art Wall Sculpture Op Art Signed</div>
+    </div>
+
+    <div class="copy-block">
+      <h4>Product Name &mdash; App Format (Max 600 Characters)</h4>
+      <button class="copy-btn no-print" onclick="copyText(this)">Copy</button>
+      <div class="copy-content">Vintage 1970s Greg Copeland Layered Mirror Art Wall Sculpture &mdash; Op Art Geometric Multi-Layer Signed Studio Piece, Gold-Tone Frame, 3D Optical Illusion Wall Decor, Mid-Century Modern Collectible, Large Format 26x26x3 inches, Approximately 30 lbs</div>
+    </div>
+
+    <div class="copy-block">
+      <h4>Full Listing Description</h4>
+      <button class="copy-btn no-print" onclick="copyText(this)">Copy</button>
+      <div class="copy-content">Vintage Greg Copeland layered mirror wall sculpture with a gold-tone frame and geometric, multi-dimensional Op Art design. This is a signed studio piece from the 1970s — part of the era when Copeland's layered mirror sculptures defined the intersection of fine art and functional décor in high-end American interiors.
+
+The sculpture features multiple layers of cut and etched mirror set at varying depths within a structured gold-tone metal frame, creating the signature three-dimensional optical illusion that made Copeland's work iconic. The layered construction catches and refracts light from every angle, producing a shifting visual effect that changes depending on the viewer's position and the room's lighting. This is not a flat decorative mirror — it is a sculptural wall piece with real depth and presence.
+
+Greg Copeland Studio pieces from the 1970s are actively collected by mid-century modern and Op Art enthusiasts. This piece is in pre-owned good condition with the kind of honest patina and character that confirms its age and authenticity.
+
+DIMENSIONS: Approximately 26 × 26 × 3 inches
+WEIGHT: Approximately 30 lbs (shipping weight ~50 lbs boxed)
+CONDITION: Pre-owned — Good
+MATERIALS: Layered mirror, glass, gold-tone metal frame
+ERA: 1970s
+MAKER: Greg Copeland Studio (signed)
+
+SHIPPING: Local pickup strongly preferred due to weight and fragile layered mirror construction. Will ship with professional packing (rigid box, corner protection, layered cushioning) at buyer's expense. Please message for a shipping quote to your zip code before purchasing.
+
+Tags: Greg Copeland, Op Art, mirror sculpture, wall art, mid-century modern, 1970s, vintage mirror, geometric art, layered mirror, signed art, studio piece, MCM, wall sculpture, gold frame, retro art</div>
+    </div>
+
+    <div class="copy-block">
+      <h4>Short Description &mdash; Marketplace / Dealer One-Liner</h4>
+      <button class="copy-btn no-print" onclick="copyText(this)">Copy</button>
+      <div class="copy-content">Signed 1970s Greg Copeland layered mirror wall sculpture. Gold-tone frame, multi-layer Op Art design with real 3D depth. 26×26×3 in, ~30 lbs. Pre-owned good condition. Local pickup preferred — will ship professionally at buyer's cost.</div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- STRUCTURED DATA (JSON) -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Structured Data &mdash; App / API Export</div>
+    <div class="copy-block">
+      <h4>JSON Product Record</h4>
+      <button class="copy-btn no-print" onclick="copyText(this)">Copy</button>
+      <div class="copy-content">{
+  "sku": "ccc90442-45eb-4751-6eda-a9cf39c03a81",
+  "product_name": "Vintage 1970s Greg Copeland Layered Mirror Art Wall Sculpture",
+  "brand": "Greg Copeland",
+  "category": "Wall Art / Sculpture",
+  "subcategory": "Mirror Art",
+  "style": "Op Art / Mid-Century Modern",
+  "era": "1970s",
+  "condition": "Pre-owned - Good",
+  "condition_grade": "Good",
+  "size": "One Size",
+  "dimensions": {
+    "height_in": 26,
+    "width_in": 26,
+    "depth_in": 3
+  },
+  "weight": {
+    "actual_lb": 30.16,
+    "shipping_lb": 50
+  },
+  "materials": ["Layered mirror", "Glass", "Gold-tone metal frame"],
+  "signed": true,
+  "cost_of_goods": 550.00,
+  "estimated_earning": 489.00,
+  "pricing": {
+    "recommended_list_low": 1100,
+    "recommended_list_high": 1400,
+    "comparable_range_low": 750,
+    "comparable_range_high": 1800,
+    "gallery_range_low": 1200,
+    "gallery_range_high": 4500,
+    "local_pickup_price": 1100,
+    "ebay_list_price": 1400
+  },
+  "platforms": ["eBay", "Facebook Marketplace", "1stDibs", "Chairish"],
+  "shipping": {
+    "local_pickup_preferred": true,
+    "ships": true,
+    "estimated_shipping_cost_low": 80,
+    "estimated_shipping_cost_high": 150,
+    "carrier": "UPS/FedEx Ground",
+    "packing_notes": "Rigid box, custom foam, corner protectors, fragile stickers"
+  },
+  "keywords": ["Greg Copeland", "Op Art", "mirror sculpture", "wall art", "mid-century modern", "1970s", "vintage mirror", "geometric art", "layered mirror", "signed art", "MCM"],
+  "listing_date": "2026-07-28",
+  "status": "ready_to_post"
+}</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="contact">
+      dayna@thewelllivedcitizen.com
+    </div>
+    <div class="legal">
+      This listing sheet is prepared by The Well Lived Citizen for internal use and dealer distribution.
+      Pricing reflects current market conditions and comparable sales data. Actual sale prices may vary.
+    </div>
+  </div>
+
+</div>
+
+<div class="toolbar no-print">
+  <button onclick="window.print()">Print / Save PDF</button>
+  <button onclick="exportJSON()">Export JSON</button>
+</div>
+
+<script>
+  function copyText(btn) {
+    var block = btn.parentElement;
+    var content = block.querySelector('.copy-content');
+    var text = content.innerText || content.textContent;
+    navigator.clipboard.writeText(text).then(function() {
+      btn.textContent = 'Copied!';
+      setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+    }).catch(function() {
+      var range = document.createRange();
+      range.selectNodeContents(content);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('copy');
+      btn.textContent = 'Copied!';
+      setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+    });
+  }
+
+  function exportJSON() {
+    var blocks = document.querySelectorAll('.copy-block');
+    var jsonBlock = blocks[blocks.length - 1];
+    var content = jsonBlock.querySelector('.copy-content').textContent;
+    var blob = new Blob([content], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'wlc-listing-copeland-mirror.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+
+</body>
+</html>

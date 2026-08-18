@@ -8,7 +8,7 @@ listed here. We work down the list, one repo at a time.
 **Bucket column** is a *provisional guess from the repo name only.* A `?` means
 low confidence — it gets confirmed or moved the moment the repo is opened.
 
-_37 source repos · 3 reviewed · 34 remaining_
+_37 source repos · 4 reviewed · 33 remaining_
 
 ---
 
@@ -47,7 +47,7 @@ _37 source repos · 3 reviewed · 34 remaining_
 
 | Status | Repo | Bucket confidence | Notes |
 |---|---|---|---|
-| ⬜ | `BUSINESS-AGENT` | high | agent (private) |
+| ✅ | `BUSINESS-AGENT` | content staged | Staged 8/18 into `_incoming/BUSINESS-AGENT/`: 83 files deduped verbatim (3 exact dupes collapsed, 19 binaries/personal docs excluded from this public repo, personal PII redacted per staging precedent). |
 | ⬜ | `Content-Extractor` | high | content extraction engine (private) |
 | ⬜ | `repo-digest` | high | repo digest tool (fork) |
 
