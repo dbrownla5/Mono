@@ -3,6 +3,18 @@
 Visual version: Miro board "The Well Lived Citizen — Master Workspace"
 (https://miro.com/app/board/uXjVH4Yu0Ws=/).
 
+---
+
+## AI contribution log
+
+| Agent | Work done | Status |
+|---|---|---|
+| **GitHub Copilot** | Waves 1–2 (inventory + single-repo pullout); wrote ANALYSIS.md and CLAIMS-LEDGER.md; built 3 agents (`repo-extractor`, `dayna-voice-auditor`, `conflict-reconciler`); staged 3 repos in `_incoming/`; built Miro board initial frames | ✅ Complete — stalled before Wave 3 |
+| **Claude** | Assigned to continue Wave 3–4; issue #7 raised because work was not completed and no post-task review was run | ❌ Did not complete — flagged by Dayna in issue #7 |
+| **Miro agent** (this pass, 2026-08-12) | Reviewed repo state; tagged AI contributions; pushed updated status to Miro board; identified exact gap (Waves 3–4 still open, ~15 repos untriaged) | ✅ Complete |
+
+---
+
 ## One company, rebuilt 4 times
 
 The Well Lived Citizen was rebuilt across **four generations**, each with a
